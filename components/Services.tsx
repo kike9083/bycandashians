@@ -86,6 +86,10 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
     }
   };
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = 'https://images.unsplash.com/photo-1550920456-0648218659dc?q=80&w=600&auto=format&fit=crop';
+  };
+
   const getAction = (cta: string) => {
     if (cta.includes('Catálogo')) return () => setView(View.CATALOG);
     if (cta.includes('Galería') || cta.includes('Transformaciones')) return () => setView(View.GALLERY);
@@ -93,11 +97,11 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   };
 
   return (
-    <div className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-24 bg-white w-full">
+      <div className="w-full px-6 md:px-12 lg:px-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900">Nuestros Pilares de Servicio</h2>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-serif font-bold text-gray-900">Nuestros Pilares de Servicio</h2>
+          <p className="mt-4 text-gray-600 max-w-3xl mx-auto text-lg">
             Ofrecemos una solución integral para que disfrutes de la cultura panameña sin preocupaciones.
           </p>
         </div>
@@ -112,7 +116,7 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-8">
             {services.map((service) => (
               <div key={service.id} className="group bg-offWhite rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative">
                 
@@ -126,30 +130,38 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
                   </div>
                 )}
 
-                <div className="h-48 overflow-hidden relative">
+                <div className="h-64 overflow-hidden relative">
                    {editingId === service.id ? (
-                    <div className="absolute inset-0 z-10 bg-white p-2 flex flex-col justify-center">
+                    <div className="absolute inset-0 z-10 bg-white p-4 flex flex-col justify-center shadow-inner">
                       <label className="text-xs font-bold mb-1">URL Nueva Imagen:</label>
                       <input 
                         value={tempImageUrl} 
                         onChange={(e) => setTempImageUrl(e.target.value)}
-                        className="border p-1 text-xs rounded w-full mb-2" 
+                        className="border p-2 text-xs rounded w-full mb-2" 
                       />
+                      <div className="h-20 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
+                         {tempImageUrl && <img src={tempImageUrl} className="h-full w-full object-cover opacity-50" alt="Preview"/>}
+                      </div>
                     </div>
                   ) : (
-                    <img src={service.image} alt={service.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <img 
+                      src={service.image} 
+                      onError={handleImageError}
+                      alt={service.title} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    />
                   )}
                   
-                  <div className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md z-10">
+                  <div className="absolute top-4 right-4 bg-white p-3 rounded-full shadow-md z-10">
                       {getIcon(service.icon_name)}
                   </div>
                 </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{service.title}</h3>
-                  <p className="text-gray-600 mb-4 text-sm flex-grow">{service.description}</p>
+                <div className="p-8 flex flex-col flex-grow">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{service.title}</h3>
+                  <p className="text-gray-600 mb-6 text-base flex-grow">{service.description}</p>
                   <button
                     onClick={getAction(service.cta)}
-                    className="w-full mt-auto py-2 border border-panamaBlue text-panamaBlue rounded font-semibold hover:bg-panamaBlue hover:text-white transition-colors text-sm"
+                    className="w-full mt-auto py-3 border-2 border-panamaBlue text-panamaBlue rounded font-bold hover:bg-panamaBlue hover:text-white transition-colors uppercase tracking-wider text-sm"
                   >
                     {service.cta}
                   </button>

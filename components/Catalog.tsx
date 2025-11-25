@@ -123,6 +123,10 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     }
   };
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = 'https://images.unsplash.com/photo-1596906660183-f32f319200b3?q=80&w=1000&auto=format&fit=crop'; // Fallback
+  };
+
   const filteredProducts = products.filter(p => {
     const typeMatch = filterType === 'ALL' || p.type === filterType;
     const techMatch = filterTech === 'ALL' || p.technique === filterTech;
@@ -130,34 +134,34 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   });
 
   return (
-    <div className="bg-white min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-200 pb-6">
+    <div className="bg-white min-h-screen py-16 w-full">
+      <div className="w-full px-6 md:px-12 lg:px-24">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-gray-200 pb-8">
           <div>
-            <h2 className="text-3xl font-serif font-bold text-gray-900">Catálogo de Alquiler</h2>
-            <p className="mt-2 text-gray-600">Encuentra la indumentaria perfecta para tu próximo evento.</p>
+            <h2 className="text-4xl font-serif font-bold text-gray-900">Catálogo de Alquiler</h2>
+            <p className="mt-2 text-xl text-gray-600">Encuentra la indumentaria perfecta para tu próximo evento.</p>
           </div>
           <div className="flex gap-2 mt-4 md:mt-0">
-             <button onClick={() => setView(View.AI_GENERATOR)} className="text-panamaBlue text-sm font-semibold underline hover:text-panamaRed">
+             <button onClick={() => setView(View.AI_GENERATOR)} className="text-panamaBlue text-base font-semibold underline hover:text-panamaRed">
                 ¿No encuentras lo que buscas? Diseña una idea con IA
              </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Filters */}
-          <div className="lg:col-span-1 bg-offWhite p-6 rounded-lg h-fit sticky top-24">
-            <div className="flex items-center gap-2 mb-4 text-panamaRed font-bold">
-              <Filter size={20} />
+          <div className="lg:col-span-1 bg-offWhite p-8 rounded-lg h-fit sticky top-24 shadow-lg">
+            <div className="flex items-center gap-2 mb-6 text-panamaRed font-bold text-xl">
+              <Filter size={24} />
               <h3>Filtros</h3>
             </div>
             
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Pollera</label>
+            <div className="mb-8">
+              <label className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Tipo de Pollera</label>
               <select 
                 value={filterType} 
                 onChange={(e) => setFilterType(e.target.value as any)}
-                className="w-full border-gray-300 rounded-md shadow-sm p-2 bg-white"
+                className="w-full border-gray-300 rounded-md shadow-sm p-3 bg-white"
               >
                 <option value="ALL">Todas</option>
                 {Object.values(PolleraType).map(t => <option key={t} value={t}>{t}</option>)}
@@ -165,11 +169,11 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Técnica/Labor</label>
+              <label className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Técnica/Labor</label>
               <select 
                 value={filterTech} 
                 onChange={(e) => setFilterTech(e.target.value as any)}
-                className="w-full border-gray-300 rounded-md shadow-sm p-2 bg-white"
+                className="w-full border-gray-300 rounded-md shadow-sm p-3 bg-white"
               >
                 <option value="ALL">Todas</option>
                 {Object.values(Technique).map(t => <option key={t} value={t}>{t}</option>)}
@@ -178,11 +182,11 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
           </div>
 
           {/* Product Grid */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-4">
             {loading ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-                <Loader2 className="w-10 h-10 animate-spin mb-4 text-panamaBlue" />
-                <p>Cargando polleras exclusivas...</p>
+              <div className="flex flex-col items-center justify-center h-96 text-gray-500">
+                <Loader2 className="w-12 h-12 animate-spin mb-4 text-panamaBlue" />
+                <p className="text-lg">Cargando polleras exclusivas...</p>
               </div>
             ) : error ? (
               <div className="flex flex-col items-center justify-center h-64 text-red-600 bg-red-50 rounded-lg p-6">
@@ -191,34 +195,34 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
                 <p className="text-center text-sm">{error}</p>
               </div>
             ) : filteredProducts.length === 0 ? (
-               <div className="flex flex-col items-center justify-center text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-8">
+               <div className="flex flex-col items-center justify-center text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-12 h-96">
                 {products.length === 0 ? (
                   <>
-                    <Database className="w-12 h-12 text-gray-300 mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">Base de Datos Vacía</h3>
-                    <p className="text-center text-sm max-w-md mb-6">
+                    <Database className="w-16 h-16 text-gray-300 mb-6" />
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Base de Datos Vacía</h3>
+                    <p className="text-center text-base max-w-md mb-8">
                       No hay productos en la base de datos de Supabase. Puedes cargar los productos de ejemplo automáticamente.
                     </p>
                     <button 
                       onClick={handleSeedData}
                       disabled={seeding}
-                      className="flex items-center bg-panamaBlue text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition-colors"
+                      className="flex items-center bg-panamaBlue text-white px-8 py-4 rounded-lg hover:bg-blue-900 transition-colors text-lg"
                     >
                       {seeding ? <Loader2 className="animate-spin mr-2" /> : <PlusCircle className="mr-2" />}
                       Cargar Datos de Prueba
                     </button>
                     
                     {seedError && (
-                      <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-left max-w-lg w-full">
+                      <div className="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg text-left max-w-2xl w-full">
                         <div className="flex items-start">
-                          <AlertCircle className="text-yellow-600 w-5 h-5 mr-2 mt-0.5 flex-shrink-0" />
+                          <AlertCircle className="text-yellow-600 w-6 h-6 mr-3 mt-1 flex-shrink-0" />
                           <div className="w-full">
-                            <p className="font-bold text-yellow-800 text-sm mb-1">Permiso Denegado (RLS)</p>
-                            <p className="text-xs text-yellow-700 mb-3">
+                            <p className="font-bold text-yellow-800 text-base mb-2">Permiso Denegado (RLS)</p>
+                            <p className="text-sm text-yellow-700 mb-4">
                               Supabase bloquea las inserciones por defecto. Para habilitar este botón, ejecuta este comando en el <strong>SQL Editor</strong> de Supabase:
                             </p>
                             <div className="relative group">
-                              <pre className="bg-gray-800 text-gray-100 p-3 rounded text-xs overflow-x-auto font-mono">
+                              <pre className="bg-gray-800 text-gray-100 p-4 rounded text-sm overflow-x-auto font-mono">
                                 {`CREATE POLICY "Enable insert for anon" 
 ON products 
 FOR INSERT 
@@ -232,10 +236,10 @@ WITH CHECK (true);`}
                   </>
                 ) : (
                   <>
-                    <p className="text-lg font-medium">No se encontraron productos con estos filtros.</p>
+                    <p className="text-xl font-medium">No se encontraron productos con estos filtros.</p>
                     <button 
                       onClick={() => { setFilterType('ALL'); setFilterTech('ALL'); }}
-                      className="mt-4 text-panamaRed font-bold hover:underline"
+                      className="mt-4 text-panamaRed font-bold hover:underline text-lg"
                     >
                       Limpiar Filtros
                     </button>
@@ -243,53 +247,62 @@ WITH CHECK (true);`}
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
                 {filteredProducts.map((product) => (
-                  <div key={product.id} className="border border-gray-100 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow bg-white flex flex-col h-full relative">
+                  <div key={product.id} className="border border-gray-100 rounded-lg overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 bg-white flex flex-col h-full relative group">
                     
                     {isEditMode && (
-                      <div className="absolute top-2 left-2 z-20 bg-white/90 p-1 rounded-full shadow-md flex gap-2">
+                      <div className="absolute top-2 left-2 z-20 bg-white/90 p-2 rounded-full shadow-md flex gap-2">
                         {editingId === product.id ? (
-                           <button onClick={() => saveEdit(product.id)} className="text-green-600 p-1"><Save size={16} /></button>
+                           <button onClick={() => saveEdit(product.id)} className="text-green-600 p-1"><Save size={18} /></button>
                         ) : (
-                           <button onClick={() => startEdit(product)} className="text-panamaBlue p-1"><Edit size={16} /></button>
+                           <button onClick={() => startEdit(product)} className="text-panamaBlue p-1"><Edit size={18} /></button>
                         )}
-                        <button onClick={() => handleDelete(product.id)} className="text-red-600 p-1"><Trash2 size={16} /></button>
+                        <button onClick={() => handleDelete(product.id)} className="text-red-600 p-1"><Trash2 size={18} /></button>
                       </div>
                     )}
 
-                    <div className="aspect-[4/5] overflow-hidden bg-gray-100 group relative">
+                    <div className="aspect-[4/5] overflow-hidden bg-gray-100 relative">
                       {editingId === product.id ? (
-                        <div className="absolute inset-0 z-10 bg-white p-4 flex flex-col justify-center">
-                            <label className="text-xs font-bold mb-1">URL Nueva Imagen:</label>
+                        <div className="absolute inset-0 z-10 bg-white p-6 flex flex-col justify-center">
+                            <label className="text-sm font-bold mb-2">URL Nueva Imagen:</label>
                             <textarea 
                               value={tempImageUrl} 
                               onChange={(e) => setTempImageUrl(e.target.value)}
-                              className="border p-1 text-xs rounded w-full mb-2 h-20" 
+                              className="border p-2 text-xs rounded w-full mb-4 h-24" 
                             />
+                             <div className="h-24 bg-gray-50 rounded flex items-center justify-center overflow-hidden border">
+                                {tempImageUrl && <img src={tempImageUrl} className="h-full w-full object-cover" alt="Preview"/>}
+                             </div>
                         </div>
                       ) : (
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                        <img 
+                          src={product.image} 
+                          onError={handleImageError}
+                          alt={product.name} 
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                        />
                       )}
                       
-                      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-gray-800 shadow-sm">
+                      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded text-xs font-bold text-gray-800 shadow-sm tracking-wider uppercase">
                         {product.technique}
                       </div>
                     </div>
-                    <div className="p-4 flex flex-col flex-grow">
-                      <div className="text-xs text-panamaRed font-bold uppercase mb-1">{product.type}</div>
-                      <h3 className="text-lg font-bold text-gray-900 truncate">{product.name}</h3>
-                      <p className="text-sm text-gray-500 mt-1 mb-4 flex-grow line-clamp-2">{product.description}</p>
-                      <div className="mt-auto flex items-center justify-between">
-                        <span className="text-xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
+                    <div className="p-6 flex flex-col flex-grow">
+                      <div className="text-xs text-panamaRed font-bold uppercase mb-2 tracking-widest">{product.type}</div>
+                      <h3 className="text-xl font-bold text-gray-900 truncate mb-2">{product.name}</h3>
+                      <p className="text-sm text-gray-500 mb-6 flex-grow line-clamp-3 leading-relaxed">{product.description}</p>
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-50">
+                        <span className="text-2xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
                         <button 
                           onClick={() => setView(View.CONTACT)}
-                          className="bg-panamaBlue text-white p-2 rounded-full hover:bg-blue-900 transition-colors"
+                          className="bg-panamaBlue text-white p-3 rounded-full hover:bg-blue-900 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                          title="Consultar"
                         >
-                          <ShoppingBag size={18} />
+                          <ShoppingBag size={20} />
                         </button>
                       </div>
-                      <div className="mt-2 text-xs text-gray-400">
+                      <div className="mt-2 text-xs text-gray-400 text-right">
                         *Precio alquiler base
                       </div>
                     </div>

@@ -18,24 +18,24 @@ export const Hero: React.FC<HeroProps> = ({ setView }) => {
         <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 to-transparent"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 flex flex-col justify-center h-full min-h-[600px]">
-        <h1 className="text-4xl md:text-6xl font-serif font-bold text-white mb-6 leading-tight">
+      <div className="relative w-full px-6 md:px-12 lg:px-24 py-24 lg:py-40 flex flex-col justify-center h-full min-h-[700px]">
+        <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-tight max-w-4xl">
           Más que una moda, <br />
           <span className="text-gold italic">una tradición.</span>
         </h1>
-        <p className="mt-4 max-w-xl text-xl text-gray-200 mb-8 font-light">
+        <p className="mt-4 max-w-2xl text-2xl text-gray-200 mb-10 font-light">
           Vive la experiencia completa de lucir una Pollera Panameña. Desde el alquiler de piezas exclusivas hasta el arte del atavío y maquillaje profesional.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-6">
           <button
             onClick={() => setView(View.CONTACT)}
-            className="bg-panamaRed text-white px-8 py-4 rounded-md font-bold text-lg hover:bg-red-700 transition-colors shadow-lg"
+            className="bg-panamaRed text-white px-10 py-5 rounded-md font-bold text-xl hover:bg-red-700 transition-colors shadow-lg"
           >
             Reserva tu Experiencia
           </button>
           <button
             onClick={() => setView(View.CATALOG)}
-            className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-md font-bold text-lg hover:bg-white hover:text-panamaBlue transition-all"
+            className="bg-transparent border-2 border-white text-white px-10 py-5 rounded-md font-bold text-xl hover:bg-white hover:text-panamaBlue transition-all"
           >
             Ver Catálogo
           </button>

@@ -26,8 +26,8 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md border-b border-gold/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="sticky top-0 z-50 bg-white shadow-md border-b border-gold/20 w-full">
+      <div className="w-full px-6 md:px-12 lg:px-16">
         <div className="flex justify-between h-20">
           <div className="flex items-center cursor-pointer" onClick={() => handleNav(View.HOME)}>
             <span className="text-2xl font-serif font-bold text-panamaBlue">
@@ -92,7 +92,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100">
+        <div className="md:hidden bg-white border-t border-gray-100 px-6">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navItems.map((item) => (
               <button
@@ -118,7 +118,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
       )}
       
       {isEditMode && (
-        <div className="bg-yellow-100 text-yellow-800 text-xs text-center py-1 font-bold">
+        <div className="bg-yellow-100 text-yellow-800 text-xs text-center py-1 font-bold w-full">
           MODO EDICIÓN ACTIVADO: Puedes cambiar imágenes y eliminar elementos.
         </div>
       )}

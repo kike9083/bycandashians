@@ -19,7 +19,7 @@ const App: React.FC = () => {
   }, [activeView]);
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-900">
+    <div className="min-h-screen flex flex-col font-sans text-gray-900 w-full overflow-x-hidden">
       <Navigation 
         currentView={activeView} 
         setView={setActiveView} 
@@ -27,23 +27,28 @@ const App: React.FC = () => {
         toggleEditMode={() => setIsEditMode(!isEditMode)}
       />
 
-      <main className="flex-grow">
+      <main className="flex-grow w-full">
         {activeView === View.HOME && (
           <>
             <Hero setView={setActiveView} />
-            <div id="essence" className="bg-white py-16 px-4 text-center">
-              <h3 className="text-2xl font-serif text-gray-800 italic mb-4">"Nuestra Esencia"</h3>
-              <p className="max-w-3xl mx-auto text-gray-600 leading-relaxed text-lg">
+            
+            <div id="essence" className="bg-white py-24 w-full px-6 md:px-12 lg:px-24 flex flex-col items-center">
+              <h3 className="text-3xl font-serif text-gray-800 italic mb-8 relative after:content-[''] after:block after:w-16 after:h-1 after:bg-panamaRed after:mx-auto after:mt-4">
+                "Nuestra Esencia"
+              </h3>
+              <p className="max-w-4xl mx-auto text-gray-600 leading-relaxed text-xl text-center font-light">
                 La pollera no es solo un vestido, es la identidad de un pueblo tejida a mano. 
                 En Tradición Panamá, honramos cada puntada y cada tembleque, asegurando que 
                 tu experiencia al portarla sea tan majestuosa como la historia que representa.
               </p>
             </div>
+
             <Services setView={setActiveView} isEditMode={isEditMode} />
-            <div className="bg-panamaRed/5 py-12 text-center">
-              <blockquote className="text-xl font-serif text-panamaBlue max-w-2xl mx-auto italic">
+            
+            <div className="bg-panamaRed/5 py-24 w-full px-6 md:px-12 lg:px-24 text-center">
+              <blockquote className="text-2xl md:text-3xl font-serif text-panamaBlue max-w-5xl mx-auto italic leading-normal">
                 "Alquilé el servicio completo para mi boda y fue un sueño. El atavío fue impecable y me sentí una reina. ¡Recomendado!"
-                <footer className="mt-2 text-sm text-gray-600 not-italic font-sans font-bold">- María A., Las Tablas</footer>
+                <footer className="mt-6 text-base text-gray-600 not-italic font-sans font-bold tracking-widest uppercase">- María A., Las Tablas</footer>
               </blockquote>
             </div>
           </>
