@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { PolleraType, Technique, Product, View } from '../types';
-import { Filter, ShoppingBag, Loader2, AlertCircle, Database, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
+import { Filter, ShoppingBag, Loader2, AlertCircle, Database, PlusCircle, Trash2, Edit, Save, X } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface CatalogProps {
   setView: (view: View) => void;
@@ -55,6 +57,8 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   // Edit states
   const [editingId, setEditingId] = useState<string | null>(null);
   const [tempImageUrl, setTempImageUrl] = useState('');
+  const [tempImageFit, setTempImageFit] = useState<'cover' | 'contain'>('cover');
+  const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
 
   const fetchProducts = async () => {
     try {
@@ -98,7 +102,8 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!window.confirm("¿Seguro que deseas eliminar esta pollera?")) return;
     const { error } = await supabase.from('products').delete().eq('id', id);
     if (!error) {
@@ -108,15 +113,35 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     }
   };
 
-  const startEdit = (product: Product) => {
+  const startEdit = (product: Product, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setEditingId(product.id);
     setTempImageUrl(product.image);
+    setTempImageFit(product.image_fit || 'cover');
+    setTempImagePos(product.image_position as any || 'center');
   };
 
-  const saveEdit = async (id: string) => {
-    const { error } = await supabase.from('products').update({ image: tempImageUrl }).eq('id', id);
+  const cancelEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(null);
+    setTempImageUrl('');
+  };
+
+  const saveEdit = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const { error } = await supabase.from('products').update({ 
+      image: tempImageUrl,
+      image_fit: tempImageFit,
+      image_position: tempImagePos
+    }).eq('id', id);
+    
     if (!error) {
-      setProducts(products.map(p => p.id === id ? { ...p, image: tempImageUrl } : p));
+      setProducts(products.map(p => p.id === id ? { 
+        ...p, 
+        image: tempImageUrl,
+        image_fit: tempImageFit,
+        image_position: tempImagePos
+      } : p));
       setEditingId(null);
     } else {
       alert('Error al actualizar imagen');
@@ -251,43 +276,109 @@ WITH CHECK (true);`}
                 {filteredProducts.map((product) => (
                   <div key={product.id} className="border border-gray-100 rounded-lg overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 bg-white flex flex-col h-full relative group">
                     
+                    {/* Admin Controls */}
                     {isEditMode && (
-                      <div className="absolute top-2 left-2 z-20 bg-white/90 p-2 rounded-full shadow-md flex gap-2">
+                      <div className="absolute top-2 left-2 z-20 flex gap-2">
                         {editingId === product.id ? (
-                           <button onClick={() => saveEdit(product.id)} className="text-green-600 p-1"><Save size={18} /></button>
+                           <div className="flex gap-1 bg-white p-1 rounded-full shadow">
+                              <button onClick={(e) => saveEdit(product.id, e)} className="text-green-600 p-1 hover:bg-green-50 rounded-full"><Save size={18} /></button>
+                              <button onClick={(e) => cancelEdit(e)} className="text-gray-500 p-1 hover:bg-gray-50 rounded-full"><X size={18} /></button>
+                           </div>
                         ) : (
-                           <button onClick={() => startEdit(product)} className="text-panamaBlue p-1"><Edit size={18} /></button>
+                           <button onClick={(e) => startEdit(product, e)} className="bg-white/90 p-2 rounded-full text-panamaBlue shadow-lg hover:bg-blue-50"><Edit size={18} /></button>
                         )}
-                        <button onClick={() => handleDelete(product.id)} className="text-red-600 p-1"><Trash2 size={18} /></button>
+                        <button onClick={(e) => handleDelete(product.id, e)} className="bg-white/90 p-2 rounded-full text-red-600 shadow-lg hover:bg-red-50"><Trash2 size={18} /></button>
                       </div>
                     )}
 
-                    <div className="aspect-[4/5] overflow-hidden bg-gray-100 relative">
+                    {/* Image Area - Clickable in Edit Mode */}
+                    <div 
+                      className={`aspect-[4/5] overflow-hidden bg-gray-100 relative ${isEditMode ? 'cursor-pointer hover:opacity-90 ring-2 ring-transparent hover:ring-panamaBlue/50 transition-all' : ''}`}
+                      onClick={(e) => isEditMode && !editingId && startEdit(product, e)}
+                    >
                       {editingId === product.id ? (
-                        <div className="absolute inset-0 z-10 bg-white p-6 flex flex-col justify-center">
-                            <label className="text-sm font-bold mb-2">URL Nueva Imagen:</label>
-                            <textarea 
-                              value={tempImageUrl} 
-                              onChange={(e) => setTempImageUrl(e.target.value)}
-                              className="border p-2 text-xs rounded w-full mb-4 h-24" 
-                            />
-                             <div className="h-24 bg-gray-50 rounded flex items-center justify-center overflow-hidden border">
-                                {tempImageUrl && <img src={tempImageUrl} className="h-full w-full object-cover" alt="Preview"/>}
+                        <div className="absolute inset-0 z-10 bg-white p-4 flex flex-col justify-between shadow-inner" onClick={e => e.stopPropagation()}>
+                            <div className="space-y-2">
+                              <div>
+                                <label className="text-[10px] font-bold uppercase text-gray-500 block mb-1">URL Imagen:</label>
+                                <input 
+                                  value={tempImageUrl} 
+                                  onChange={(e) => setTempImageUrl(e.target.value)}
+                                  className="border border-gray-300 p-2 text-xs rounded-md w-full focus:outline-none bg-gray-50" 
+                                />
+                              </div>
+                              <div className="flex gap-2">
+                                <div className="w-1/2">
+                                  <label className="text-[10px] font-bold uppercase text-gray-500 block mb-1">Ajuste:</label>
+                                  <select 
+                                    value={tempImageFit}
+                                    onChange={(e: any) => setTempImageFit(e.target.value)}
+                                    className="border border-gray-300 p-1 text-xs rounded-md w-full bg-gray-50"
+                                  >
+                                    <option value="cover">Llenar</option>
+                                    <option value="contain">Completa</option>
+                                  </select>
+                                </div>
+                                <div className="w-1/2">
+                                  <label className="text-[10px] font-bold uppercase text-gray-500 block mb-1">Posición:</label>
+                                  <select 
+                                    value={tempImagePos}
+                                    onChange={(e: any) => setTempImagePos(e.target.value)}
+                                    className="border border-gray-300 p-1 text-xs rounded-md w-full bg-gray-50"
+                                  >
+                                    <option value="center">Centro</option>
+                                    <option value="top">Arriba</option>
+                                    <option value="bottom">Abajo</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+
+                             <div className="flex-grow bg-gray-50 rounded border flex items-center justify-center overflow-hidden my-2 relative">
+                                {tempImageUrl ? (
+                                  <img 
+                                    src={getOptimizedImageUrl(tempImageUrl, 300)} 
+                                    className="h-full w-full" 
+                                    style={{ objectFit: tempImageFit, objectPosition: tempImagePos }}
+                                    alt="Preview" 
+                                    onError={(e) => e.currentTarget.style.display = 'none'}
+                                  />
+                                ) : (
+                                  <span className="text-xs text-gray-400">Vista previa</span>
+                                )}
+                             </div>
+                             <div className="flex gap-2">
+                               <button onClick={(e) => saveEdit(product.id, e)} className="flex-1 bg-green-600 text-white py-2 rounded text-xs font-bold hover:bg-green-700">Guardar</button>
+                               <button onClick={(e) => cancelEdit(e)} className="flex-1 bg-gray-200 text-gray-700 py-2 rounded text-xs font-bold hover:bg-gray-300">Cancelar</button>
                              </div>
                         </div>
                       ) : (
                         <img 
-                          src={product.image} 
+                          src={getOptimizedImageUrl(product.image, 500)} 
                           onError={handleImageError}
                           alt={product.name} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                          loading="lazy"
+                          className="w-full h-full transition-transform duration-700 group-hover:scale-105"
+                          style={{ 
+                            objectFit: product.image_fit || 'cover',
+                            objectPosition: product.image_position || 'center'
+                          }} 
                         />
                       )}
                       
-                      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded text-xs font-bold text-gray-800 shadow-sm tracking-wider uppercase">
-                        {product.technique}
-                      </div>
+                      {!editingId && (
+                         <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded text-xs font-bold text-gray-800 shadow-sm tracking-wider uppercase pointer-events-none">
+                           {product.technique}
+                         </div>
+                      )}
+                      
+                      {isEditMode && !editingId && (
+                         <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity">
+                            <span className="bg-white text-gray-900 px-3 py-1 rounded-full text-xs font-bold shadow">Editar Visualización</span>
+                         </div>
+                      )}
                     </div>
+
                     <div className="p-6 flex flex-col flex-grow">
                       <div className="text-xs text-panamaRed font-bold uppercase mb-2 tracking-widest">{product.type}</div>
                       <h3 className="text-xl font-bold text-gray-900 truncate mb-2">{product.name}</h3>

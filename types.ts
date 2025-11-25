@@ -4,7 +4,9 @@ export enum View {
   CATALOG = 'CATALOG',
   GALLERY = 'GALLERY',
   CONTACT = 'CONTACT',
-  AI_GENERATOR = 'AI_GENERATOR'
+  AI_GENERATOR = 'AI_GENERATOR',
+  PRIVACY = 'PRIVACY',
+  TERMS = 'TERMS'
 }
 
 export enum PolleraType {
@@ -31,6 +33,8 @@ export interface Product {
   price: number;
   image: string;
   description: string;
+  image_fit?: 'cover' | 'contain';
+  image_position?: 'top' | 'center' | 'bottom' | 'left' | 'right';
 }
 
 export interface ServiceItem {
@@ -40,10 +44,14 @@ export interface ServiceItem {
   icon_name: string; // Stored as string in DB
   image: string;
   cta: string;
+  image_fit?: 'cover' | 'contain';
+  image_position?: 'top' | 'center' | 'bottom';
 }
 
 export interface GalleryItem {
   id: string;
   url: string;
   category: string;
+  image_fit?: 'cover' | 'contain';
+  image_position?: 'top' | 'center' | 'bottom';
 }

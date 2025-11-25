@@ -1,16 +1,25 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Ensure API key is present
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
-
 export const generatePolleraImage = async (prompt: string): Promise<string | null> => {
+  let apiKey = '';
+  try {
+    // Safely check for process.env availability
+    if (typeof process !== 'undefined' && process.env) {
+      apiKey = process.env.API_KEY || '';
+    }
+  } catch (e) {
+    console.warn("process.env is not available");
+  }
+
   if (!apiKey) {
     console.error("API Key missing");
     return null;
   }
 
   try {
+    // Initialize inside the function to prevent app crash on load if key is missing
+    const ai = new GoogleGenAI({ apiKey });
+    
     const enhancedPrompt = `
       High quality, photorealistic image of a Panamanian Pollera traditional dress. 
       Details: ${prompt}. 

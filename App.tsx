@@ -8,6 +8,7 @@ import { Gallery } from './components/Gallery';
 import { Contact } from './components/Contact';
 import { AIGenerator } from './components/AIGenerator';
 import { Footer } from './components/Footer';
+import { PrivacyPolicy, TermsOfService } from './components/Legal';
 
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<View>(View.HOME);
@@ -73,9 +74,17 @@ const App: React.FC = () => {
         {activeView === View.AI_GENERATOR && (
           <AIGenerator />
         )}
+
+        {activeView === View.PRIVACY && (
+          <PrivacyPolicy />
+        )}
+
+        {activeView === View.TERMS && (
+          <TermsOfService />
+        )}
       </main>
 
-      <Footer />
+      <Footer setView={setActiveView} />
     </div>
   );
 };

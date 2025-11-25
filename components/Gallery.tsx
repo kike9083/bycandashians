@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { GalleryItem } from '../types';
 import { supabase } from '../services/supabaseClient';
-import { Loader2, PlusCircle, Trash2, Save, Edit } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Save, Edit, X } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface GalleryProps {
   isEditMode: boolean;
@@ -31,6 +33,8 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
   // Editing existing
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editUrl, setEditUrl] = useState('');
+  const [tempImageFit, setTempImageFit] = useState<'cover' | 'contain'>('cover');
+  const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
 
   const fetchGallery = async () => {
     setLoading(true);
@@ -48,7 +52,8 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
     if (!error) fetchGallery();
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!confirm('¿Eliminar foto?')) return;
     const { error } = await supabase.from('gallery').delete().eq('id', id);
     if (!error) setImages(images.filter(i => i.id !== id));
@@ -64,16 +69,38 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
     }
   };
 
-  const startEdit = (img: GalleryItem) => {
+  const startEdit = (img: GalleryItem, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setEditingId(img.id);
     setEditUrl(img.url);
+    setTempImageFit(img.image_fit || 'cover');
+    setTempImagePos(img.image_position as any || 'center');
   };
 
-  const saveEdit = async (id: string) => {
-    const { error } = await supabase.from('gallery').update({ url: editUrl }).eq('id', id);
+  const cancelEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(null);
+    setEditUrl('');
+  };
+
+  const saveEdit = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const { error } = await supabase.from('gallery').update({ 
+      url: editUrl,
+      image_fit: tempImageFit,
+      image_position: tempImagePos
+    }).eq('id', id);
+
     if (!error) {
-      setImages(images.map(i => i.id === id ? { ...i, url: editUrl } : i));
+      setImages(images.map(i => i.id === id ? { 
+        ...i, 
+        url: editUrl,
+        image_fit: tempImageFit,
+        image_position: tempImagePos
+      } : i));
       setEditingId(null);
+    } else {
+      alert("Error al actualizar la imagen");
     }
   };
 
@@ -133,42 +160,105 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {images.map((img) => (
-              <div key={img.id} className="relative group overflow-hidden aspect-square rounded-sm cursor-pointer shadow-md bg-gray-100">
+              <div 
+                key={img.id} 
+                className={`relative group overflow-hidden aspect-square rounded-sm shadow-md bg-gray-100 ${isEditMode ? 'cursor-pointer ring-2 ring-transparent hover:ring-panamaBlue/50' : 'cursor-default'}`}
+                onClick={(e) => isEditMode && !editingId && startEdit(img, e)}
+              >
                 
                 {isEditMode && (
                   <div className="absolute top-2 right-2 z-20 flex gap-2">
                      {editingId === img.id ? (
-                        <button onClick={() => saveEdit(img.id)} className="bg-white p-2 rounded-full text-green-600 shadow-lg hover:bg-green-50"><Save size={18} /></button>
+                        <div className="flex gap-1 bg-white p-1 rounded-full shadow">
+                          <button onClick={(e) => saveEdit(img.id, e)} className="p-2 rounded-full text-green-600 hover:bg-green-50"><Save size={18} /></button>
+                          <button onClick={(e) => cancelEdit(e)} className="p-2 rounded-full text-gray-500 hover:bg-gray-50"><X size={18} /></button>
+                        </div>
                      ) : (
-                        <button onClick={() => startEdit(img)} className="bg-white p-2 rounded-full text-panamaBlue shadow-lg hover:bg-blue-50"><Edit size={18} /></button>
+                        <button onClick={(e) => startEdit(img, e)} className="bg-white p-2 rounded-full text-panamaBlue shadow-lg hover:bg-blue-50"><Edit size={18} /></button>
                      )}
-                     <button onClick={() => handleDelete(img.id)} className="bg-white p-2 rounded-full text-red-600 shadow-lg hover:bg-red-50"><Trash2 size={18} /></button>
+                     <button onClick={(e) => handleDelete(img.id, e)} className="bg-white p-2 rounded-full text-red-600 shadow-lg hover:bg-red-50"><Trash2 size={18} /></button>
                   </div>
                 )}
 
                 {editingId === img.id ? (
-                    <div className="absolute inset-0 bg-white p-4 z-10 flex flex-col justify-center">
-                       <label className="text-xs font-bold mb-1">Editar URL:</label>
+                    <div className="absolute inset-0 bg-white p-4 z-10 flex flex-col justify-start overflow-y-auto" onClick={e => e.stopPropagation()}>
+                       <label className="text-[10px] font-bold text-gray-500 mb-1 block">URL</label>
                        <textarea 
                           value={editUrl} 
                           onChange={e => setEditUrl(e.target.value)} 
-                          className="w-full h-32 border p-2 text-xs" 
+                          className="w-full h-12 border p-2 text-xs rounded focus:ring-2 focus:ring-panamaBlue focus:outline-none mb-2" 
+                          placeholder="Nueva URL..."
                        />
+                       
+                       <div className="flex gap-2 mb-2">
+                         <div className="w-1/2">
+                           <label className="text-[10px] font-bold text-gray-500 mb-1 block">Ajuste</label>
+                           <select 
+                            value={tempImageFit}
+                            onChange={(e: any) => setTempImageFit(e.target.value)}
+                            className="w-full border p-1 text-xs rounded"
+                           >
+                            <option value="cover">Llenar</option>
+                            <option value="contain">Completa</option>
+                           </select>
+                         </div>
+                         <div className="w-1/2">
+                           <label className="text-[10px] font-bold text-gray-500 mb-1 block">Posición</label>
+                           <select 
+                            value={tempImagePos}
+                            onChange={(e: any) => setTempImagePos(e.target.value)}
+                            className="w-full border p-1 text-xs rounded"
+                           >
+                            <option value="center">Centro</option>
+                            <option value="top">Arriba</option>
+                            <option value="bottom">Abajo</option>
+                           </select>
+                         </div>
+                       </div>
+
+                       <div className="flex-grow bg-gray-50 rounded border flex items-center justify-center overflow-hidden mb-2 relative">
+                         {editUrl ? (
+                            <img 
+                              src={getOptimizedImageUrl(editUrl, 300)} 
+                              className="w-full h-full"
+                              style={{ objectFit: tempImageFit, objectPosition: tempImagePos }} 
+                              alt="preview" 
+                            />
+                         ) : <span>Preview</span>}
+                       </div>
+
+                       <div className="flex gap-2">
+                          <button onClick={(e) => saveEdit(img.id, e)} className="flex-1 bg-green-600 text-white text-xs py-2 rounded font-bold hover:bg-green-700">Guardar</button>
+                          <button onClick={(e) => cancelEdit(e)} className="flex-1 bg-gray-200 text-gray-700 text-xs py-2 rounded font-bold hover:bg-gray-300">Cancelar</button>
+                       </div>
                     </div>
                 ) : (
+                  <>
                     <img 
-                      src={img.url} 
+                      src={getOptimizedImageUrl(img.url, 600)} 
                       onError={handleImageError}
                       alt={img.category} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                      loading="lazy"
+                      className="w-full h-full transition-transform duration-700 group-hover:scale-110" 
+                      style={{ 
+                        objectFit: img.image_fit || 'cover',
+                        objectPosition: img.image_position || 'center'
+                      }}
                     />
+                    
+                    {!editingId && (
+                      <div className={`absolute inset-0 bg-black/40 ${isEditMode ? 'opacity-0 hover:opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-300 flex items-center justify-center pointer-events-none`}>
+                        {isEditMode ? (
+                           <span className="bg-white text-gray-900 px-3 py-1 rounded-full text-xs font-bold shadow">Editar Imagen</span>
+                        ) : (
+                           <span className="text-white font-serif font-bold text-xl transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 border-2 border-white px-6 py-2 tracking-widest uppercase">
+                             {img.category}
+                           </span>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
-                
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                  <span className="text-white font-serif font-bold text-xl transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 border-2 border-white px-6 py-2 tracking-widest uppercase">
-                    {img.category}
-                  </span>
-                </div>
               </div>
             ))}
           </div>

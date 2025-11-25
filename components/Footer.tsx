@@ -1,6 +1,11 @@
 import React from 'react';
+import { View } from '../types';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  setView: (view: View) => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ setView }) => {
   return (
     <footer className="bg-gray-900 text-white border-t border-gold/30 w-full">
       <div className="w-full px-6 md:px-12 lg:px-24 py-16">
@@ -12,10 +17,20 @@ export const Footer: React.FC = () => {
             <p className="text-gray-400 text-base mt-2">Más que una moda, una tradición.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-400">
-            <a href="#" className="hover:text-white transition-colors uppercase tracking-wider">Política de Privacidad</a>
-            <a href="#" className="hover:text-white transition-colors uppercase tracking-wider">Términos</a>
-            <a href="#" className="hover:text-white transition-colors uppercase tracking-wider">Instagram</a>
-            <a href="#" className="hover:text-white transition-colors uppercase tracking-wider">Facebook</a>
+            <button onClick={() => setView(View.PRIVACY)} className="hover:text-white transition-colors uppercase tracking-wider">
+              Política de Privacidad
+            </button>
+            <button onClick={() => setView(View.TERMS)} className="hover:text-white transition-colors uppercase tracking-wider">
+              Términos
+            </button>
+            <a 
+              href="https://www.instagram.com/bycandashians/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-white transition-colors uppercase tracking-wider"
+            >
+              Instagram
+            </a>
           </div>
         </div>
         <div className="mt-12 text-center text-xs text-gray-600 border-t border-gray-800 pt-8">

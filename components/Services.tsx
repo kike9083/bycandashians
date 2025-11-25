@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { View, ServiceItem } from '../types';
 import { Shirt, Gem, Palette, Music, Loader2, Edit, Save, PlusCircle } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface ServicesProps {
   setView: (view: View) => void;
@@ -42,8 +44,12 @@ const SAMPLE_SERVICES = [
 export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Edit State
   const [editingId, setEditingId] = useState<string | null>(null);
   const [tempImageUrl, setTempImageUrl] = useState('');
+  const [tempImageFit, setTempImageFit] = useState<'cover' | 'contain'>('cover');
+  const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
 
   const fetchServices = async () => {
     setLoading(true);
@@ -74,12 +80,24 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   const startEdit = (service: ServiceItem) => {
     setEditingId(service.id);
     setTempImageUrl(service.image);
+    setTempImageFit(service.image_fit || 'cover');
+    setTempImagePos(service.image_position as any || 'center');
   };
 
   const saveEdit = async (id: string) => {
-    const { error } = await supabase.from('services').update({ image: tempImageUrl }).eq('id', id);
+    const { error } = await supabase.from('services').update({ 
+      image: tempImageUrl,
+      image_fit: tempImageFit,
+      image_position: tempImagePos
+    }).eq('id', id);
+
     if (!error) {
-      setServices(services.map(s => s.id === id ? { ...s, image: tempImageUrl } : s));
+      setServices(services.map(s => s.id === id ? { 
+        ...s, 
+        image: tempImageUrl,
+        image_fit: tempImageFit,
+        image_position: tempImagePos
+      } : s));
       setEditingId(null);
     } else {
       alert('Error al actualizar imagen');
@@ -130,25 +148,65 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
                   </div>
                 )}
 
-                <div className="h-64 overflow-hidden relative">
+                <div className="h-64 overflow-hidden relative bg-gray-200">
                    {editingId === service.id ? (
-                    <div className="absolute inset-0 z-10 bg-white p-4 flex flex-col justify-center shadow-inner">
-                      <label className="text-xs font-bold mb-1">URL Nueva Imagen:</label>
+                    <div className="absolute inset-0 z-10 bg-white p-4 flex flex-col justify-start shadow-inner overflow-y-auto">
+                      <label className="text-[10px] font-bold uppercase text-gray-500 mb-1">URL Imagen</label>
                       <input 
                         value={tempImageUrl} 
                         onChange={(e) => setTempImageUrl(e.target.value)}
-                        className="border p-2 text-xs rounded w-full mb-2" 
+                        className="border p-1 text-xs rounded w-full mb-2 bg-gray-50" 
                       />
-                      <div className="h-20 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
-                         {tempImageUrl && <img src={tempImageUrl} className="h-full w-full object-cover opacity-50" alt="Preview"/>}
+                      
+                      <div className="flex gap-2 mb-2">
+                        <div className="w-1/2">
+                          <label className="text-[10px] font-bold uppercase text-gray-500 mb-1">Ajuste</label>
+                          <select 
+                            value={tempImageFit} 
+                            onChange={(e: any) => setTempImageFit(e.target.value)}
+                            className="border p-1 text-xs rounded w-full bg-gray-50"
+                          >
+                            <option value="cover">Llenar (Cover)</option>
+                            <option value="contain">Completa (Contain)</option>
+                          </select>
+                        </div>
+                        <div className="w-1/2">
+                           <label className="text-[10px] font-bold uppercase text-gray-500 mb-1">Posición</label>
+                           <select 
+                            value={tempImagePos} 
+                            onChange={(e: any) => setTempImagePos(e.target.value)}
+                            className="border p-1 text-xs rounded w-full bg-gray-50"
+                          >
+                            <option value="center">Centro</option>
+                            <option value="top">Arriba</option>
+                            <option value="bottom">Abajo</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="flex-grow bg-gray-100 rounded border flex items-center justify-center overflow-hidden relative">
+                         {tempImageUrl && (
+                           <img 
+                              src={getOptimizedImageUrl(tempImageUrl, 300)} 
+                              className="h-full w-full" 
+                              style={{ objectFit: tempImageFit, objectPosition: tempImagePos }}
+                              alt="Preview"
+                            />
+                         )}
+                         <span className="absolute bottom-1 right-1 text-[9px] bg-black/50 text-white px-1 rounded">Vista Previa</span>
                       </div>
                     </div>
                   ) : (
                     <img 
-                      src={service.image} 
+                      src={getOptimizedImageUrl(service.image, 600)} 
                       onError={handleImageError}
                       alt={service.title} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      loading="lazy"
+                      className="w-full h-full group-hover:scale-110 transition-transform duration-500"
+                      style={{ 
+                        objectFit: service.image_fit || 'cover',
+                        objectPosition: service.image_position || 'center'
+                      }} 
                     />
                   )}
                   
