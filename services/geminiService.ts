@@ -3,8 +3,9 @@ import { GoogleGenAI } from "@google/genai";
 export const generatePolleraImage = async (prompt: string): Promise<string | null> => {
   let apiKey = '';
   try {
-    // Safely check for process.env availability
+    // @ts-ignore
     if (typeof process !== 'undefined' && process.env) {
+      // @ts-ignore
       apiKey = process.env.API_KEY || '';
     }
   } catch (e) {
@@ -17,7 +18,6 @@ export const generatePolleraImage = async (prompt: string): Promise<string | nul
   }
 
   try {
-    // Initialize inside the function to prevent app crash on load if key is missing
     const ai = new GoogleGenAI({ apiKey });
     
     const enhancedPrompt = `

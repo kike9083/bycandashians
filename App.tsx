@@ -9,26 +9,48 @@ import { Contact } from './components/Contact';
 import { AIGenerator } from './components/AIGenerator';
 import { Footer } from './components/Footer';
 import { PrivacyPolicy, TermsOfService } from './components/Legal';
+import { AdminLogin } from './components/AdminLogin';
+import { supabase } from './services/supabaseClient';
+import { Session } from '@supabase/supabase-js';
 
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<View>(View.HOME);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+
+  // Handle Authentication Session
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      // If user logs out, disable edit mode automatically
+      if (!session) {
+        setIsEditMode(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Scroll to top when view changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [activeView]);
 
-  return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-900 w-full overflow-x-hidden">
-      <Navigation 
-        currentView={activeView} 
-        setView={setActiveView} 
-        isEditMode={isEditMode}
-        toggleEditMode={() => setIsEditMode(!isEditMode)}
-      />
+  // Main Content Rendering Logic
+  const renderContent = () => {
+    if (activeView === View.ADMIN_LOGIN) {
+      return <AdminLogin setView={setActiveView} />;
+    }
 
-      <main className="flex-grow w-full">
+    // Common components structure for main site
+    return (
+      <>
         {activeView === View.HOME && (
           <>
             <Hero setView={setActiveView} />
@@ -82,9 +104,26 @@ const App: React.FC = () => {
         {activeView === View.TERMS && (
           <TermsOfService />
         )}
+      </>
+    );
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col font-sans text-gray-900 w-full overflow-x-hidden">
+      <Navigation 
+        currentView={activeView} 
+        setView={setActiveView} 
+        isEditMode={isEditMode}
+        toggleEditMode={() => setIsEditMode(!isEditMode)}
+        session={session}
+      />
+
+      <main className="flex-grow w-full">
+        {renderContent()}
       </main>
 
-      <Footer setView={setActiveView} />
+      {/* Only show Footer if not in login screen */}
+      {activeView !== View.ADMIN_LOGIN && <Footer setView={setActiveView} />}
     </div>
   );
 };

@@ -6,7 +6,8 @@ export enum View {
   CONTACT = 'CONTACT',
   AI_GENERATOR = 'AI_GENERATOR',
   PRIVACY = 'PRIVACY',
-  TERMS = 'TERMS'
+  TERMS = 'TERMS',
+  ADMIN_LOGIN = 'ADMIN_LOGIN'
 }
 
 export enum PolleraType {

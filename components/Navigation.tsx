@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { View } from '../types';
-import { Menu, X, Sparkles, PenTool } from 'lucide-react';
+import { Menu, X, Sparkles, PenTool, Lock, LogOut } from 'lucide-react';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '../services/supabaseClient';
 
 interface NavigationProps {
   currentView: View;
   setView: (view: View) => void;
   isEditMode: boolean;
   toggleEditMode: () => void;
+  session: Session | null;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, isEditMode, toggleEditMode }) => {
+export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, isEditMode, toggleEditMode, session }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
@@ -22,6 +25,12 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
 
   const handleNav = (view: View) => {
     setView(view);
+    setIsOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setView(View.HOME);
     setIsOpen(false);
   };
 
@@ -59,27 +68,49 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
               <span>Diseña con IA</span>
             </button>
 
-            <button
-              onClick={toggleEditMode}
-              className={`p-2 rounded-full transition-colors ${
-                isEditMode ? 'bg-panamaRed text-white' : 'text-gray-400 hover:text-gray-600'
-              }`}
-              title="Modo Edición"
-            >
-              <PenTool size={18} />
-            </button>
+            {/* Auth Controls */}
+            {session ? (
+              <div className="flex items-center gap-2 border-l pl-4 border-gray-200">
+                <button
+                  onClick={toggleEditMode}
+                  className={`p-2 rounded-full transition-colors ${
+                    isEditMode ? 'bg-panamaRed text-white' : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                  title="Modo Edición"
+                >
+                  <PenTool size={18} />
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 rounded-full text-gray-400 hover:text-panamaBlue"
+                  title="Cerrar Sesión"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => handleNav(View.ADMIN_LOGIN)}
+                className="p-2 rounded-full text-gray-300 hover:text-gray-500"
+                title="Acceso Admin"
+              >
+                <Lock size={16} />
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
-            <button
-              onClick={toggleEditMode}
-              className={`p-2 rounded-full transition-colors ${
-                isEditMode ? 'bg-panamaRed text-white' : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <PenTool size={18} />
-            </button>
+            {session && (
+               <button
+                  onClick={toggleEditMode}
+                  className={`p-2 rounded-full transition-colors ${
+                    isEditMode ? 'bg-panamaRed text-white' : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  <PenTool size={18} />
+                </button>
+            )}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-600 hover:text-panamaBlue focus:outline-none"
@@ -113,11 +144,29 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
               >
                 ✨ Diseña con IA
               </button>
+              
+              <div className="border-t border-gray-100 pt-2 mt-2">
+                {session ? (
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-600 font-bold"
+                  >
+                    <LogOut size={16} /> Cerrar Sesión
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleNav(View.ADMIN_LOGIN)}
+                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-gray-400"
+                  >
+                    <Lock size={16} /> Acceso Admin
+                  </button>
+                )}
+              </div>
           </div>
         </div>
       )}
       
-      {isEditMode && (
+      {isEditMode && session && (
         <div className="bg-yellow-100 text-yellow-800 text-xs text-center py-1 font-bold w-full">
           MODO EDICIÓN ACTIVADO: Puedes cambiar imágenes y eliminar elementos.
         </div>
