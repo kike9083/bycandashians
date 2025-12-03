@@ -3,6 +3,7 @@ import { View } from '../types';
 import { Menu, X, Sparkles, PenTool, Lock, LogOut } from 'lucide-react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabaseClient';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface NavigationProps {
   currentView: View;
@@ -12,6 +13,7 @@ interface NavigationProps {
   session: Session | null;
 }
 
+const LOGO_URL = "http://console-varios-minio.fjueze.easypanel.host/api/v1/download-shared-object/aHR0cHM6Ly92YXJpb3MtbWluaW8uZmp1ZXplLmVhc3lwYW5lbC5ob3N0L2J5Y2FuZGFzaGFuL2ltYWdlcy9sb2dvLXZlY3RvcjkucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9NTFUU0xMTlJTWDc3QllTMlNQMTYlMkYyMDI1MTIwMiUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTEyMDJUMjA1ODMyWiZYLUFtei1FeHBpcmVzPTQzMjAwJlgtQW16LVNlY3VyaXR5LVRva2VuPWV5SmhiR2NpT2lKSVV6VXhNaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpoWTJObGMzTkxaWGtpT2lJMU1WUlRURXhPVWxOWU56ZENXVk15VTFBeE5pSXNJbVY0Y0NJNk1UYzJORGMwTnpBNE9Td2ljR0Z5Wlc1MElqb2lZV1J0YVc0aWZRLk93WkRCVVdRMjVzOTZUR09FOHptaVVucFR0d2RhZFVGSjBfdGNUeFdMMDdINmVPTGlRNlU3WWhodW1YSm9wU0lPMEFwVnJOX0V4aG1BUTNUZUxJRjFRJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZ2ZXJzaW9uSWQ9bnVsbCZYLUFtei1TaWduYXR1cmU9NDg2Y2E5MTcxMjdhZmQ4ZTE3NDcxMjM2MzhiMGRlOWFjNzA0NmRjMzg1OTE4NzBmYzc5NDAxM2U0YjQ5NzYyOQ"
 export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, isEditMode, toggleEditMode, session }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -39,9 +41,11 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
       <div className="w-full px-6 md:px-12 lg:px-16">
         <div className="flex justify-between h-20">
           <div className="flex items-center cursor-pointer" onClick={() => handleNav(View.HOME)}>
-            <span className="text-2xl font-serif font-bold text-panamaBlue">
-              Tradición<span className="text-panamaRed">Panamá</span>
-            </span>
+             <img 
+              src={getOptimizedImageUrl(LOGO_URL, 300)} 
+              alt="Logo" 
+              className="h-16 md:h-20 w-auto object-contain"
+            />
           </div>
 
           {/* Desktop Menu */}

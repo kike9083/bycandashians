@@ -9,8 +9,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ setView }) => {
   // Using a high-quality Unsplash image as the base to ensure fast loading and optimization availability
-  const heroImage = "http://console-varios-minio.fjueze.easypanel.host/api/v1/download-shared-object/aHR0cHM6Ly92YXJpb3MtbWluaW8uZmp1ZXplLmVhc3lwYW5lbC5ob3N0L2J5Y2FuZGFzaGFuL2ltYWdlcy9kdWUlQzMlQjFhcy01LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUo3TlUwSkdKRUJFMlRIOUtCSkJWJTJGMjAyNTExMjYlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMTI2VDAzMDczNVomWC1BbXotRXhwaXJlcz00MzE5OSZYLUFtei1TZWN1cml0eS1Ub2tlbj1leUpoYkdjaU9pSklVelV4TWlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKaFkyTmxjM05MWlhraU9pSktOMDVWTUVwSFNrVkNSVEpVU0RsTFFrcENWaUlzSW1WNGNDSTZNVGMyTkRFMk9UWXlPQ3dpY0dGeVpXNTBJam9pWVdSdGFXNGlmUS4yU0JIdHNKTF9POTRReFNJY05CVi1WUmMtNng2UWtOVkdmZnZ5dlRJLTRuQjZXS1Jza3k2a3hFWWM2ZG9mUWxWVFVuRnd1dzJ2M2RfNFlRMll3cWlUQSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QmdmVyc2lvbklkPW51bGwmWC1BbXotU2lnbmF0dXJlPTA5YWQwZjAxN2MxODhlOTBkZjQ4NWYyMWFlZTkxMTFhMjZmMGM5OTk5ZGVhMmM0ZWYyYjcxMTRlMjExNmJjNGM"; 
-
+  const heroImage = "http://console-varios-minio.fjueze.easypanel.host/api/v1/download-shared-object/aHR0cHM6Ly92YXJpb3MtbWluaW8uZmp1ZXplLmVhc3lwYW5lbC5ob3N0L2J5Y2FuZGFzaGFuL2ltYWdlcy9kdWUlQzMlQjFhcy01LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPTUxVFNMTE5SU1g3N0JZUzJTUDE2JTJGMjAyNTEyMDIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMjAyVDIwNTcxMlomWC1BbXotRXhwaXJlcz00MzIwMCZYLUFtei1TZWN1cml0eS1Ub2tlbj1leUpoYkdjaU9pSklVelV4TWlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKaFkyTmxjM05MWlhraU9pSTFNVlJUVEV4T1VsTllOemRDV1ZNeVUxQXhOaUlzSW1WNGNDSTZNVGMyTkRjME56QTRPU3dpY0dGeVpXNTBJam9pWVdSdGFXNGlmUS5Pd1pEQlVXUTI1czk2VEdPRTh6bWlVbnBUdHdkYWRVRkowX3RjVHhXTDA3SDZlT0xpUTZVN1loaHVtWEpvcFNJTzBBcFZyTl9FeGhtQVEzVGVMSUYxUSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QmdmVyc2lvbklkPW51bGwmWC1BbXotU2lnbmF0dXJlPTI4OWZiOTk4ZjA1MzRmNDc4ZGJhM2Q4NmNlYmQ4OTYxMGRlMjk2OWVlOGNlNzY3ODYyMmY2Mjk4MzQwNDUyNTE"
   return (
     <div className="relative bg-gray-900 overflow-hidden">
       {/* Background Image with Overlay */}
@@ -27,7 +26,7 @@ export const Hero: React.FC<HeroProps> = ({ setView }) => {
 
       <div className="relative w-full px-6 md:px-12 lg:px-24 py-24 lg:py-40 flex flex-col justify-center h-full min-h-[700px]">
         <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-tight max-w-4xl">
-          Más que una moda, <br />
+          Más que Polleras, <br />
           <span className="text-gold italic">una tradición.</span>
         </h1>
         <p className="mt-4 max-w-2xl text-2xl text-gray-200 mb-10 font-light">
