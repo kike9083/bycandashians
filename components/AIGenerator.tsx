@@ -31,46 +31,48 @@ export const AIGenerator: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen py-16">
+    <div className="bg-background-dark min-h-screen pt-[250px] pb-16 w-full">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center p-3 bg-white rounded-full shadow-md mb-4">
-             <Sparkles className="text-gold w-8 h-8 mr-2" />
-             <span className="text-panamaBlue font-bold text-sm uppercase tracking-wider">Powered by Gemini Nano Banana</span>
+          <div className="inline-flex items-center justify-center p-3 bg-card-dark border border-gold/20 rounded-full shadow-lg shadow-gold/5 mb-4 backdrop-blur-sm">
+            <Sparkles className="text-gold w-6 h-6 mr-2" />
+            <span className="text-gold font-bold text-xs uppercase tracking-[0.2em]">Powered by Gemini Nano Banana</span>
           </div>
-          <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Diseñador Virtual IA</h2>
-          <p className="text-gray-600 text-lg">
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-ivory mb-6">Diseñador Virtual IA</h2>
+          <p className="text-ivory/60 text-lg max-w-2xl mx-auto font-light leading-relaxed">
             Describe la pollera de tus sueños y nuestra inteligencia artificial creará una visualización exclusiva para ti.
             Usa estas imágenes como referencia para tu pedido personalizado.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        <div className="bg-card-dark rounded-3xl shadow-2xl overflow-hidden border border-white/5 relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-50"></div>
           <div className="p-8 md:p-12">
-            <form onSubmit={handleGenerate} className="space-y-6">
+            <form onSubmit={handleGenerate} className="space-y-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-bold text-gold uppercase tracking-widest mb-3">
                   Describe tu idea (Color, Región, Labor, Accesorios):
                 </label>
-                <div className="relative">
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-gold/20 to-olive/20 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
                   <textarea
                     rows={4}
-                    className="block w-full rounded-lg border-gray-300 bg-gray-50 p-4 focus:border-panamaBlue focus:ring-panamaBlue sm:text-sm resize-none"
+                    className="relative block w-full rounded-xl border-white/10 bg-background-dark p-4 focus:border-gold focus:ring focus:ring-gold/20 sm:text-sm resize-none text-ivory placeholder-ivory/20 transition-all"
                     placeholder="Ejemplo: Una pollera de gala santeña con labor zurcida en color turquesa y vino, con mucho lujo en los tembleques de oro y perlas..."
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                   />
-                  <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+                  <div className="absolute bottom-3 right-3 text-[10px] text-ivory/30 uppercase tracking-wider font-bold">
                     Sugerencia: Sé específico con los colores.
                   </div>
                 </div>
               </div>
-              
+
               <button
                 type="submit"
                 disabled={loading || !prompt}
-                className={`w-full flex items-center justify-center py-4 px-6 border border-transparent rounded-lg text-base font-medium text-white transition-all
-                  ${loading || !prompt ? 'bg-gray-400 cursor-not-allowed' : 'bg-panamaBlue hover:bg-blue-900 shadow-lg hover:shadow-xl'}`}
+                className={`w-full flex items-center justify-center py-4 px-6 border border-transparent rounded-xl text-sm font-bold uppercase tracking-widest transition-all
+                  ${loading || !prompt ? 'bg-white/5 text-ivory/20 cursor-not-allowed' : 'bg-gold text-background-dark hover:bg-gold-light hover:shadow-lg hover:shadow-gold/20 hover:-translate-y-0.5'}`}
               >
                 {loading ? (
                   <>
@@ -87,43 +89,47 @@ export const AIGenerator: React.FC = () => {
             </form>
 
             {error && (
-              <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-md">
+              <div className="mt-8 p-4 bg-red-900/20 border-l-4 border-red-500 rounded-r-lg">
                 <div className="flex">
                   <div className="ml-3">
-                    <p className="text-sm text-red-700">{error}</p>
+                    <p className="text-sm text-red-200">{error}</p>
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="bg-gray-50 border-t border-gray-200 p-8 flex flex-col items-center justify-center min-h-[400px]">
-             {image ? (
-               <div className="relative group max-w-lg w-full">
-                 <img src={image} alt="Pollera Generada por IA" className="rounded-lg shadow-2xl w-full" />
-                 <a 
-                   href={image} 
-                   download="mi-diseño-pollera.png"
-                   className="absolute bottom-4 right-4 bg-white text-gray-900 px-4 py-2 rounded-full shadow-lg font-bold flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                 >
-                   <Download size={16} /> Descargar
-                 </a>
-               </div>
-             ) : (
-               <div className="text-center text-gray-400">
-                 {loading ? (
-                    <div className="animate-pulse flex flex-col items-center">
-                        <div className="h-64 w-64 bg-gray-200 rounded-lg mb-4"></div>
-                        <p>La IA está tejiendo tu diseño digital...</p>
+          <div className="bg-background-dark/50 border-t border-white/5 p-8 flex flex-col items-center justify-center min-h-[400px] relative">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
+            {image ? (
+              <div className="relative group max-w-lg w-full">
+                <div className="absolute -inset-1 bg-gradient-to-r from-gold via-olive to-gold rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                <img src={image} alt="Pollera Generada por IA" className="relative rounded-lg shadow-2xl w-full border border-white/10" />
+                <a
+                  href={image}
+                  download="mi-diseño-pollera.png"
+                  className="absolute bottom-4 right-4 bg-background-dark/90 backdrop-blur text-gold border border-gold/30 px-6 py-3 rounded-full shadow-lg font-bold flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-gold hover:text-background-dark transform hover:-translate-y-1"
+                >
+                  <Download size={16} /> <span className="text-xs uppercase tracking-wider">Descargar</span>
+                </a>
+              </div>
+            ) : (
+              <div className="text-center text-ivory/20">
+                {loading ? (
+                  <div className="animate-pulse flex flex-col items-center">
+                    <div className="h-64 w-64 bg-white/5 rounded-2xl mb-6 shadow-inner border border-white/5"></div>
+                    <p className="text-gold/70 text-sm uppercase tracking-widest animate-pulse">La IA está tejiendo tu diseño digital...</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mx-auto h-24 w-24 mb-6 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
+                      <ImageIcon className="h-10 w-10 opacity-50" />
                     </div>
-                 ) : (
-                    <>
-                        <ImageIcon className="mx-auto h-16 w-16 mb-4 opacity-50" />
-                        <p className="text-lg">Tu diseño aparecerá aquí</p>
-                    </>
-                 )}
-               </div>
-             )}
+                    <p className="text-lg font-serif italic text-ivory/40">Tu diseño aparecerá aquí</p>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

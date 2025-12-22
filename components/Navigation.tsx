@@ -3,7 +3,6 @@ import { View } from '../types';
 import { Menu, X, Sparkles, PenTool, Lock, LogOut } from 'lucide-react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabaseClient';
-import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface NavigationProps {
   currentView: View;
@@ -13,9 +12,17 @@ interface NavigationProps {
   session: Session | null;
 }
 
-const LOGO_URL = "http://console-varios-minio.fjueze.easypanel.host/api/v1/download-shared-object/aHR0cHM6Ly92YXJpb3MtbWluaW8uZmp1ZXplLmVhc3lwYW5lbC5ob3N0L2J5Y2FuZGFzaGFuL2ltYWdlcy9sb2dvLXZlY3RvcjkucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9NTFUU0xMTlJTWDc3QllTMlNQMTYlMkYyMDI1MTIwMiUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTEyMDJUMjA1ODMyWiZYLUFtei1FeHBpcmVzPTQzMjAwJlgtQW16LVNlY3VyaXR5LVRva2VuPWV5SmhiR2NpT2lKSVV6VXhNaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpoWTJObGMzTkxaWGtpT2lJMU1WUlRURXhPVWxOWU56ZENXVk15VTFBeE5pSXNJbVY0Y0NJNk1UYzJORGMwTnpBNE9Td2ljR0Z5Wlc1MElqb2lZV1J0YVc0aWZRLk93WkRCVVdRMjVzOTZUR09FOHptaVVucFR0d2RhZFVGSjBfdGNUeFdMMDdINmVPTGlRNlU3WWhodW1YSm9wU0lPMEFwVnJOX0V4aG1BUTNUZUxJRjFRJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZ2ZXJzaW9uSWQ9bnVsbCZYLUFtei1TaWduYXR1cmU9NDg2Y2E5MTcxMjdhZmQ4ZTE3NDcxMjM2MzhiMGRlOWFjNzA0NmRjMzg1OTE4NzBmYzc5NDAxM2U0YjQ5NzYyOQ"
 export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, isEditMode, toggleEditMode, session }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
     { label: 'Inicio', value: View.HOME },
@@ -37,15 +44,18 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md border-b border-gold/20 w-full">
+    <nav className={`fixed top-0 z-50 w-full transition-all duration-500 ${scrolled ? 'bg-background-dark/90 backdrop-blur-xl shadow-2xl py-2 border-b border-white/5' : 'bg-gradient-to-b from-background-dark/90 to-transparent py-6'}`}>
       <div className="w-full px-6 md:px-12 lg:px-16">
-        <div className="flex justify-between h-20">
-          <div className="flex items-center cursor-pointer" onClick={() => handleNav(View.HOME)}>
-             <img 
-              src={getOptimizedImageUrl(LOGO_URL, 300)} 
-              alt="Logo" 
-              className="h-16 md:h-20 w-auto object-contain"
-            />
+        <div className="flex justify-between items-center">
+          <div className="flex items-center cursor-pointer group" onClick={() => handleNav(View.HOME)}>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gold/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <img
+                src="/logo.png"
+                alt="Más que Polleras Logo"
+                className={`w-auto object-contain transition-all duration-500 ${scrolled ? 'h-20' : 'h-[200px]'}`}
+              />
+            </div>
           </div>
 
           {/* Desktop Menu */}
@@ -54,39 +64,31 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
               <button
                 key={item.value}
                 onClick={() => handleNav(item.value)}
-                className={`text-sm font-medium transition-colors duration-200 ${
-                  currentView === item.value
-                    ? 'text-panamaRed border-b-2 border-panamaRed'
-                    : 'text-gray-600 hover:text-panamaBlue'
-                }`}
+                className={`text-sm font-medium transition-colors duration-200 uppercase tracking-widest ${currentView === item.value
+                  ? 'text-gold border-b border-gold'
+                  : 'text-ivory/70 hover:text-gold'
+                  }`}
               >
                 {item.label}
               </button>
             ))}
-            
-            <button
-              onClick={() => handleNav(View.AI_GENERATOR)}
-              className="flex items-center space-x-2 bg-gradient-to-r from-panamaBlue to-blue-900 text-white px-4 py-2 rounded-full text-xs font-bold hover:shadow-lg transition-all"
-            >
-              <Sparkles size={14} className="text-gold" />
-              <span>Diseña con IA</span>
-            </button>
+
+
 
             {/* Auth Controls */}
             {session ? (
-              <div className="flex items-center gap-2 border-l pl-4 border-gray-200">
+              <div className="flex items-center gap-2 border-l pl-4 border-olive/20">
                 <button
                   onClick={toggleEditMode}
-                  className={`p-2 rounded-full transition-colors ${
-                    isEditMode ? 'bg-panamaRed text-white' : 'text-gray-400 hover:text-gray-600'
-                  }`}
+                  className={`p-2 rounded-full transition-colors ${isEditMode ? 'bg-primary text-background-dark' : 'text-ivory/50 hover:text-ivory'
+                    }`}
                   title="Modo Edición"
                 >
                   <PenTool size={18} />
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-full text-gray-400 hover:text-panamaBlue"
+                  className="p-2 rounded-full text-ivory/50 hover:text-gold"
                   title="Cerrar Sesión"
                 >
                   <LogOut size={18} />
@@ -95,7 +97,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
             ) : (
               <button
                 onClick={() => handleNav(View.ADMIN_LOGIN)}
-                className="p-2 rounded-full text-gray-300 hover:text-gray-500"
+                className="p-2 rounded-full text-ivory/30 hover:text-ivory/70"
                 title="Acceso Admin"
               >
                 <Lock size={16} />
@@ -104,22 +106,21 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-4">
             {session && (
-               <button
-                  onClick={toggleEditMode}
-                  className={`p-2 rounded-full transition-colors ${
-                    isEditMode ? 'bg-panamaRed text-white' : 'text-gray-400 hover:text-gray-600'
+              <button
+                onClick={toggleEditMode}
+                className={`p-2 rounded-full transition-colors ${isEditMode ? 'bg-primary text-background-dark' : 'text-ivory/50 hover:text-ivory'
                   }`}
-                >
-                  <PenTool size={18} />
-                </button>
+              >
+                <PenTool size={18} />
+              </button>
             )}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-600 hover:text-panamaBlue focus:outline-none"
+              className="text-ivory hover:text-gold focus:outline-none"
             >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
         </div>
@@ -127,52 +128,46 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-6">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="md:hidden bg-background-dark border-t border-olive/20 px-6 absolute w-full shadow-2xl">
+          <div className="px-2 pt-4 pb-6 space-y-2 sm:px-3">
             {navItems.map((item) => (
               <button
                 key={item.value}
                 onClick={() => handleNav(item.value)}
-                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
-                  currentView === item.value
-                    ? 'bg-panamaRed/10 text-panamaRed'
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`block w-full text-left px-3 py-3 rounded-lg text-base font-medium transition-colors ${currentView === item.value
+                  ? 'bg-olive/20 text-gold'
+                  : 'text-ivory hover:bg-white/5'
+                  }`}
               >
                 {item.label}
               </button>
             ))}
-             <button
-                onClick={() => handleNav(View.AI_GENERATOR)}
-                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-panamaBlue font-bold"
-              >
-                ✨ Diseña con IA
-              </button>
-              
-              <div className="border-t border-gray-100 pt-2 mt-2">
-                {session ? (
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-600 font-bold"
-                  >
-                    <LogOut size={16} /> Cerrar Sesión
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleNav(View.ADMIN_LOGIN)}
-                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-gray-400"
-                  >
-                    <Lock size={16} /> Acceso Admin
-                  </button>
-                )}
-              </div>
+
+
+            <div className="border-t border-olive/20 pt-4 mt-4">
+              {session ? (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-400 font-bold"
+                >
+                  <LogOut size={16} /> Cerrar Sesión
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleNav(View.ADMIN_LOGIN)}
+                  className="flex items-center gap-2 w-full text-left px-3 py-2 text-ivory/50"
+                >
+                  <Lock size={16} /> Acceso Admin
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
-      
+
       {isEditMode && session && (
-        <div className="bg-yellow-100 text-yellow-800 text-xs text-center py-1 font-bold w-full">
-          MODO EDICIÓN ACTIVADO: Puedes cambiar imágenes y eliminar elementos.
+        <div className="bg-gold text-background-dark text-xs text-center py-1 font-bold w-full uppercase tracking-widest">
+          Modo Edición Activado
         </div>
       )}
     </nav>

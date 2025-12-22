@@ -8,15 +8,15 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ setView }) => {
-  // Using a high-quality Unsplash image as the base to ensure fast loading and optimization availability
-  const heroImage = "http://console-varios-minio.fjueze.easypanel.host/api/v1/download-shared-object/aHR0cHM6Ly92YXJpb3MtbWluaW8uZmp1ZXplLmVhc3lwYW5lbC5ob3N0L2J5Y2FuZGFzaGFuL2ltYWdlcy9kdWUlQzMlQjFhcy01LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPTUxVFNMTE5SU1g3N0JZUzJTUDE2JTJGMjAyNTEyMDIlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMjAyVDIwNTcxMlomWC1BbXotRXhwaXJlcz00MzIwMCZYLUFtei1TZWN1cml0eS1Ub2tlbj1leUpoYkdjaU9pSklVelV4TWlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKaFkyTmxjM05MWlhraU9pSTFNVlJUVEV4T1VsTllOemRDV1ZNeVUxQXhOaUlzSW1WNGNDSTZNVGMyTkRjME56QTRPU3dpY0dGeVpXNTBJam9pWVdSdGFXNGlmUS5Pd1pEQlVXUTI1czk2VEdPRTh6bWlVbnBUdHdkYWRVRkowX3RjVHhXTDA3SDZlT0xpUTZVN1loaHVtWEpvcFNJTzBBcFZyTl9FeGhtQVEzVGVMSUYxUSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QmdmVyc2lvbklkPW51bGwmWC1BbXotU2lnbmF0dXJlPTI4OWZiOTk4ZjA1MzRmNDc4ZGJhM2Q4NmNlYmQ4OTYxMGRlMjk2OWVlOGNlNzY3ODYyMmY2Mjk4MzQwNDUyNTE"
+  // Using the specific image provided by the user
+  const heroImage = "https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fdue%C3%B1as-5.png&version_id=null";
   return (
     <div className="relative bg-gray-900 overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <img
           className="w-full h-full object-cover object-top opacity-60"
-          src={getOptimizedImageUrl(heroImage, 1920)} 
+          src={getOptimizedImageUrl(heroImage, 1920)}
           alt="Detalle de Pollera Panameña y Encajes"
           // @ts-ignore - fetchPriority is a valid attribute in modern browsers but React types might lag
           fetchPriority="high"

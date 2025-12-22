@@ -44,7 +44,7 @@ const SAMPLE_SERVICES = [
 export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Edit State
   const [editingId, setEditingId] = useState<string | null>(null);
   const [tempImageUrl, setTempImageUrl] = useState('');
@@ -69,11 +69,11 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
 
   const getIcon = (name: string) => {
     switch (name) {
-      case 'shirt': return <Shirt className="w-10 h-10 text-panamaRed" />;
+      case 'shirt': return <Shirt className="w-10 h-10 text-gold" />;
       case 'gem': return <Gem className="w-10 h-10 text-gold" />;
-      case 'palette': return <Palette className="w-10 h-10 text-panamaBlue" />;
-      case 'music': return <Music className="w-10 h-10 text-green-700" />;
-      default: return <Shirt className="w-10 h-10" />;
+      case 'palette': return <Palette className="w-10 h-10 text-gold" />;
+      case 'music': return <Music className="w-10 h-10 text-gold" />;
+      default: return <Shirt className="w-10 h-10 text-gold" />;
     }
   };
 
@@ -85,15 +85,15 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   };
 
   const saveEdit = async (id: string) => {
-    const { error } = await supabase.from('services').update({ 
+    const { error } = await supabase.from('services').update({
       image: tempImageUrl,
       image_fit: tempImageFit,
       image_position: tempImagePos
     }).eq('id', id);
 
     if (!error) {
-      setServices(services.map(s => s.id === id ? { 
-        ...s, 
+      setServices(services.map(s => s.id === id ? {
+        ...s,
         image: tempImageUrl,
         image_fit: tempImageFit,
         image_position: tempImagePos
@@ -115,67 +115,70 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   };
 
   return (
-    <div className="py-24 bg-white w-full">
+    <div className="pt-[250px] pb-24 bg-background-dark min-h-screen w-full">
       <div className="w-full px-6 md:px-12 lg:px-24">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-serif font-bold text-gray-900">Nuestros Pilares de Servicio</h2>
-          <p className="mt-4 text-gray-600 max-w-3xl mx-auto text-lg">
+        <div className="text-center mb-16 animate-fade-in-up">
+          <span className="text-gold uppercase tracking-[0.2em] text-xs font-bold bg-gold/10 px-4 py-1 rounded-full border border-gold/20 backdrop-blur-sm mb-4 inline-block">
+            Excelencia y Tradición
+          </span>
+          <h2 className="text-3xl md:text-5xl font-serif font-bold text-ivory">Nuestros Pilares de Servicio</h2>
+          <p className="mt-4 text-ivory/70 max-w-3xl mx-auto text-lg font-light">
             Ofrecemos una solución integral para que disfrutes de la cultura panameña sin preocupaciones.
           </p>
         </div>
 
         {loading ? (
-          <div className="flex justify-center"><Loader2 className="animate-spin text-panamaBlue" /></div>
+          <div className="flex justify-center"><Loader2 className="animate-spin text-gold" /></div>
         ) : services.length === 0 ? (
           <div className="text-center">
-            <p className="mb-4">No hay servicios cargados.</p>
-            <button onClick={handleSeedServices} className="bg-panamaBlue text-white px-4 py-2 rounded flex items-center mx-auto gap-2">
+            <p className="mb-4 text-ivory/50">No hay servicios cargados.</p>
+            <button onClick={handleSeedServices} className="bg-primary text-background-dark px-4 py-2 rounded flex items-center mx-auto gap-2 font-bold hover:bg-gold-light transition-colors">
               <PlusCircle /> Cargar Servicios Iniciales
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-8 animate-fade-in-up delay-200">
             {services.map((service) => (
-              <div key={service.id} className="group bg-offWhite rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative">
-                
+              <div key={service.id} className="group bg-card-dark border border-olive/20 rounded-3xl overflow-hidden hover:border-gold/50 transition-all duration-500 hover:-translate-y-2 flex flex-col relative w-full">
+
                 {isEditMode && (
-                  <div className="absolute top-2 left-2 z-20 bg-white/90 p-1 rounded-full shadow-md">
+                  <div className="absolute top-2 left-2 z-20 bg-background-dark/90 p-1 rounded-full shadow-md border border-gold/20">
                     {editingId === service.id ? (
-                      <button onClick={() => saveEdit(service.id)} className="text-green-600 p-1"><Save size={16} /></button>
+                      <button onClick={() => saveEdit(service.id)} className="text-primary p-1"><Save size={16} /></button>
                     ) : (
-                      <button onClick={() => startEdit(service)} className="text-panamaBlue p-1"><Edit size={16} /></button>
+                      <button onClick={() => startEdit(service)} className="text-gold p-1"><Edit size={16} /></button>
                     )}
                   </div>
                 )}
 
-                <div className="h-64 overflow-hidden relative bg-gray-200">
-                   {editingId === service.id ? (
-                    <div className="absolute inset-0 z-10 bg-white p-4 flex flex-col justify-start shadow-inner overflow-y-auto">
-                      <label className="text-[10px] font-bold uppercase text-gray-500 mb-1">URL Imagen</label>
-                      <input 
-                        value={tempImageUrl} 
+                <div className="h-64 overflow-hidden relative bg-background-dark">
+                  {editingId === service.id ? (
+                    <div className="absolute inset-0 z-10 bg-card-dark p-4 flex flex-col justify-start shadow-inner overflow-y-auto border-b border-gold/30">
+                      <label className="text-[10px] font-bold uppercase text-gold mb-1">URL Imagen</label>
+                      <input
+                        value={tempImageUrl}
                         onChange={(e) => setTempImageUrl(e.target.value)}
-                        className="border p-1 text-xs rounded w-full mb-2 bg-gray-50" 
+                        className="border border-gold/30 p-1 text-xs rounded w-full mb-2 bg-background-dark text-ivory"
                       />
-                      
+
                       <div className="flex gap-2 mb-2">
                         <div className="w-1/2">
-                          <label className="text-[10px] font-bold uppercase text-gray-500 mb-1">Ajuste</label>
-                          <select 
-                            value={tempImageFit} 
+                          <label className="text-[10px] font-bold uppercase text-gold mb-1">Ajuste</label>
+                          <select
+                            value={tempImageFit}
                             onChange={(e: any) => setTempImageFit(e.target.value)}
-                            className="border p-1 text-xs rounded w-full bg-gray-50"
+                            className="border border-gold/30 p-1 text-xs rounded w-full bg-background-dark text-ivory"
                           >
                             <option value="cover">Llenar (Cover)</option>
                             <option value="contain">Completa (Contain)</option>
                           </select>
                         </div>
                         <div className="w-1/2">
-                           <label className="text-[10px] font-bold uppercase text-gray-500 mb-1">Posición</label>
-                           <select 
-                            value={tempImagePos} 
+                          <label className="text-[10px] font-bold uppercase text-gold mb-1">Posición</label>
+                          <select
+                            value={tempImagePos}
                             onChange={(e: any) => setTempImagePos(e.target.value)}
-                            className="border p-1 text-xs rounded w-full bg-gray-50"
+                            className="border border-gold/30 p-1 text-xs rounded w-full bg-background-dark text-ivory"
                           >
                             <option value="center">Centro</option>
                             <option value="top">Arriba</option>
@@ -184,42 +187,47 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
                         </div>
                       </div>
 
-                      <div className="flex-grow bg-gray-100 rounded border flex items-center justify-center overflow-hidden relative">
-                         {tempImageUrl && (
-                           <img 
-                              src={getOptimizedImageUrl(tempImageUrl, 300)} 
-                              className="h-full w-full" 
-                              style={{ objectFit: tempImageFit, objectPosition: tempImagePos }}
-                              alt="Preview"
-                            />
-                         )}
-                         <span className="absolute bottom-1 right-1 text-[9px] bg-black/50 text-white px-1 rounded">Vista Previa</span>
+                      <div className="flex-grow bg-background-dark rounded border border-gold/30 flex items-center justify-center overflow-hidden relative">
+                        {tempImageUrl && (
+                          <img
+                            src={getOptimizedImageUrl(tempImageUrl, 300)}
+                            className="h-full w-full"
+                            style={{ objectFit: tempImageFit, objectPosition: tempImagePos }}
+                            alt="Preview"
+                          />
+                        )}
+                        <span className="absolute bottom-1 right-1 text-[9px] bg-black/50 text-white px-1 rounded">Vista Previa</span>
                       </div>
                     </div>
                   ) : (
-                    <img 
-                      src={getOptimizedImageUrl(service.image, 600)} 
-                      onError={handleImageError}
-                      alt={service.title} 
-                      loading="lazy"
-                      className="w-full h-full group-hover:scale-110 transition-transform duration-500"
-                      style={{ 
-                        objectFit: service.image_fit || 'cover',
-                        objectPosition: service.image_position || 'center'
-                      }} 
-                    />
+                    <>
+                      <div className="absolute inset-0 bg-gold/10 mix-blend-overlay z-10"></div>
+                      <img
+                        src={getOptimizedImageUrl(service.image, 600)}
+                        onError={handleImageError}
+                        alt={service.title}
+                        loading="lazy"
+                        className="w-full h-full group-hover:scale-110 transition-transform duration-700 grayscale-[20%] group-hover:grayscale-0"
+                        style={{
+                          objectFit: service.image_fit || 'cover',
+                          objectPosition: service.image_position || 'center'
+                        }}
+                      />
+                    </>
                   )}
-                  
-                  <div className="absolute top-4 right-4 bg-white p-3 rounded-full shadow-md z-10">
-                      {getIcon(service.icon_name)}
+
+                  <div className="absolute bottom-4 right-4 bg-background-dark/90 backdrop-blur-md p-3 rounded-full border border-gold/30 z-10 text-gold shadow-lg shadow-black/20">
+                    {getIcon(service.icon_name)}
                   </div>
                 </div>
-                <div className="p-8 flex flex-col flex-grow">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{service.title}</h3>
-                  <p className="text-gray-600 mb-6 text-base flex-grow">{service.description}</p>
+                <div className="p-8 flex flex-col flex-grow relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-olive/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none"></div>
+                  <h3 className="text-2xl font-serif font-medium text-ivory mb-3 group-hover:text-gold transition-colors">{service.title}</h3>
+                  <div className="w-10 h-0.5 bg-olive/30 mb-4 group-hover:w-full group-hover:bg-gold/50 transition-all duration-500"></div>
+                  <p className="text-ivory/60 mb-8 text-sm leading-relaxed flex-grow">{service.description}</p>
                   <button
                     onClick={getAction(service.cta)}
-                    className="w-full mt-auto py-3 border-2 border-panamaBlue text-panamaBlue rounded font-bold hover:bg-panamaBlue hover:text-white transition-colors uppercase tracking-wider text-sm"
+                    className="w-full mt-auto py-3 border border-gold/30 text-gold rounded-xl font-bold hover:bg-gold hover:text-background-dark transition-all duration-300 uppercase tracking-wider text-xs"
                   >
                     {service.cta}
                   </button>

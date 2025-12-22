@@ -10,6 +10,7 @@ import { AIGenerator } from './components/AIGenerator';
 import { Footer } from './components/Footer';
 import { PrivacyPolicy, TermsOfService } from './components/Legal';
 import { AdminLogin } from './components/AdminLogin';
+import { LandingPage } from './components/LandingPage';
 import { supabase } from './services/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 
@@ -54,20 +55,20 @@ const App: React.FC = () => {
         {activeView === View.HOME && (
           <>
             <Hero setView={setActiveView} />
-            
+
             <div id="essence" className="bg-white py-24 w-full px-6 md:px-12 lg:px-24 flex flex-col items-center">
               <h3 className="text-3xl font-serif text-gray-800 italic mb-8 relative after:content-[''] after:block after:w-16 after:h-1 after:bg-panamaRed after:mx-auto after:mt-4">
                 "Nuestra Esencia"
               </h3>
               <p className="max-w-4xl mx-auto text-gray-600 leading-relaxed text-xl text-center font-light">
-                La pollera no es solo un vestido, es la identidad de un pueblo tejida a mano. 
-                En Tradición Panamá, honramos cada puntada y cada tembleque, asegurando que 
+                La pollera no es solo un vestido, es la identidad de un pueblo tejida a mano.
+                En Tradición Panamá, honramos cada puntada y cada tembleque, asegurando que
                 tu experiencia al portarla sea tan majestuosa como la historia que representa.
               </p>
             </div>
 
             <Services setView={setActiveView} isEditMode={isEditMode} />
-            
+
             <div className="bg-panamaRed/5 py-24 w-full px-6 md:px-12 lg:px-24 text-center">
               <blockquote className="text-2xl md:text-3xl font-serif text-panamaBlue max-w-5xl mx-auto italic leading-normal">
                 "Alquilé el servicio completo para mi boda y fue un sueño. El atavío fue impecable y me sentí una reina. ¡Recomendado!"
@@ -108,11 +109,15 @@ const App: React.FC = () => {
     );
   };
 
+  if (activeView === View.HOME) {
+    return <LandingPage setView={setActiveView} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-900 w-full overflow-x-hidden">
-      <Navigation 
-        currentView={activeView} 
-        setView={setActiveView} 
+      <Navigation
+        currentView={activeView}
+        setView={setActiveView}
         isEditMode={isEditMode}
         toggleEditMode={() => setIsEditMode(!isEditMode)}
         session={session}
