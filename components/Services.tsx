@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, ServiceItem } from '../types';
-import { Shirt, Gem, Palette, Music, Loader2, Edit, Save, PlusCircle } from 'lucide-react';
+import { Shirt, Gem, Palette, Music, Loader2, Edit, Save, PlusCircle, Camera } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 
@@ -38,6 +38,13 @@ const SAMPLE_SERVICES = [
     icon_name: 'music',
     cta: 'Cotizar Evento',
     image: 'https://images.unsplash.com/photo-1533147670608-2a2f9775d3a4?q=80&w=600&auto=format&fit=crop'
+  },
+  {
+    title: 'Sesión de Fotos',
+    description: 'Inmortaliza tu experiencia con fotografía profesional especializada en polleras. Exteriores y estudio.',
+    icon_name: 'camera',
+    cta: 'Agendar Sesión',
+    image: 'https://images.unsplash.com/photo-1551189671-d68b6356d62c?q=80&w=600&auto=format&fit=crop'
   }
 ];
 
@@ -50,6 +57,9 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   const [tempImageUrl, setTempImageUrl] = useState('');
   const [tempImageFit, setTempImageFit] = useState<'cover' | 'contain'>('cover');
   const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
+
+  const [tempTitle, setTempTitle] = useState('');
+  const [tempDescription, setTempDescription] = useState('');
 
   const fetchServices = async () => {
     setLoading(true);
@@ -73,6 +83,7 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
       case 'gem': return <Gem className="w-10 h-10 text-gold" />;
       case 'palette': return <Palette className="w-10 h-10 text-gold" />;
       case 'music': return <Music className="w-10 h-10 text-gold" />;
+      case 'camera': return <Camera className="w-10 h-10 text-gold" />;
       default: return <Shirt className="w-10 h-10 text-gold" />;
     }
   };
@@ -82,13 +93,17 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
     setTempImageUrl(service.image);
     setTempImageFit(service.image_fit || 'cover');
     setTempImagePos(service.image_position as any || 'center');
+    setTempTitle(service.title);
+    setTempDescription(service.description);
   };
 
   const saveEdit = async (id: string) => {
     const { error } = await supabase.from('services').update({
       image: tempImageUrl,
       image_fit: tempImageFit,
-      image_position: tempImagePos
+      image_position: tempImagePos,
+      title: tempTitle,
+      description: tempDescription
     }).eq('id', id);
 
     if (!error) {
@@ -96,11 +111,50 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
         ...s,
         image: tempImageUrl,
         image_fit: tempImageFit,
-        image_position: tempImagePos
+        image_position: tempImagePos,
+        title: tempTitle,
+        description: tempDescription
       } : s));
       setEditingId(null);
     } else {
       alert('Error al actualizar imagen');
+    }
+  };
+
+  const addPhotoService = async () => {
+    const photoService = {
+      title: 'Sesión de Fotos',
+      description: 'Inmortaliza tu experiencia con fotografía profesional especializada en polleras. Exteriores y estudio.',
+      icon_name: 'camera',
+      cta: 'Agendar Sesión',
+      image: 'https://images.unsplash.com/photo-1551189671-d68b6356d62c?q=80&w=600&auto=format&fit=crop'
+    };
+
+    // Check if checks already exists locally to avoid duplicates visually (optional, but good UX)
+    if (services.some(s => s.title === photoService.title)) {
+      alert('Este servicio ya existe en la lista.');
+      return;
+    }
+
+    const { data, error } = await supabase.from('services').insert([photoService]).select();
+
+    if (!error && data) {
+      setServices((prev) => [...prev, data[0] as ServiceItem]);
+      alert("Servicio agregado exitosamente.");
+    } else {
+      console.error("Error adding service", error);
+
+      // Fallback: Add locally so the user can see it (even if DB fails)
+      const fallbackService = {
+        ...photoService,
+        id: `temp-${Date.now()}`,
+        image_fit: 'cover',
+        image_position: 'center'
+      } as ServiceItem;
+
+      setServices((prev) => [...prev, fallbackService]);
+
+      alert(`Nota: El servicio se agregó VISUALMENTE, pero hubo un error al guardarlo en la base de datos (${error?.message || 'Error desconocido'}).\n\nSi el error es "Failed to fetch", suele ser un bloqueo de red o falta de permisos RLS en Supabase.`);
     }
   };
 
@@ -222,9 +276,29 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
                 </div>
                 <div className="p-8 flex flex-col flex-grow relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-olive/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl pointer-events-none"></div>
-                  <h3 className="text-2xl font-serif font-medium text-ivory mb-3 group-hover:text-gold transition-colors">{service.title}</h3>
-                  <div className="w-10 h-0.5 bg-olive/30 mb-4 group-hover:w-full group-hover:bg-gold/50 transition-all duration-500"></div>
-                  <p className="text-ivory/60 mb-8 text-sm leading-relaxed flex-grow">{service.description}</p>
+                  {editingId === service.id ? (
+                    <>
+                      <input
+                        value={tempTitle}
+                        onChange={(e) => setTempTitle(e.target.value)}
+                        className="bg-background-dark border border-gold/30 rounded p-1 mb-2 text-xl font-bold font-serif w-full text-ivory placeholder-ivory/50"
+                        placeholder="Título del servicio"
+                      />
+                      <div className="w-10 h-0.5 bg-olive/30 mb-4 transition-all duration-500"></div>
+                      <textarea
+                        value={tempDescription}
+                        onChange={(e) => setTempDescription(e.target.value)}
+                        className="bg-background-dark border border-white/10 rounded p-1 mb-6 text-sm text-ivory/80 w-full h-24 resize-none placeholder-ivory/50"
+                        placeholder="Descripción..."
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-2xl font-serif font-medium text-ivory mb-3 group-hover:text-gold transition-colors">{service.title}</h3>
+                      <div className="w-10 h-0.5 bg-olive/30 mb-4 group-hover:w-full group-hover:bg-gold/50 transition-all duration-500"></div>
+                      <p className="text-ivory/60 mb-8 text-sm leading-relaxed flex-grow">{service.description}</p>
+                    </>
+                  )}
                   <button
                     onClick={getAction(service.cta)}
                     className="w-full mt-auto py-3 border border-gold/30 text-gold rounded-xl font-bold hover:bg-gold hover:text-background-dark transition-all duration-300 uppercase tracking-wider text-xs"
@@ -234,6 +308,18 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
                 </div>
               </div>
             ))}
+
+            {/* Admin Add Button */}
+            {isEditMode && services.length > 0 && (
+              <div className="flex items-center justify-center p-8 border-2 border-dashed border-olive/30 rounded-3xl hover:border-gold/50 transition-colors cursor-pointer bg-white/5 group" onClick={addPhotoService}>
+                <div className="flex flex-col items-center gap-4 text-ivory/50 group-hover:text-gold transition-colors">
+                  <div className="bg-olive/20 p-4 rounded-full group-hover:bg-gold/20 transition-colors">
+                    <PlusCircle size={32} />
+                  </div>
+                  <span className="font-bold text-lg uppercase tracking-widest">Agregar "Sesión de Fotos"</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

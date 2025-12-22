@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View } from '../types';
-import { Menu, X, Sparkles, PenTool, Lock, LogOut } from 'lucide-react';
+import { Menu, X, Sparkles, PenTool, Lock, LogOut, Users } from 'lucide-react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabaseClient';
 
@@ -44,7 +44,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
   };
 
   return (
-    <nav className={`fixed top-0 z-50 w-full transition-all duration-500 ${scrolled ? 'bg-background-dark/90 backdrop-blur-xl shadow-2xl py-2 border-b border-white/5' : 'bg-gradient-to-b from-background-dark/90 to-transparent py-6'}`}>
+    <nav className={`fixed top-0 z-50 w-full transition-all duration-500 ${scrolled ? 'bg-background-dark/90 backdrop-blur-xl shadow-2xl py-2' : 'bg-gradient-to-b from-background-dark/90 to-transparent py-6'}`}>
       <div className="w-full px-6 md:px-12 lg:px-16">
         <div className="flex justify-between items-center">
           <div className="flex items-center cursor-pointer group" onClick={() => handleNav(View.HOME)}>
@@ -78,6 +78,13 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
             {/* Auth Controls */}
             {session ? (
               <div className="flex items-center gap-2 border-l pl-4 border-olive/20">
+                <button
+                  onClick={() => handleNav(View.CRM)}
+                  className={`p-2 rounded-full transition-colors ${currentView === View.CRM ? 'text-gold' : 'text-ivory/50 hover:text-ivory'}`}
+                  title="CRM / Clientes"
+                >
+                  <Users size={18} />
+                </button>
                 <button
                   onClick={toggleEditMode}
                   className={`p-2 rounded-full transition-colors ${isEditMode ? 'bg-primary text-background-dark' : 'text-ivory/50 hover:text-ivory'
@@ -146,12 +153,20 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
 
             <div className="border-t border-olive/20 pt-4 mt-4">
               {session ? (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-400 font-bold"
-                >
-                  <LogOut size={16} /> Cerrar Sesión
-                </button>
+                <>
+                  <button
+                    onClick={() => handleNav(View.CRM)}
+                    className={`flex items-center gap-2 w-full text-left px-3 py-2 ${currentView === View.CRM ? 'text-gold' : 'text-ivory'}`}
+                  >
+                    <Users size={16} /> CRM / Clientes
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-red-400 font-bold"
+                  >
+                    <LogOut size={16} /> Cerrar Sesión
+                  </button>
+                </>
               ) : (
                 <button
                   onClick={() => handleNav(View.ADMIN_LOGIN)}
@@ -165,11 +180,6 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
         </div>
       )}
 
-      {isEditMode && session && (
-        <div className="bg-gold text-background-dark text-xs text-center py-1 font-bold w-full uppercase tracking-widest">
-          Modo Edición Activado
-        </div>
-      )}
     </nav>
   );
 };

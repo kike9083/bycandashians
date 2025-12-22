@@ -23,6 +23,19 @@
     }
 }
 
-html {
+html,
+body {
     scroll-behavior: smooth;
+    background-color: #4F6352 !important;
+    /* Force green background */
+    margin: 0;
+    padding: 0;
+    overscroll-behavior-y: none;
+    /* Prevents white line on bounce */
+    height: 100%;
+}
+
+#root {
+    min-height: 100%;
+    background-color: #4F6352;
 }

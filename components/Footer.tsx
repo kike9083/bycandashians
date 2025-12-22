@@ -15,7 +15,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
           <div className="mb-8 md:mb-0 text-center md:text-left">
             <img
               src="/logo.png"
-              alt="By Candashan Logo"
+              alt="By Candashian Logo"
               className="h-24 w-auto object-contain mb-4 md:mb-0 grayscale-[50%] hover:grayscale-0 transition-all duration-500"
             />
             <p className="text-ivory/50 text-sm mt-2 font-light tracking-wide">Más que Polleras, una tradición de lujo.</p>
@@ -38,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
           </div>
         </div>
         <div className="mt-12 text-center text-[10px] text-ivory/20 border-t border-white/5 pt-8 uppercase tracking-widest">
-          © {new Date().getFullYear()} By Candashan. Todos los derechos reservados.
+          © {new Date().getFullYear()} By Candashian. Todos los derechos reservados.
         </div>
       </div>
     </footer>

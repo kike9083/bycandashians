@@ -7,7 +7,9 @@ export enum View {
   AI_GENERATOR = 'AI_GENERATOR',
   PRIVACY = 'PRIVACY',
   TERMS = 'TERMS',
-  ADMIN_LOGIN = 'ADMIN_LOGIN'
+  ADMIN_LOGIN = 'ADMIN_LOGIN',
+  HISTORY = 'HISTORY',
+  CRM = 'CRM'
 }
 
 export enum PolleraType {
@@ -55,4 +57,16 @@ export interface GalleryItem {
   category: string;
   image_fit?: 'cover' | 'contain';
   image_position?: 'top' | 'center' | 'bottom';
+}
+
+export interface Lead {
+  id: string;
+  created_at: string;
+  name: string;
+  email: string;
+  phone: string;
+  service: string;
+  event_date: string;
+  message: string;
+  status: 'New' | 'Contacted' | 'Booked' | 'Lost';
 }

@@ -60,6 +60,10 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   const [tempImageFit, setTempImageFit] = useState<'cover' | 'contain'>('cover');
   const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
 
+  const [tempName, setTempName] = useState('');
+  const [tempDescription, setTempDescription] = useState('');
+  const [tempPrice, setTempPrice] = useState(0);
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -119,6 +123,9 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     setTempImageUrl(product.image);
     setTempImageFit(product.image_fit || 'cover');
     setTempImagePos(product.image_position as any || 'center');
+    setTempName(product.name);
+    setTempDescription(product.description);
+    setTempPrice(product.price);
   };
 
   const cancelEdit = (e: React.MouseEvent) => {
@@ -132,7 +139,10 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     const { error } = await supabase.from('products').update({
       image: tempImageUrl,
       image_fit: tempImageFit,
-      image_position: tempImagePos
+      image_position: tempImagePos,
+      name: tempName,
+      description: tempDescription,
+      price: tempPrice
     }).eq('id', id);
 
     if (!error) {
@@ -140,11 +150,14 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
         ...p,
         image: tempImageUrl,
         image_fit: tempImageFit,
-        image_position: tempImagePos
+        image_position: tempImagePos,
+        name: tempName,
+        description: tempDescription,
+        price: tempPrice
       } : p));
       setEditingId(null);
     } else {
-      alert('Error al actualizar imagen');
+      alert('Error al actualizar producto');
     }
   };
 
@@ -343,10 +356,7 @@ WITH CHECK (true);`}
                               <span className="text-xs text-ivory/30">Vista previa</span>
                             )}
                           </div>
-                          <div className="flex gap-2">
-                            <button onClick={(e) => saveEdit(product.id, e)} className="flex-1 bg-primary text-background-dark py-2 rounded text-xs font-bold hover:bg-primary/90">Guardar</button>
-                            <button onClick={(e) => cancelEdit(e)} className="flex-1 bg-white/10 text-ivory py-2 rounded text-xs font-bold hover:bg-white/20">Cancelar</button>
-                          </div>
+
                         </div>
                       ) : (
                         <img
@@ -362,12 +372,6 @@ WITH CHECK (true);`}
                         />
                       )}
 
-                      {!editingId && (
-                        <div className="absolute top-3 right-3 bg-background-dark/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-ivory shadow-sm tracking-wider uppercase pointer-events-none border border-olive/20">
-                          {product.technique}
-                        </div>
-                      )}
-
                       {isEditMode && !editingId && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
                           <span className="bg-primary text-background-dark px-4 py-2 rounded-full text-xs font-bold shadow-lg transform hover:scale-105 transition-transform">Editar Visualización</span>
@@ -376,9 +380,39 @@ WITH CHECK (true);`}
                     </div>
 
                     <div className="p-6 flex flex-col flex-grow">
-                      <div className="text-xs text-gold font-bold uppercase mb-2 tracking-widest">{product.type}</div>
-                      <h3 className="text-xl font-bold text-ivory truncate mb-2 font-serif">{product.name}</h3>
-                      <p className="text-sm text-ivory/60 mb-6 flex-grow line-clamp-3 leading-relaxed">{product.description}</p>
+                      {editingId === product.id ? (
+                        <>
+                          <input
+                            value={tempName}
+                            onChange={(e) => setTempName(e.target.value)}
+                            className="bg-background-dark border border-gold/30 rounded p-1 mb-2 text-xl font-bold font-serif w-full text-ivory"
+                            placeholder="Título del producto"
+                          />
+                          <textarea
+                            value={tempDescription}
+                            onChange={(e) => setTempDescription(e.target.value)}
+                            className="bg-background-dark border border-white/10 rounded p-1 mb-2 text-sm text-ivory/80 w-full h-24 resize-none"
+                            placeholder="Descripción..."
+                          />
+                          <div className="mb-6">
+                            <label className="text-xs text-ivory/50 font-bold uppercase block mb-1">Precio (USD):</label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={tempPrice}
+                              onChange={(e) => setTempPrice(parseFloat(e.target.value) || 0)}
+                              className="bg-background-dark border border-white/10 rounded p-2 text-lg font-bold text-gold w-full"
+                              placeholder="0.00"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <h3 className="text-xl font-bold text-ivory truncate mb-2 font-serif">{product.name}</h3>
+                          <p className="text-sm text-ivory/60 mb-6 flex-grow line-clamp-3 leading-relaxed">{product.description}</p>
+                        </>
+                      )}
+
                       <div className="mt-auto flex items-center justify-between pt-4 border-t border-olive/10">
                         <span className="text-2xl font-bold text-gold">${product.price.toFixed(2)}</span>
                         <button
@@ -395,6 +429,42 @@ WITH CHECK (true);`}
                     </div>
                   </div>
                 ))}
+
+                {/* Admin Add Button */}
+                {isEditMode && (
+                  <div
+                    className="bg-card-dark border-2 border-dashed border-olive/30 rounded-[2rem] flex items-center justify-center p-8 cursor-pointer hover:border-gold/50 transition-all group min-h-[400px]"
+                    onClick={async () => {
+                      const newProduct = {
+                        name: 'Nuevo Producto',
+                        type: PolleraType.GALA,
+                        technique: Technique.ZURCIDA,
+                        price: 0,
+                        description: 'Descripción pendiente...',
+                        image: '',
+                        image_fit: 'cover',
+                        image_position: 'center'
+                      };
+
+                      const { data, error } = await supabase.from('products').insert([newProduct]).select();
+
+                      if (!error && data) {
+                        setProducts(prev => [...prev, data[0] as Product]);
+                        // Auto-start edit mode for the new product
+                        startEdit(data[0] as Product);
+                      } else {
+                        alert("Error al crear producto: " + error?.message);
+                      }
+                    }}
+                  >
+                    <div className="flex flex-col items-center gap-4 text-ivory/50 group-hover:text-gold transition-colors">
+                      <div className="bg-olive/20 p-6 rounded-full group-hover:bg-gold/20 transition-colors">
+                        <PlusCircle size={48} />
+                      </div>
+                      <span className="font-bold text-xl uppercase tracking-widest text-center">Agregar Producto</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

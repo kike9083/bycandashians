@@ -11,6 +11,8 @@ import { Footer } from './components/Footer';
 import { PrivacyPolicy, TermsOfService } from './components/Legal';
 import { AdminLogin } from './components/AdminLogin';
 import { LandingPage } from './components/LandingPage';
+import { History } from './components/History';
+import { CRM } from './components/CRM';
 import { supabase } from './services/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 
@@ -29,8 +31,9 @@ const App: React.FC = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      // If user logs out, disable edit mode automatically
-      if (!session) {
+      if (session) {
+        setIsEditMode(true);
+      } else {
         setIsEditMode(false);
       }
     });
@@ -105,12 +108,20 @@ const App: React.FC = () => {
         {activeView === View.TERMS && (
           <TermsOfService />
         )}
+
+        {activeView === View.HISTORY && (
+          <History isEditMode={isEditMode} />
+        )}
+
+        {activeView === View.CRM && (
+          <CRM />
+        )}
       </>
     );
   };
 
   if (activeView === View.HOME) {
-    return <LandingPage setView={setActiveView} />;
+    return <LandingPage setView={setActiveView} session={session} isEditMode={isEditMode} toggleEditMode={() => setIsEditMode(!isEditMode)} />;
   }
 
   return (

@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View } from '../types';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '../services/supabaseClient';
+import { Lock, LogOut, PenTool } from 'lucide-react';
 
 interface LandingPageProps {
     setView: (view: View) => void;
+    session?: Session | null;
+    isEditMode?: boolean;
+    toggleEditMode?: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEditMode, toggleEditMode }) => {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -16,10 +22,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        setView(View.HOME);
+    };
+
     return (
         <div className="bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden min-h-screen text-ivory">
             {/* Header - Expert Redesign */}
-            <div className={`fixed w-full transition-all duration-500 z-50 ${scrolled ? 'bg-background-dark/80 backdrop-blur-xl border-b border-white/5 py-2 shadow-2xl' : 'bg-gradient-to-b from-background-dark/90 to-transparent py-6'}`}>
+            <div className={`fixed w-full transition-all duration-500 z-50 ${scrolled ? 'bg-background-dark/80 backdrop-blur-xl py-2 shadow-2xl' : 'bg-gradient-to-b from-background-dark/90 to-transparent py-6'}`}>
                 <div className="px-6 md:px-12 flex items-center justify-between max-w-[1920px] mx-auto">
                     <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setView(View.HOME)}>
                         {/* Logo Container with Glow Effect */}
@@ -27,7 +38,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                             <div className="absolute -inset-4 bg-gold/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                             <img
                                 src="/logo.png"
-                                alt="By Candashan"
+                                alt="By Candashian"
                                 className={`w-auto object-contain transition-all duration-500 drop-shadow-2xl ${scrolled ? 'h-[120px]' : 'h-[200px]'}`}
                             />
                         </div>
@@ -39,6 +50,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                             {[
                                 { label: 'Inicio', view: View.HOME },
                                 { label: 'Servicios', view: View.SERVICES },
+                                { label: 'Catálogo', view: View.CATALOG },
                                 { label: 'Galería', view: View.GALLERY },
                                 { label: 'Contacto', view: View.CONTACT }
                             ].map((item) => (
@@ -57,16 +69,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
 
                         <div className="h-8 w-[1px] bg-white/10 mx-2"></div>
 
-                        <button
-                            className="relative overflow-hidden group rounded-full"
-                            onClick={() => setView(View.CONTACT)}
-                        >
-                            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-gold via-gold-light to-gold opacity-100 group-hover:opacity-90 transition-opacity"></div>
-                            <div className="absolute inset-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-                            <div className="relative px-8 py-3 bg-background-dark/10 backdrop-blur-[1px] flex items-center gap-3">
-                                <span className="text-background-dark text-xs font-bold uppercase tracking-widest group-hover:tracking-[0.2em] transition-all">Agendar Cita</span>
+                        {/* Admin / CTA Section */}
+                        {session ? (
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={toggleEditMode}
+                                    className={`p-2 rounded-full transition-colors ${isEditMode ? 'bg-primary text-background-dark' : 'text-ivory/50 hover:text-ivory'}`}
+                                    title="Modo Edición"
+                                >
+                                    <PenTool size={18} />
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="p-2 rounded-full text-ivory/50 hover:text-gold"
+                                    title="Cerrar Sesión"
+                                >
+                                    <LogOut size={18} />
+                                </button>
                             </div>
-                        </button>
+                        ) : (
+                            <button
+                                onClick={() => setView(View.ADMIN_LOGIN)}
+                                className="p-2 rounded-full text-ivory/30 hover:text-ivory/70 transition-colors"
+                                title="Acceso Admin"
+                            >
+                                <Lock size={16} />
+                            </button>
+                        )}
                     </div>
 
                     <button className="md:hidden text-ivory hover:text-gold transition-colors">
@@ -96,7 +125,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                     <div className="flex flex-col sm:flex-row gap-6 mt-8">
                         <button
                             className="group flex min-w-[180px] cursor-pointer items-center justify-center rounded-full h-14 px-10 bg-primary hover:bg-[#2ecc71] text-background-dark text-lg font-bold transition-all duration-300 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1"
-                            onClick={() => setView(View.SERVICES)}
+                            onClick={() => setView(View.HISTORY)}
                         >
                             <span className="group-hover:mr-2 transition-all">Conoce Nuestra Historia</span>
                             <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all duration-300">arrow_forward</span>
@@ -182,7 +211,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
 
             {/* Footer Minimal */}
             <div className="w-full bg-[#050807] border-t border-white/5 py-10 px-4 flex flex-col items-center justify-center text-center">
-                <h2 className="text-ivory/30 text-2xl font-serif font-bold tracking-wide mb-4">By Candashan</h2>
+                <h2 className="text-ivory/30 text-2xl font-serif font-bold tracking-wide mb-4">By Candashian</h2>
                 <div className="flex gap-4 text-ivory/40">
                     <span className="text-sm">© 2024 Todos los derechos reservados</span>
                 </div>

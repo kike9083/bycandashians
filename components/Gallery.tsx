@@ -44,6 +44,8 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
   const [tempImageFit, setTempImageFit] = useState<'cover' | 'contain'>('cover');
   const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
 
+  const [tempCategory, setTempCategory] = useState('');
+
   const fetchGallery = useCallback(async (pageNumber: number, category: string, isAppend: boolean) => {
     try {
       if (isAppend) {
@@ -140,6 +142,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
     setEditUrl(img.url);
     setTempImageFit(img.image_fit || 'cover');
     setTempImagePos(img.image_position as any || 'center');
+    setTempCategory(img.category || 'Eventos');
   };
 
   const cancelEdit = (e: React.MouseEvent) => {
@@ -153,7 +156,8 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
     const { error } = await supabase.from('gallery').update({
       url: editUrl,
       image_fit: tempImageFit,
-      image_position: tempImagePos
+      image_position: tempImagePos,
+      category: tempCategory
     }).eq('id', id);
 
     if (!error) {
@@ -161,7 +165,8 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
         ...i,
         url: editUrl,
         image_fit: tempImageFit,
-        image_position: tempImagePos
+        image_position: tempImagePos,
+        category: tempCategory
       } : i));
       setEditingId(null);
     } else {
@@ -316,6 +321,17 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                         </div>
                       </div>
 
+                      <div className="mt-1">
+                        <label className="text-[10px] font-bold text-gold/70 uppercase mb-1 block">Categoría</label>
+                        <select
+                          value={tempCategory}
+                          onChange={(e) => setTempCategory(e.target.value)}
+                          className="w-full bg-background-dark border border-white/10 p-1 text-xs rounded text-ivory focus:border-gold outline-none"
+                        >
+                          {CATEGORIES.filter(c => c !== 'TODAS').map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+
                       <div className="h-24 bg-background-dark rounded border border-white/10 flex items-center justify-center overflow-hidden relative">
                         {editUrl ? (
                           <img
@@ -348,7 +364,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-background-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6">
                           <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <span className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-2 block">By Candashan</span>
+                            <span className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-2 block">By Candashian</span>
                             <span className="text-ivory font-serif text-2xl font-medium tracking-wide block">
                               {img.category}
                             </span>
