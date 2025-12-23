@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, Mail, MapPin, MessageSquare, CheckCircle, AlertCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageSquare, CheckCircle, AlertCircle, ChevronDown } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 
 export const Contact: React.FC = () => {
@@ -7,6 +7,7 @@ export const Contact: React.FC = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const services = [
     'Alquiler de Pollera',
@@ -69,11 +70,8 @@ export const Contact: React.FC = () => {
         return;
       }
 
-      // Mostrar mensaje de éxito
-      setMessage({ type: 'success', text: '¡Solicitud enviada exitosamente! Te contactaremos pronto.' });
-
       // Abrir WhatsApp
-      const text = `Hola! Me gustaría cotizar un servicio.%0A%0A*Nombre:* ${name}%0A*Email:* ${email}%0A*Fecha del Evento:* ${date}%0A*Servicios:* ${servicesText}%0A*Descripción:* ${messageText}`;
+      const text = `Hola! Me gustaría cotizar un servicio.%0A%0A*Nombre:* ${name}%0A*Teléfono:* ${phone}%0A*Email:* ${email}%0A*Fecha del Evento:* ${date}%0A*Servicios:* ${servicesText}%0A*Descripción:* ${messageText}`;
       window.open(`https://wa.me/50769816062?text=${text}`, '_blank');
 
       // Limpiar formulario
@@ -195,42 +193,59 @@ export const Contact: React.FC = () => {
                 <input name="phone" type="tel" className="mt-1 block w-full rounded-xl border-white/10 bg-background-dark text-ivory placeholder-ivory/20 shadow-sm focus:border-gold focus:ring focus:ring-gold/20 p-4 border transition-all" placeholder="+507 6xxx-xxxx" />
               </div>
 
+              <div className="relative">
+                <label className="block text-xs font-bold text-gold uppercase tracking-widest mb-2">Servicios de Interés *</label>
+                <div
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="mt-1 block w-full rounded-xl border-white/10 bg-background-dark text-ivory shadow-sm focus:border-gold p-4 border transition-all cursor-pointer flex justify-between items-center min-h-[58px]"
+                >
+                  <div className="flex flex-wrap gap-2">
+                    {selectedServices.length === 0 ? (
+                      <span className="text-ivory/20 outline-none">Selecciona uno o más servicios</span>
+                    ) : (
+                      selectedServices.map(s => (
+                        <span key={s} className="bg-gold/20 text-gold text-xs px-2 py-1 rounded-md border border-gold/30">
+                          {s}
+                        </span>
+                      ))
+                    )}
+                  </div>
+                  <ChevronDown size={20} className={`text-gold transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                </div>
+
+                {dropdownOpen && (
+                  <div className="absolute z-[20] mt-2 w-full bg-card-dark border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-fade-in">
+                    <div className="max-h-[250px] overflow-y-auto p-2 space-y-1 custom-scrollbar">
+                      {services.map((service) => (
+                        <div
+                          key={service}
+                          onClick={() => toggleService(service)}
+                          className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${selectedServices.includes(service)
+                            ? 'bg-gold/10 text-gold'
+                            : 'hover:bg-white/5 text-ivory/70'
+                            }`}
+                        >
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${selectedServices.includes(service)
+                            ? 'bg-gold border-gold'
+                            : 'border-white/30'
+                            }`}>
+                            {selectedServices.includes(service) && (
+                              <svg className="w-3 h-3 text-background-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          <span className="text-sm font-medium">{service}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-gold uppercase tracking-widest mb-2">Fecha del Evento</label>
                 <input name="date" type="date" className="mt-1 block w-full rounded-xl border-white/10 bg-background-dark text-ivory shadow-sm focus:border-gold focus:ring focus:ring-gold/20 p-4 border transition-all [color-scheme:dark]" />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block text-xs font-bold text-gold uppercase tracking-widest mb-3">Servicios de Interés *</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {services.map((service) => (
-                    <div
-                      key={service}
-                      onClick={() => toggleService(service)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedServices.includes(service)
-                        ? 'bg-gold/10 border-gold/50 shadow-lg shadow-gold/10'
-                        : 'bg-background-dark border-white/10 hover:border-gold/30'
-                        }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${selectedServices.includes(service)
-                          ? 'bg-gold border-gold'
-                          : 'border-white/30'
-                          }`}>
-                          {selectedServices.includes(service) && (
-                            <svg className="w-3 h-3 text-background-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </div>
-                        <span className={`text-sm font-medium ${selectedServices.includes(service) ? 'text-gold' : 'text-ivory/70'
-                          }`}>
-                          {service}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-gold uppercase tracking-widest mb-2">Descripción Detallada</label>
