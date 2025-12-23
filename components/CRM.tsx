@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { Lead } from '../types';
-import { MessageCircle, Trash2, Calendar, Mail, User, Phone, Search, Grid3x3, List, ChevronDown, ChevronUp, Filter } from 'lucide-react';
+import { MessageCircle, Trash2, Calendar, Mail, User, Phone, Search, Grid3x3, List, ChevronDown, ChevronUp, Filter, FileText, Edit2, Save, X as CloseIcon } from 'lucide-react';
+import { QuoteModal } from './QuoteModal';
 
 export const CRM: React.FC = () => {
     const [leads, setLeads] = useState<Lead[]>([]);
@@ -11,6 +12,9 @@ export const CRM: React.FC = () => {
     const [sortField, setSortField] = useState<'name' | 'created_at' | 'status'>('created_at');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [statusFilter, setStatusFilter] = useState<string>('ALL');
+    const [selectedQuoteLead, setSelectedQuoteLead] = useState<Lead | null>(null);
+    const [editingLead, setEditingLead] = useState<Lead | null>(null);
+    const [editFormData, setEditFormData] = useState<Partial<Lead>>({});
 
     useEffect(() => {
         fetchLeads();
@@ -62,6 +66,35 @@ export const CRM: React.FC = () => {
 
         if (!error) {
             setLeads(prev => prev.filter(lead => lead.id !== id));
+        }
+    };
+
+    const startEditing = (lead: Lead) => {
+        setEditingLead(lead);
+        setEditFormData({
+            name: lead.name,
+            email: lead.email,
+            phone: lead.phone,
+            service: lead.service,
+            event_date: lead.event_date,
+            message: lead.message
+        });
+    };
+
+    const handleUpdateLead = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingLead) return;
+
+        const { error } = await supabase
+            .from('leads')
+            .update(editFormData)
+            .eq('id', editingLead.id);
+
+        if (!error) {
+            setLeads(prev => prev.map(l => l.id === editingLead.id ? { ...l, ...editFormData } : l));
+            setEditingLead(null);
+        } else {
+            alert('Error al actualizar el cliente: ' + error.message);
         }
     };
 
@@ -158,8 +191,8 @@ export const CRM: React.FC = () => {
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`p-2 rounded-full transition-all cursor-pointer ${viewMode === 'list'
-                                        ? 'bg-gold text-background-dark'
-                                        : 'text-ivory/50 hover:text-ivory'
+                                    ? 'bg-gold text-background-dark'
+                                    : 'text-ivory/50 hover:text-ivory'
                                     }`}
                                 title="Vista de Lista"
                             >
@@ -253,19 +286,33 @@ export const CRM: React.FC = () => {
                                 </div>
 
                                 <div className="flex gap-3 pt-4 border-t border-white/5">
+                                    <button
+                                        onClick={() => setSelectedQuoteLead(lead)}
+                                        className="flex-1 bg-gold/20 hover:bg-gold hover:text-background-dark text-gold border border-gold/30 rounded-lg py-2 flex items-center justify-center gap-2 font-bold text-sm transition-all"
+                                    >
+                                        <FileText size={16} /> Cotizar
+                                    </button>
+                                    <button
+                                        onClick={() => startEditing(lead)}
+                                        className="p-2 text-ivory/50 hover:bg-white/10 hover:text-ivory rounded-lg transition-colors"
+                                        title="Editar"
+                                    >
+                                        <Edit2 size={16} />
+                                    </button>
                                     {lead.phone && (
                                         <a
                                             href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=Hola ${lead.name}, recibimos tu solicitud sobre ${lead.service}.`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex-1 bg-green-600/20 hover:bg-green-600 hover:text-white text-green-400 border border-green-600/30 rounded-lg py-2 flex items-center justify-center gap-2 font-bold text-sm transition-all"
+                                            className="p-2 bg-green-600/20 hover:bg-green-600 hover:text-white text-green-400 border border-green-600/30 rounded-lg transition-all"
+                                            title="WhatsApp"
                                         >
-                                            <MessageCircle size={16} /> WhatsApp
+                                            <MessageCircle size={16} />
                                         </a>
                                     )}
                                     <button
                                         onClick={() => deleteLead(lead.id)}
-                                        className="px-3 py-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                                        className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                                         title="Eliminar"
                                     >
                                         <Trash2 size={16} />
@@ -367,6 +414,20 @@ export const CRM: React.FC = () => {
                                             </td>
                                             <td className="py-4 px-6">
                                                 <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => setSelectedQuoteLead(lead)}
+                                                        className="p-2 bg-gold/20 hover:bg-gold hover:text-background-dark text-gold border border-gold/30 rounded-lg transition-all"
+                                                        title="Cotizar"
+                                                    >
+                                                        <FileText size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => startEditing(lead)}
+                                                        className="p-2 text-ivory/50 hover:bg-white/10 hover:text-white rounded-lg transition-all"
+                                                        title="Editar"
+                                                    >
+                                                        <Edit2 size={16} />
+                                                    </button>
                                                     {lead.phone && (
                                                         <a
                                                             href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=Hola ${lead.name}, recibimos tu solicitud sobre ${lead.service}.`}
@@ -395,6 +456,100 @@ export const CRM: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* Edit Lead Modal */}
+            {editingLead && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-background-dark border border-white/10 rounded-[2rem] shadow-2xl w-full max-w-xl overflow-hidden flex flex-col">
+                        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-card-dark">
+                            <h2 className="text-2xl font-serif font-bold text-gold">Editar Cliente</h2>
+                            <button onClick={() => setEditingLead(null)} className="p-2 hover:bg-white/5 rounded-full">
+                                <CloseIcon size={24} className="text-ivory/50" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleUpdateLead} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-ivory/50 mb-1">Nombre Completo</label>
+                                <input
+                                    type="text"
+                                    value={editFormData.name || ''}
+                                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2 text-ivory focus:border-gold outline-none"
+                                    required
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-ivory/50 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        value={editFormData.email || ''}
+                                        onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2 text-ivory focus:border-gold outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-ivory/50 mb-1">Teléfono</label>
+                                    <input
+                                        type="text"
+                                        value={editFormData.phone || ''}
+                                        onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2 text-ivory focus:border-gold outline-none"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-ivory/50 mb-1">Servicio Interés</label>
+                                <input
+                                    type="text"
+                                    value={editFormData.service || ''}
+                                    onChange={(e) => setEditFormData({ ...editFormData, service: e.target.value })}
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2 text-ivory focus:border-gold outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-ivory/50 mb-1">Fecha del Evento</label>
+                                <input
+                                    type="date"
+                                    value={editFormData.event_date || ''}
+                                    onChange={(e) => setEditFormData({ ...editFormData, event_date: e.target.value })}
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2 text-ivory focus:border-gold outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-ivory/50 mb-1">Mensaje/Notas</label>
+                                <textarea
+                                    value={editFormData.message || ''}
+                                    onChange={(e) => setEditFormData({ ...editFormData, message: e.target.value })}
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2 text-ivory focus:border-gold outline-none h-24 resize-none"
+                                />
+                            </div>
+                            <div className="flex gap-4 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingLead(null)}
+                                    className="flex-1 px-6 py-3 border border-white/10 rounded-xl text-ivory hover:bg-white/5 transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 bg-gold text-background-dark px-6 py-3 rounded-xl font-bold hover:bg-gold-light transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Save size={18} /> Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {selectedQuoteLead && (
+                <QuoteModal
+                    lead={selectedQuoteLead}
+                    onClose={() => setSelectedQuoteLead(null)}
+                />
+            )}
         </div>
     );
 };
