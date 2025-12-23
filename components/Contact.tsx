@@ -141,7 +141,7 @@ export const Contact: React.FC = () => {
                 </div>
                 <div className="ml-6">
                   <h3 className="text-xl font-bold text-ivory group-hover:text-gold transition-colors">Ubicación</h3>
-                  <p className="mt-1 text-ivory/60 text-lg">Calle 50, Plaza Tradición, Ciudad de Panamá</p>
+                  <p className="mt-1 text-ivory/60 text-lg">Ciudad de Panamá</p>
                 </div>
               </div>
             </div>
