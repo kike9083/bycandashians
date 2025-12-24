@@ -13,6 +13,8 @@ import { AdminLogin } from './components/AdminLogin';
 import { LandingPage } from './components/LandingPage';
 import { History } from './components/History';
 import { CRM } from './components/CRM';
+import { OfferLanding } from './components/OfferLanding';
+import { OfferLandingEvent } from './components/OfferLandingEvent';
 import { supabase } from './services/supabaseClient';
 import { Session } from '@supabase/supabase-js';
 
@@ -124,6 +126,14 @@ const App: React.FC = () => {
     return <LandingPage setView={setActiveView} session={session} isEditMode={isEditMode} toggleEditMode={() => setIsEditMode(!isEditMode)} />;
   }
 
+  if (activeView === View.OFFER_LANDING) {
+    return <OfferLanding setView={setActiveView} />;
+  }
+
+  if (activeView === View.OFFER_EVENT) {
+    return <OfferLandingEvent setView={setActiveView} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-900 w-full overflow-x-hidden">
       <Navigation
@@ -139,7 +149,7 @@ const App: React.FC = () => {
       </main>
 
       {/* Only show Footer if not in login screen */}
-      {activeView !== View.ADMIN_LOGIN && <Footer setView={setActiveView} />}
+      {activeView !== View.ADMIN_LOGIN && activeView !== View.OFFER_LANDING && activeView !== View.OFFER_EVENT && <Footer setView={setActiveView} />}
     </div>
   );
 };

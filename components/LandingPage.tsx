@@ -122,20 +122,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                     <p className="text-ivory/90 text-lg md:text-2xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md text-balance font-serif">
                         Elevando el folklore panameño a un estándar de <span className="text-gold italic">lujo</span> y <span className="text-gold italic">precisión</span>. Descubre por qué somos la elección experta para tus momentos más memorables.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-6 mt-8">
-                        <button
-                            className="group flex min-w-[180px] cursor-pointer items-center justify-center rounded-full h-14 px-10 bg-primary hover:bg-[#2ecc71] text-background-dark text-lg font-bold transition-all duration-300 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1"
-                            onClick={() => setView(View.HISTORY)}
-                        >
-                            <span className="group-hover:mr-2 transition-all">Conoce Nuestra Historia</span>
-                            <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all duration-300">arrow_forward</span>
-                        </button>
-                        <button
-                            className="flex min-w-[180px] cursor-pointer items-center justify-center rounded-full h-14 px-10 bg-white/5 border border-white/10 text-ivory text-lg font-medium hover:bg-white/10 hover:border-ivory/30 transition-all backdrop-blur-sm"
-                            onClick={() => setView(View.GALLERY)}
-                        >
-                            Ver Galería
-                        </button>
+                    <div className="flex flex-col gap-4 mt-8 w-full max-w-2xl">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <button
+                                className="group flex flex-col items-center justify-center rounded-2xl p-6 bg-primary hover:bg-[#2ecc71] text-background-dark font-bold transition-all shadow-xl hover:-translate-y-2"
+                                onClick={() => setView(View.OFFER_LANDING)}
+                            >
+                                <span className="material-symbols-outlined text-3xl mb-2">check_circle</span>
+                                <span className="text-lg">Opción 1: Alquiler Premium</span>
+                                <span className="text-xs opacity-70 font-normal">Enfoque: Calidad y Tradición</span>
+                            </button>
+
+                            <button
+                                className="group flex flex-col items-center justify-center rounded-2xl p-6 bg-gradient-to-br from-olive to-gold/80 text-white font-black transition-all shadow-xl hover:-translate-y-2 hover:shadow-olive/50"
+                                onClick={() => setView(View.OFFER_EVENT)}
+                            >
+                                <span className="material-symbols-outlined text-3xl mb-2">bolt</span>
+                                <span className="text-lg italic">Opción 2: Promo 2026</span>
+                                <span className="text-xs opacity-90 font-bold">Enfoque: Urgencia y Evento</span>
+                            </button>
+                        </div>
+                        <p className="text-center text-ivory/40 text-xs mt-4 uppercase tracking-widest font-bold">Haz Clic para Ver el Diseño</p>
                     </div>
                 </div>
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-ivory/30">

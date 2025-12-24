@@ -177,10 +177,10 @@ export const CRM: React.FC = () => {
                         </div>
 
                         {/* View Toggle */}
-                        <div className="flex bg-card-dark border border-white/10 rounded-full p-1">
+                        <div className="flex bg-card-dark border border-white/10 rounded-full p-1 h-fit">
                             <button
                                 onClick={() => setViewMode('grid')}
-                                className={`p-2 rounded-full transition-all cursor-pointer ${viewMode === 'grid'
+                                className={`p-2 rounded-full transition-all cursor-pointer relative z-10 ${viewMode === 'grid'
                                     ? 'bg-gold text-background-dark'
                                     : 'text-ivory/50 hover:text-ivory'
                                     }`}
@@ -190,7 +190,7 @@ export const CRM: React.FC = () => {
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
-                                className={`p-2 rounded-full transition-all cursor-pointer ${viewMode === 'list'
+                                className={`p-2 rounded-full transition-all cursor-pointer relative z-10 ${viewMode === 'list'
                                     ? 'bg-gold text-background-dark'
                                     : 'text-ivory/50 hover:text-ivory'
                                     }`}

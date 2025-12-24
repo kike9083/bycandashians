@@ -9,7 +9,9 @@ export enum View {
   TERMS = 'TERMS',
   ADMIN_LOGIN = 'ADMIN_LOGIN',
   HISTORY = 'HISTORY',
-  CRM = 'CRM'
+  CRM = 'CRM',
+  OFFER_LANDING = 'OFFER_LANDING',
+  OFFER_EVENT = 'OFFER_EVENT'
 }
 
 export enum PolleraType {
