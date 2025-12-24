@@ -98,7 +98,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                     <div className="relative">
                         <div className="absolute -inset-4 bg-gold/10 rounded-[2rem] blur-2xl"></div>
                         <img
-                            src="https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fpollera-de-gala-sante%C3%B1a-1.png&version_id=null"
+                            src="https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fpollera-landing-1.png&version_id=null"
                             alt="Detalle Pollera"
                             className="relative rounded-[2rem] border border-white/10 shadow-2xl w-full object-cover aspect-[4/5]"
                         />
