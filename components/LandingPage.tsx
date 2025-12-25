@@ -107,12 +107,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
             {/* Hero Section */}
             <div className="relative flex flex-col items-center justify-center min-h-[85vh] w-full p-4 md:p-8">
                 <div className="absolute inset-0 w-full h-full z-0 rounded-b-3xl overflow-hidden">
-                    <div
-                        className="w-full h-full bg-cover bg-center"
-                        style={{
-                            backgroundImage: "linear-gradient(rgba(10, 15, 13, 0.4) 0%, rgba(10, 15, 13, 0.95) 100%), url('/portada-bg.png')"
-                        }}
-                    ></div>
+                    <div className="w-full h-full bg-cover hero-bg"></div>
                 </div>
                 <div className="relative z-10 flex flex-col items-center text-center max-w-5xl gap-8 mt-16 animate-fade-in-up">
                     <span className="text-gold uppercase tracking-[0.3em] text-xs font-bold bg-gold/5 px-6 py-2 rounded-full border border-gold/10 backdrop-blur-md shadow-lg shadow-gold/5 animate-fade-in delay-200">

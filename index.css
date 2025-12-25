@@ -21,6 +21,17 @@
         background-color: #F2E3C6;
         color: #29332A;
     }
+
+    .hero-bg {
+        background-image: linear-gradient(rgba(10, 15, 13, 0.4) 0%, rgba(10, 15, 13, 0.95) 100%), url('https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fdue%C3%B1as-3.jpg&version_id=null');
+        background-position: 33% center;
+    }
+
+    @media (min-width: 768px) {
+        .hero-bg {
+            background-image: linear-gradient(rgba(10, 15, 13, 0.4) 0%, rgba(10, 15, 13, 0.95) 100%), url('/portada-bg.png');
+        }
+    }
 }
 
 html,
