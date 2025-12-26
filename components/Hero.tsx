@@ -9,7 +9,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ setView }) => {
   // Using the specific image provided by the user
-  const heroImage = "https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fdue%C3%B1as-5.png&version_id=null";
+  const heroImage = "/image/dueñas-5.png";
   return (
     <div className="relative bg-gray-900 overflow-hidden">
       {/* Background Image with Overlay */}

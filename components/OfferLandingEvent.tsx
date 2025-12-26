@@ -56,7 +56,7 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-background-dark/40 to-background-dark z-10" />
                     <img
-                        src="https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fdesfila-de-polleras-2.png&version_id=null"
+                        src="/image/desfila-de-polleras-2.png"
                         alt="Background"
                         className="w-full h-full object-cover opacity-60 scale-105"
                     />

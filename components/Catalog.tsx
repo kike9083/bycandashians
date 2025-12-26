@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { PolleraType, Technique, Product, View } from '../types';
 import { Filter, ShoppingBag, Loader2, AlertCircle, Database, PlusCircle, Trash2, Edit, Save, X } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
-import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { getOptimizedImageUrl, localizeImageUrl } from '../utils/imageUtils';
 
 interface CatalogProps {
   setView: (view: View) => void;
@@ -17,7 +17,7 @@ const SAMPLE_PRODUCTS = [
     technique: Technique.ZURCIDA,
     price: 450.00,
     description: 'Exquisita pollera de gala santeña con labores zurcidas y caladas. Incluye joyero completo.',
-    image: 'https://images.unsplash.com/photo-1596906660183-f32f319200b3?q=80&w=1000&auto=format&fit=crop'
+    image: '/image/pollera-santena-optimized.jpg'
   },
   {
     name: 'Pollera Montuna Santeña',
@@ -25,7 +25,7 @@ const SAMPLE_PRODUCTS = [
     technique: Technique.MARCADA,
     price: 180.00,
     description: 'Colorida montuna santeña con camisa marcada en punto de cruz y faldón de zaraza floral.',
-    image: 'https://images.unsplash.com/photo-1533147670608-2a2f9775d3a4?q=80&w=1000&auto=format&fit=crop'
+    image: '/image/catalog-montuna.jpg'
   },
   {
     name: 'Pollera Congo',
@@ -33,7 +33,7 @@ const SAMPLE_PRODUCTS = [
     technique: Technique.APLICACION,
     price: 90.00,
     description: 'Tradicional pollera Congo de la Costa Atlántica, llena de retazos, color y vida. Incluye corona.',
-    image: 'https://images.unsplash.com/photo-1523974447453-deb40652b04c?q=80&w=1000&auto=format&fit=crop'
+    image: '/image/pollera-santeña.png'
   },
   {
     name: 'Pollera Veragüense',
@@ -41,7 +41,7 @@ const SAMPLE_PRODUCTS = [
     technique: Technique.SOMBREADA,
     price: 200.00,
     description: 'Hermosa pollera de la región de Veraguas, caracterizada por sus tonos pastel y elegancia sencilla.',
-    image: 'https://images.unsplash.com/photo-1605289355680-75fbbee5c324?q=80&w=1000&auto=format&fit=crop'
+    image: '/image/dueñas-3.jpg'
   }
 ];
 
@@ -120,7 +120,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   const startEdit = (product: Product, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setEditingId(product.id);
-    setTempImageUrl(product.image);
+    setTempImageUrl(localizeImageUrl(product.image));
     setTempImageFit(product.image_fit || 'cover');
     setTempImagePos(product.image_position as any || 'center');
     setTempName(product.name);
@@ -162,7 +162,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = 'https://images.unsplash.com/photo-1596906660183-f32f319200b3?q=80&w=1000&auto=format&fit=crop'; // Fallback
+    e.currentTarget.src = '/image/pollera-santena-optimized.jpg'; // Fallback
   };
 
   const filteredProducts = products.filter(p => {

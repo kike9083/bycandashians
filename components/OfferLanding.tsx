@@ -25,7 +25,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background-dark z-10" />
                     <img
-                        src="https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fdesfila-de-polleras-2.png&version_id=null"
+                        src="/image/desfila-de-polleras-2.png"
                         alt="Reina Folklórica"
                         className="w-full h-full object-cover opacity-60 animate-ken-burns"
                     />
@@ -98,7 +98,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                     <div className="relative">
                         <div className="absolute -inset-4 bg-gold/10 rounded-[2rem] blur-2xl"></div>
                         <img
-                            src="https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fpollera-landing-1.png&version_id=null"
+                            src="/image/pollera-landing-1.png"
                             alt="Detalle Pollera"
                             className="relative rounded-[2rem] border border-white/10 shadow-2xl w-full object-cover aspect-[4/5]"
                         />

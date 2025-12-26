@@ -157,7 +157,7 @@ export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
                     <div className="relative rounded-t-full rounded-b-[10rem] overflow-hidden border-2 border-white/10 h-[600px] shadow-2xl">
                         <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10 opacity-60"></div>
                         <img
-                            src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=800&auto=format&fit=crop"
+                            src="/image/service-atavio.jpg"
                             alt="Tradición Panameña"
                             className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                         />

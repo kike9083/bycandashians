@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { GalleryItem } from '../types';
 import { supabase } from '../services/supabaseClient';
 import { Loader2, PlusCircle, Trash2, Save, Edit, X, Filter, ChevronDown } from 'lucide-react';
-import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { getOptimizedImageUrl, localizeImageUrl } from '../utils/imageUtils';
 
 interface GalleryProps {
   isEditMode: boolean;
@@ -139,7 +139,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
   const startEdit = (img: GalleryItem, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setEditingId(img.id);
-    setEditUrl(img.url);
+    setEditUrl(localizeImageUrl(img.url));
     setTempImageFit(img.image_fit || 'cover');
     setTempImagePos(img.image_position as any || 'center');
     setTempCategory(img.category || 'Eventos');
@@ -175,7 +175,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = 'https://images.unsplash.com/photo-1550920456-0648218659dc?q=80&w=600&auto=format&fit=crop';
+    e.currentTarget.src = '/image/galeria-5.jpg';
   };
 
   return (

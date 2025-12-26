@@ -51,7 +51,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
             <div className="relative">
               <div className="absolute -inset-4 bg-gold/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <img
-                src="/logo.png"
+                src="/image/logo.png"
                 alt="Más que Polleras Logo"
                 className={`w-auto object-contain transition-all duration-500 ${scrolled ? 'h-20' : 'h-[200px]'}`}
               />

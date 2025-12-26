@@ -37,7 +37,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                         <div className="relative">
                             <div className="absolute -inset-4 bg-gold/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                             <img
-                                src="/logo.png"
+                                src="/image/logo.png"
                                 alt="By Candashian"
                                 className={`w-auto object-contain transition-all duration-500 drop-shadow-2xl ${scrolled ? 'h-[120px]' : 'h-[200px]'}`}
                             />

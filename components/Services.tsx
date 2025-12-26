@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, ServiceItem } from '../types';
 import { Shirt, Gem, Palette, Music, Loader2, Edit, Save, PlusCircle, Camera } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
-import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { getOptimizedImageUrl, localizeImageUrl } from '../utils/imageUtils';
 
 interface ServicesProps {
   setView: (view: View) => void;
@@ -16,35 +16,35 @@ const SAMPLE_SERVICES = [
     description: 'Colección exclusiva de Polleras de Gala, Montunas y Congos. Calidad premium desde $150.00.',
     icon_name: 'shirt',
     cta: 'Ver Catálogo',
-    image: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=600&auto=format&fit=crop'
+    image: '/image/service-alquiler.jpg'
   },
   {
     title: 'Arreglos y Atavíos',
     description: 'El arte de vestir la pollera. Incluye enjaretado tradicional, colocación experta de joyas y tembleques.',
     icon_name: 'gem',
     cta: 'Ver Galería',
-    image: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=600&auto=format&fit=crop'
+    image: '/image/service-atavio.jpg'
   },
   {
     title: 'Maquillaje y Peinados',
     description: 'Transformación completa. Peinados tradicionales con tembleques y maquillaje resistente para eventos.',
     icon_name: 'palette',
     cta: 'Ver Transformaciones',
-    image: 'https://images.unsplash.com/photo-1512413914633-b5043f4041ea?q=80&w=600&auto=format&fit=crop'
+    image: '/image/service-makeup.jpg'
   },
   {
     title: 'Presentaciones Folklóricas',
     description: 'Parejas de baile y conjuntos típicos para eventos corporativos y bodas. Cumbia, Tamborito y Punto.',
     icon_name: 'music',
     cta: 'Cotizar Evento',
-    image: 'https://images.unsplash.com/photo-1533147670608-2a2f9775d3a4?q=80&w=600&auto=format&fit=crop'
+    image: '/image/service-folk.jpg'
   },
   {
     title: 'Sesión de Fotos',
     description: 'Inmortaliza tu experiencia con fotografía profesional especializada en polleras. Exteriores y estudio.',
     icon_name: 'camera',
     cta: 'Agendar Sesión',
-    image: 'https://images.unsplash.com/photo-1551189671-d68b6356d62c?q=80&w=600&auto=format&fit=crop'
+    image: '/image/video-thumb.jpg'
   }
 ];
 
@@ -90,7 +90,7 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
 
   const startEdit = (service: ServiceItem) => {
     setEditingId(service.id);
-    setTempImageUrl(service.image);
+    setTempImageUrl(localizeImageUrl(service.image));
     setTempImageFit(service.image_fit || 'cover');
     setTempImagePos(service.image_position as any || 'center');
     setTempTitle(service.title);
@@ -127,7 +127,7 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
       description: 'Inmortaliza tu experiencia con fotografía profesional especializada en polleras. Exteriores y estudio.',
       icon_name: 'camera',
       cta: 'Agendar Sesión',
-      image: 'https://images.unsplash.com/photo-1551189671-d68b6356d62c?q=80&w=600&auto=format&fit=crop'
+      image: '/image/service-folk.jpg'
     };
 
     // Check if checks already exists locally to avoid duplicates visually (optional, but good UX)
@@ -159,7 +159,7 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = 'https://images.unsplash.com/photo-1550920456-0648218659dc?q=80&w=600&auto=format&fit=crop';
+    e.currentTarget.src = '/image/service-folk.jpg';
   };
 
   const getAction = (cta: string) => {

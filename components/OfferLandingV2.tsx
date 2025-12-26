@@ -22,17 +22,17 @@ export const OfferLandingV2: React.FC<OfferLandingV2Props> = ({ setView }) => {
         {
             title: "El Origen",
             text: "Cada pieza comienza con un hilo de seda y una promesa: mantener viva nuestra historia.",
-            image: "/story-origin.jpg"
+            image: "/image/galeria-1.jpg"
         },
         {
             title: "La Maestría",
             text: "Manos artesanas dedican cientos de horas a crear detalles que ninguna máquina podría replicar.",
-            image: "/story-craft.jpg"
+            image: "/image/galeria-2.jpg"
         },
         {
             title: "Tu Momento",
             text: "No es solo vestirse. Es encarnar la elegancia de mil reinas que vinieron antes que ti.",
-            image: "/pollera-santena-optimized.jpg"
+            image: "/image/pollera-santena-optimized.jpg"
         }
     ];
 
@@ -62,7 +62,7 @@ export const OfferLandingV2: React.FC<OfferLandingV2Props> = ({ setView }) => {
             <header className="relative h-screen w-full overflow-hidden flex flex-col justify-end items-center pb-24 text-center">
                 <div className="absolute inset-0">
                     <img
-                        src="/portada-bg.png"
+                        src="/image/portada-bg.png"
                         className="w-full h-full object-cover opacity-50 scale-105 animate-ken-burns-slow"
                         alt="Cinematic Background"
                     />
@@ -137,7 +137,7 @@ export const OfferLandingV2: React.FC<OfferLandingV2Props> = ({ setView }) => {
 
                     <div className="relative aspect-video w-full max-w-5xl mx-auto rounded-xl overflow-hidden group cursor-pointer shadow-2xl border border-white/5">
                         <img
-                            src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?q=80&w=1600&auto=format&fit=crop"
+                            src="/image/video-thumb.jpg"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60"
                             alt="Video Thumbnail"
                         />
@@ -152,7 +152,7 @@ export const OfferLandingV2: React.FC<OfferLandingV2Props> = ({ setView }) => {
 
             {/* 4. SOFT OFFER / INVITATION */}
             <section className="py-32 px-6 flex flex-col items-center justify-center text-center relative">
-                <div className="absolute inset-0 bg-[url('/portada-bg.png')] bg-fixed bg-cover opacity-10 grayscale"></div>
+                <div className="absolute inset-0 bg-[url('/image/portada-bg.png')] bg-fixed bg-cover opacity-10 grayscale"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]"></div>
 
                 <div className="relative z-10 max-w-3xl space-y-8 p-12 border border-gold/20 bg-black/40 backdrop-blur-md rounded-sm">
