@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, ServiceItem } from '../types';
-import { Shirt, Gem, Palette, Music, Loader2, Edit, Save, PlusCircle, Camera } from 'lucide-react';
+import { Shirt, Gem, Palette, Music, Loader2, Edit, Save, PlusCircle, Camera, Upload } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { getOptimizedImageUrl, localizeImageUrl } from '../utils/imageUtils';
+import { ImageUploadModal } from './ImageUploadModal';
 
 interface ServicesProps {
   setView: (view: View) => void;
@@ -57,6 +58,7 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   const [tempImageUrl, setTempImageUrl] = useState('');
   const [tempImageFit, setTempImageFit] = useState<'cover' | 'contain'>('cover');
   const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const [tempTitle, setTempTitle] = useState('');
   const [tempDescription, setTempDescription] = useState('');
@@ -130,7 +132,6 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
       image: '/image/service-folk.jpg'
     };
 
-    // Check if checks already exists locally to avoid duplicates visually (optional, but good UX)
     if (services.some(s => s.title === photoService.title)) {
       alert('Este servicio ya existe en la lista.');
       return;
@@ -143,23 +144,13 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
       alert("Servicio agregado exitosamente.");
     } else {
       console.error("Error adding service", error);
-
-      // Fallback: Add locally so the user can see it (even if DB fails)
-      const fallbackService = {
-        ...photoService,
-        id: `temp-${Date.now()}`,
-        image_fit: 'cover',
-        image_position: 'center'
-      } as ServiceItem;
-
-      setServices((prev) => [...prev, fallbackService]);
-
-      alert(`Nota: El servicio se agregó VISUALMENTE, pero hubo un error al guardarlo en la base de datos (${error?.message || 'Error desconocido'}).\n\nSi el error es "Failed to fetch", suele ser un bloqueo de red o falta de permisos RLS en Supabase.`);
+      alert(`Error al guardar en la base de datos (${error?.message || 'Error desconocido'}).`);
     }
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = '/image/service-folk.jpg';
+    e.currentTarget.src = getOptimizedImageUrl('/image/service-folk.jpg');
+    e.currentTarget.onerror = null;
   };
 
   const getAction = (cta: string) => {
@@ -175,9 +166,9 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
           <span className="text-gold uppercase tracking-[0.2em] text-xs font-bold bg-gold/10 px-4 py-1 rounded-full border border-gold/20 backdrop-blur-sm mb-4 inline-block">
             Excelencia y Tradición
           </span>
-          <h2 className="text-3xl md:text-5xl font-serif font-bold text-ivory">Nuestros Pilares de Servicio</h2>
+          <h1 className="text-3xl md:text-5xl font-serif font-bold text-ivory">Nuestros Servicios de Folklore</h1>
           <p className="mt-4 text-ivory/70 max-w-3xl mx-auto text-lg font-light">
-            Ofrecemos una solución integral para que disfrutes de la cultura panameña sin preocupaciones.
+            Ofrecemos una solución integral de alquiler de polleras y atavío para que disfrutes de la cultura panameña.
           </p>
         </div>
 
@@ -208,12 +199,19 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
                 <div className="h-64 overflow-hidden relative bg-background-dark">
                   {editingId === service.id ? (
                     <div className="absolute inset-0 z-10 bg-card-dark p-4 flex flex-col justify-start shadow-inner overflow-y-auto border-b border-gold/30">
-                      <label className="text-[10px] font-bold uppercase text-gold mb-1">URL Imagen</label>
-                      <input
-                        value={tempImageUrl}
-                        onChange={(e) => setTempImageUrl(e.target.value)}
-                        className="border border-gold/30 p-1 text-xs rounded w-full mb-2 bg-background-dark text-ivory"
-                      />
+                      <div className="mb-2">
+                        <label className="text-[10px] font-bold uppercase text-gold block mb-2">Imagen del Servicio:</label>
+                        <button
+                          onClick={() => setIsUploadModalOpen(true)}
+                          className="w-full flex items-center justify-center gap-2 bg-background-dark border border-gold/30 hover:border-gold hover:bg-gold/10 text-ivory p-3 rounded-xl transition-all group/btn"
+                        >
+                          <Upload size={16} className="text-gold group-hover/btn:scale-110 transition-transform" />
+                          <span className="text-xs font-bold uppercase tracking-wider">Cambiar Imagen</span>
+                        </button>
+                        {tempImageUrl && (
+                          <p className="text-[9px] text-ivory/30 mt-1 truncate px-1">{tempImageUrl}</p>
+                        )}
+                      </div>
 
                       <div className="flex gap-2 mb-2">
                         <div className="w-1/2">
@@ -241,7 +239,7 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
                         </div>
                       </div>
 
-                      <div className="flex-grow bg-background-dark rounded border border-gold/30 flex items-center justify-center overflow-hidden relative">
+                      <div className="flex-grow bg-background-dark rounded border border-gold/30 flex items-center justify-center overflow-hidden relative min-h-[100px]">
                         {tempImageUrl && (
                           <img
                             src={getOptimizedImageUrl(tempImageUrl, 300)}
@@ -309,20 +307,25 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
               </div>
             ))}
 
-            {/* Admin Add Button */}
             {isEditMode && services.length > 0 && (
               <div className="flex items-center justify-center p-8 border-2 border-dashed border-olive/30 rounded-3xl hover:border-gold/50 transition-colors cursor-pointer bg-white/5 group" onClick={addPhotoService}>
                 <div className="flex flex-col items-center gap-4 text-ivory/50 group-hover:text-gold transition-colors">
                   <div className="bg-olive/20 p-4 rounded-full group-hover:bg-gold/20 transition-colors">
                     <PlusCircle size={32} />
                   </div>
-                  <span className="font-bold text-lg uppercase tracking-widest">Agregar "Sesión de Fotos"</span>
+                  <span className="font-bold text-lg uppercase tracking-widest text-center">Agregar "Sesión de Fotos"</span>
                 </div>
               </div>
             )}
           </div>
         )}
       </div>
+      <ImageUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUpload={(urls) => setTempImageUrl(urls[0])}
+        allowMultiple={false}
+      />
     </div>
   );
 };

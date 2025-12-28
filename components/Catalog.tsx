@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { PolleraType, Technique, Product, View } from '../types';
-import { Filter, ShoppingBag, Loader2, AlertCircle, Database, PlusCircle, Trash2, Edit, Save, X } from 'lucide-react';
+import { Filter, ShoppingBag, Loader2, AlertCircle, Database, PlusCircle, Trash2, Edit, Save, X, Upload } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { getOptimizedImageUrl, localizeImageUrl } from '../utils/imageUtils';
+import { ImageUploadModal } from './ImageUploadModal';
 
 interface CatalogProps {
   setView: (view: View) => void;
@@ -59,10 +60,13 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   const [tempImageUrl, setTempImageUrl] = useState('');
   const [tempImageFit, setTempImageFit] = useState<'cover' | 'contain'>('cover');
   const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const [tempName, setTempName] = useState('');
   const [tempDescription, setTempDescription] = useState('');
   const [tempPrice, setTempPrice] = useState(0);
+  const [tempType, setTempType] = useState<PolleraType>(PolleraType.GALA);
+  const [tempTechnique, setTempTechnique] = useState<Technique>(Technique.ZURCIDA);
 
   const fetchProducts = async () => {
     try {
@@ -126,6 +130,8 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     setTempName(product.name);
     setTempDescription(product.description);
     setTempPrice(product.price);
+    setTempType(product.type);
+    setTempTechnique(product.technique);
   };
 
   const cancelEdit = (e: React.MouseEvent) => {
@@ -142,7 +148,9 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
       image_position: tempImagePos,
       name: tempName,
       description: tempDescription,
-      price: tempPrice
+      price: tempPrice,
+      type: tempType,
+      technique: tempTechnique
     }).eq('id', id);
 
     if (!error) {
@@ -153,7 +161,9 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
         image_position: tempImagePos,
         name: tempName,
         description: tempDescription,
-        price: tempPrice
+        price: tempPrice,
+        type: tempType,
+        technique: tempTechnique
       } : p));
       setEditingId(null);
     } else {
@@ -162,7 +172,8 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = '/image/pollera-santena-optimized.jpg'; // Fallback
+    e.currentTarget.src = getOptimizedImageUrl('/image/pollera-santena-optimized.jpg'); // Fallback
+    e.currentTarget.onerror = null;
   };
 
   const filteredProducts = products.filter(p => {
@@ -176,8 +187,8 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
       <div className="w-full px-6 md:px-12 lg:px-24">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-olive/20 pb-8">
           <div>
-            <h2 className="text-4xl font-serif font-bold text-ivory animate-fade-in-up">Catálogo de Alquiler</h2>
-            <p className="mt-2 text-xl text-ivory/60 animate-fade-in-up delay-100">Encuentra la indumentaria perfecta para tu próximo evento.</p>
+            <h1 className="text-4xl font-serif font-bold text-ivory animate-fade-in-up">Catálogo de Alquiler de Polleras</h1>
+            <p className="mt-2 text-xl text-ivory/60 animate-fade-in-up delay-100">Alquiler de polleras de gala y montunas exclusivas para tu próximo evento.</p>
           </div>
 
         </div>
@@ -199,18 +210,6 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
               >
                 <option value="ALL">Todas</option>
                 {Object.values(PolleraType).map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-bold text-ivory/80 mb-2 uppercase tracking-wide">Técnica/Labor</label>
-              <select
-                value={filterTech}
-                onChange={(e) => setFilterTech(e.target.value as any)}
-                className="w-full border-olive/30 rounded-xl shadow-sm p-3 bg-background-dark text-ivory focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
-              >
-                <option value="ALL">Todas</option>
-                {Object.values(Technique).map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
           </div>
@@ -308,13 +307,18 @@ WITH CHECK (true);`}
                       {editingId === product.id ? (
                         <div className="absolute inset-0 z-10 bg-card-dark p-4 flex flex-col justify-between shadow-inner" onClick={e => e.stopPropagation()}>
                           <div className="space-y-2">
-                            <div>
-                              <label className="text-[10px] font-bold uppercase text-ivory/50 block mb-1">URL Imagen:</label>
-                              <input
-                                value={tempImageUrl}
-                                onChange={(e) => setTempImageUrl(e.target.value)}
-                                className="border border-olive/30 p-2 text-xs rounded-md w-full focus:outline-none bg-background-dark text-ivory"
-                              />
+                            <div className="mb-2">
+                              <label className="text-[10px] font-bold uppercase text-gold block mb-2">Imagen del Producto:</label>
+                              <button
+                                onClick={() => setIsUploadModalOpen(true)}
+                                className="w-full flex items-center justify-center gap-2 bg-background-dark border border-gold/30 hover:border-gold hover:bg-gold/10 text-ivory p-3 rounded-xl transition-all group/btn"
+                              >
+                                <Upload size={16} className="text-gold group-hover/btn:scale-110 transition-transform" />
+                                <span className="text-xs font-bold uppercase tracking-wider">Cambiar Imagen</span>
+                              </button>
+                              {tempImageUrl && (
+                                <p className="text-[9px] text-ivory/30 mt-1 truncate px-1">{tempImageUrl}</p>
+                              )}
                             </div>
                             <div className="flex gap-2">
                               <div className="w-1/2">
@@ -394,6 +398,28 @@ WITH CHECK (true);`}
                             className="bg-background-dark border border-white/10 rounded p-1 mb-2 text-sm text-ivory/80 w-full h-24 resize-none"
                             placeholder="Descripción..."
                           />
+                          <div className="flex gap-2 mb-6">
+                            <div className="w-1/2">
+                              <label className="text-xs text-ivory/50 font-bold uppercase block mb-1">Tipo:</label>
+                              <select
+                                value={tempType}
+                                onChange={(e) => setTempType(e.target.value as PolleraType)}
+                                className="bg-background-dark border border-white/10 rounded p-2 text-sm text-ivory w-full outline-none focus:border-gold"
+                              >
+                                {Object.values(PolleraType).map(t => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                            </div>
+                            <div className="w-1/2">
+                              <label className="text-xs text-ivory/50 font-bold uppercase block mb-1">Labor:</label>
+                              <select
+                                value={tempTechnique}
+                                onChange={(e) => setTempTechnique(e.target.value as Technique)}
+                                className="bg-background-dark border border-white/10 rounded p-2 text-sm text-ivory w-full outline-none focus:border-gold"
+                              >
+                                {Object.values(Technique).map(t => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                            </div>
+                          </div>
                           <div className="mb-6">
                             <label className="text-xs text-ivory/50 font-bold uppercase block mb-1">Precio (USD):</label>
                             <input
@@ -413,18 +439,14 @@ WITH CHECK (true);`}
                         </>
                       )}
 
-                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-olive/10">
-                        <span className="text-2xl font-bold text-gold">${product.price.toFixed(2)}</span>
+                      <div className="mt-auto flex justify-center pt-4 border-t border-olive/10">
                         <button
                           onClick={() => setView(View.CONTACT)}
-                          className="bg-primary text-background-dark p-3 rounded-full hover:bg-primary/90 transition-colors shadow-lg hover:shadow-primary/20 transform hover:-translate-y-1"
-                          title="Consultar"
+                          className="bg-primary text-background-dark py-3 px-8 rounded-full hover:bg-primary/90 transition-colors shadow-lg hover:shadow-primary/20 transform hover:-translate-y-1 font-bold flex items-center gap-2"
                         >
                           <ShoppingBag size={20} />
+                          <span>Consultar</span>
                         </button>
-                      </div>
-                      <div className="mt-2 text-xs text-olive/40 text-right">
-                        *Precio alquiler base
                       </div>
                     </div>
                   </div>
@@ -470,6 +492,12 @@ WITH CHECK (true);`}
           </div>
         </div>
       </div>
-    </div>
+      <ImageUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUpload={(urls) => setTempImageUrl(urls[0])}
+        allowMultiple={false}
+      />
+    </div >
   );
 };

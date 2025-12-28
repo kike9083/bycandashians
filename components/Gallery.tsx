@@ -2,8 +2,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { GalleryItem } from '../types';
 import { supabase } from '../services/supabaseClient';
-import { Loader2, PlusCircle, Trash2, Save, Edit, X, Filter, ChevronDown } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Save, Edit, X, Filter, ChevronDown, Upload } from 'lucide-react';
 import { getOptimizedImageUrl, localizeImageUrl } from '../utils/imageUtils';
+import { ImageUploadModal } from './ImageUploadModal';
 
 interface GalleryProps {
   isEditMode: boolean;
@@ -45,6 +46,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
   const [tempImagePos, setTempImagePos] = useState<'center' | 'top' | 'bottom'>('center');
 
   const [tempCategory, setTempCategory] = useState('');
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const fetchGallery = useCallback(async (pageNumber: number, category: string, isAppend: boolean) => {
     try {
@@ -120,19 +122,21 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
     if (!error) setImages(images.filter(i => i.id !== id));
   };
 
-  const handleAdd = async () => {
-    if (!newUrl) return;
+  const handleAddMultiple = async (urls: string[]) => {
+    const itemsToInsert = urls.map(url => ({
+      url,
+      category: newCategory
+    }));
+
     const { data, error } = await supabase
       .from('gallery')
-      .insert([{ url: newUrl, category: newCategory }])
+      .insert(itemsToInsert)
       .select();
 
     if (!error && data) {
-      setNewUrl('');
-      // Prepend new image to the list immediately
-      setImages([data[0] as GalleryItem, ...images]);
+      setImages([...(data as GalleryItem[]), ...images]);
     } else {
-      alert("Error al guardar en la base de datos. Verifica permisos.");
+      alert("Error al guardar en la base de datos: " + (error?.message || 'Error desconocido'));
     }
   };
 
@@ -175,7 +179,9 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = '/image/galeria-5.jpg';
+    e.currentTarget.src = getOptimizedImageUrl('/image/galeria-5.jpg');
+    // Prevenir bucles si la imagen de fallback también falla
+    e.currentTarget.onerror = null;
   };
 
   return (
@@ -185,7 +191,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
           <span className="text-gold uppercase tracking-[0.2em] text-xs font-bold bg-gold/10 px-4 py-1 rounded-full border border-gold/20 backdrop-blur-sm mb-4 inline-block">
             Portafolio
           </span>
-          <h2 className="text-4xl md:text-6xl font-serif font-bold text-ivory tracking-tight">Nuestra Galería</h2>
+          <h1 className="text-4xl md:text-6xl font-serif font-bold text-ivory tracking-tight">Galería de Polleras y Eventos</h1>
           <p className="mt-4 text-xl text-ivory/60 font-light max-w-2xl mx-auto">Testimonios visuales de nuestra pasión por el folklore, capturando la esencia de cada detalle.</p>
         </div>
 
@@ -207,40 +213,35 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
 
         {/* Edit Mode: Add New Photo */}
         {isEditMode && (
-          <div className="mb-12 p-6 bg-card-dark border border-gold/20 rounded-2xl max-w-2xl mx-auto shadow-2xl shadow-black/50">
-            <div className="flex items-center gap-2 mb-6 text-gold font-bold uppercase tracking-wider text-sm border-b border-white/5 pb-4">
-              <PlusCircle size={20} />
-              <h3>Agregar Nueva Foto</h3>
-            </div>
-            <div className="flex flex-col gap-4">
-              <input
-                placeholder="Pegar URL de la imagen aquí..."
-                value={newUrl}
-                onChange={e => setNewUrl(e.target.value)}
-                className="bg-background-dark border border-white/10 p-3 rounded-lg w-full focus:border-gold focus:ring-1 focus:ring-gold outline-none text-ivory placeholder-ivory/30 transition-all"
-              />
-              <div className="flex gap-4 items-stretch flex-col sm:flex-row">
-                <div className="w-full sm:w-1/3 h-32 bg-background-dark border border-white/10 rounded-lg flex items-center justify-center overflow-hidden relative group">
-                  {newUrl ? <img src={newUrl} className="h-full w-full object-cover" onError={handleImageError} alt="preview" /> : <span className="text-ivory/30 text-xs uppercase font-bold tracking-widest">Vista previa</span>}
-                </div>
-                <div className="flex-grow flex flex-col justify-between gap-4 sm:gap-0">
-                  <div>
-                    <label className="text-xs font-bold text-gold/70 uppercase mb-2 block tracking-wider">Categoría</label>
-                    <select
-                      value={newCategory}
-                      onChange={e => setNewCategory(e.target.value)}
-                      className="bg-background-dark border border-white/10 text-ivory p-3 rounded-lg w-full focus:border-gold outline-none"
-                    >
-                      {CATEGORIES.filter(c => c !== 'TODAS').map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+          <div className="mb-12 p-8 bg-card-dark border border-gold/20 rounded-[2rem] max-w-2xl mx-auto shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent pointer-events-none"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold">
+                    <PlusCircle size={24} />
                   </div>
-                  <button
-                    onClick={handleAdd}
-                    disabled={!newUrl}
-                    className={`p-3 rounded-lg font-bold transition-all uppercase tracking-wider text-xs ${!newUrl ? 'bg-white/5 text-ivory/30 cursor-not-allowed' : 'bg-primary text-background-dark hover:bg-gold hover:shadow-lg'}`}
-                  >
-                    Publicar Foto
-                  </button>
+                  <h3 className="text-xl font-serif font-bold text-ivory">Gestionar Galería</h3>
+                </div>
+                <select
+                  value={newCategory}
+                  onChange={e => setNewCategory(e.target.value)}
+                  className="bg-background-dark border border-white/10 text-ivory px-4 py-2 rounded-xl focus:border-gold outline-none text-sm font-bold"
+                >
+                  {CATEGORIES.filter(c => c !== 'TODAS').map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+
+              <div
+                onClick={() => setIsUploadModalOpen(true)}
+                className="border-2 border-dashed border-gold/20 rounded-2xl p-10 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-gold/50 hover:bg-gold/5 transition-all group/upload"
+              >
+                <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center text-gold group-hover/upload:scale-110 transition-transform">
+                  <Upload size={32} />
+                </div>
+                <div className="text-center">
+                  <p className="text-ivory font-bold text-lg">Subir Fotos a la Carpeta</p>
+                  <p className="text-ivory/40 text-sm mt-1">Selecciona una o varias imágenes de tu computadora</p>
                 </div>
               </div>
             </div>
@@ -286,13 +287,14 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                   {editingId === img.id ? (
                     <div className="bg-card-dark p-4 border border-gold/20 rounded-2xl flex flex-col gap-3" onClick={e => e.stopPropagation()}>
                       <div>
-                        <label className="text-[10px] font-bold text-gold uppercase tracking-wider mb-1 block">URL Imagen</label>
-                        <textarea
-                          value={editUrl}
-                          onChange={e => setEditUrl(e.target.value)}
-                          className="w-full h-16 bg-background-dark border border-white/10 p-2 text-xs rounded-lg focus:border-gold outline-none text-ivory resize-none"
-                          placeholder="Nueva URL..."
-                        />
+                        <label className="text-[10px] font-bold text-gold uppercase tracking-wider mb-2 block">Imagen de la Obra</label>
+                        <button
+                          onClick={() => setIsUploadModalOpen(true)}
+                          className="w-full flex items-center justify-center gap-2 bg-background-dark border border-gold/30 hover:border-gold hover:bg-gold/10 text-ivory p-3 rounded-xl transition-all group/btn"
+                        >
+                          <Upload size={16} className="text-gold group-hover/btn:scale-110 transition-transform" />
+                          <span className="text-xs font-bold uppercase tracking-wider">Cambiar Imagen</span>
+                        </button>
                       </div>
 
                       <div className="flex gap-2">
@@ -393,6 +395,18 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
           </>
         )}
       </div>
+      <ImageUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUpload={(urls) => {
+          if (editingId) {
+            setEditUrl(urls[0]);
+          } else {
+            handleAddMultiple(urls);
+          }
+        }}
+        allowMultiple={!editingId}
+      />
     </div>
   );
 };

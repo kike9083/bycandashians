@@ -53,7 +53,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
               <img
                 src="/image/logo.png"
                 alt="Más que Polleras Logo"
-                className={`w-auto object-contain transition-all duration-500 ${scrolled ? 'h-20' : 'h-[200px]'}`}
+                className={`w-auto object-contain transition-all duration-500 ${scrolled ? 'h-16 md:h-20' : 'h-24 md:h-[200px]'}`}
               />
             </div>
           </div>
@@ -64,6 +64,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
               <button
                 key={item.value}
                 onClick={() => handleNav(item.value)}
+                aria-label={`Ir a ${item.label}`}
                 className={`text-sm font-medium transition-colors duration-200 uppercase tracking-widest ${currentView === item.value
                   ? 'text-gold border-b border-gold'
                   : 'text-ivory/70 hover:text-gold'
@@ -135,7 +136,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-background-dark border-t border-olive/20 px-6 absolute w-full shadow-2xl">
+        <div className="md:hidden bg-background-dark border-t border-olive/20 px-6 absolute top-full left-0 w-full shadow-2xl max-h-[80vh] overflow-y-auto">
           <div className="px-2 pt-4 pb-6 space-y-2 sm:px-3">
             {navItems.map((item) => (
               <button

@@ -31,11 +31,21 @@ export const Contact: React.FC = () => {
     setMessage(null);
 
     const form = e.target as any;
+    const honeypot = form.website_url.value; // Campo honeypot
     const name = form.name.value;
     const email = form.email.value;
     const phone = form.phone?.value || '';
     const date = form.date.value;
     const messageText = form.message.value;
+
+    // Si el campo honeypot tiene contenido, es un bot
+    if (honeypot) {
+      console.warn('Bot detectado vía honeypot');
+      setMessage({ type: 'success', text: '¡Gracias! Tu mensaje ha sido enviado.' }); // Engañamos al bot
+      setSubmitting(false);
+      form.reset();
+      return;
+    }
 
     // Validar que se haya seleccionado al menos un servicio
     if (selectedServices.length === 0) {
@@ -48,7 +58,7 @@ export const Contact: React.FC = () => {
 
     try {
       // Guardar en Supabase
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('leads')
         .insert([
           {
@@ -60,12 +70,11 @@ export const Contact: React.FC = () => {
             message: messageText,
             status: 'New'
           }
-        ])
-        .select();
+        ]);
 
       if (error) {
         console.error('Error al guardar:', error);
-        setMessage({ type: 'error', text: 'Hubo un error al enviar el formulario. Por favor intenta de nuevo.' });
+        setMessage({ type: 'error', text: `Error al enviar: ${error.message || 'Error desconocido'}` });
         setSubmitting(false);
         return;
       }
@@ -179,6 +188,10 @@ export const Contact: React.FC = () => {
               className="space-y-6 relative z-10"
               onSubmit={handleSubmit}
             >
+              {/* Honeypot field - Hidden from humans */}
+              <div className="hidden" aria-hidden="true">
+                <input type="text" name="website_url" tabIndex={-1} autoComplete="off" />
+              </div>
               <div>
                 <label className="block text-xs font-bold text-gold uppercase tracking-widest mb-2">Nombre Completo</label>
                 <input required name="name" type="text" className="mt-1 block w-full rounded-xl border-white/10 bg-background-dark text-ivory placeholder-ivory/20 shadow-sm focus:border-gold focus:ring focus:ring-gold/20 p-4 border transition-all" placeholder="Tu nombre" />

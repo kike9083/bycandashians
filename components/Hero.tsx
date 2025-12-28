@@ -9,7 +9,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ setView }) => {
   // Using the specific image provided by the user
-  const heroImage = "/image/dueñas-5.png";
+  const heroImage = "/image/duenas-5.jpg";
   return (
     <div className="relative bg-gray-900 overflow-hidden">
       {/* Background Image with Overlay */}
@@ -26,8 +26,8 @@ export const Hero: React.FC<HeroProps> = ({ setView }) => {
 
       <div className="relative w-full px-6 md:px-12 lg:px-24 py-24 lg:py-40 flex flex-col justify-center h-full min-h-[700px]">
         <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-tight max-w-4xl">
-          Más que Polleras, <br />
-          <span className="text-gold italic">una tradición.</span>
+          Alquiler de Polleras <br />
+          en Panamá, <span className="text-gold italic">un legado.</span>
         </h1>
         <p className="mt-4 max-w-2xl text-2xl text-gray-200 mb-10 font-light">
           Vive la experiencia completa de lucir una Pollera Panameña. Desde el alquiler de piezas exclusivas hasta el arte del atavío y maquillaje profesional.

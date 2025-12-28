@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View } from '../types';
 import { Calendar, MapPin, Clock, Zap, Ticket, Users } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface OfferLandingEventProps {
     setView: (view: View) => void;
@@ -11,6 +12,11 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
     useEffect(() => {
+        // Dynamic SEO Update for this Event
+        document.title = "Mil Polleras 2026 | Alquiler de Polleras en Las Tablas";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute("content", "Reserva tu cupo para el Desfile de las Mil Polleras 2026. Alquiler de pollera de gala, atavío, maquillaje y joyería en Las Tablas. Cupos limitados.");
+
         const targetDate = new Date('2026-01-17T13:00:00'); // Jan 17, 2026, 1:00 PM
 
         const interval = setInterval(() => {
@@ -26,7 +32,11 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
             }
         }, 1000);
 
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            // Reset to original on unmount
+            document.title = "Más que Polleras | Tradición Panamá";
+        };
     }, []);
 
     const handleBooking = (type: string) => {
@@ -56,7 +66,7 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-background-dark/40 to-background-dark z-10" />
                     <img
-                        src="/image/desfila-de-polleras-2.png"
+                        src={getOptimizedImageUrl("/image/desfila-de-polleras-2.jpg", 1920)}
                         alt="Background"
                         className="w-full h-full object-cover opacity-60 scale-105"
                     />

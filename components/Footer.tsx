@@ -14,7 +14,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-8 md:mb-0 text-center md:text-left">
             <img
-              src="/logo.png"
+              src={getOptimizedImageUrl('/image/logo.png', 400)}
               alt="By Candashian Logo"
               className="h-24 w-auto object-contain mb-4 md:mb-0 grayscale-[50%] hover:grayscale-0 transition-all duration-500"
             />

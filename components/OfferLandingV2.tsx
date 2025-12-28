@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View } from '../types';
 import { ArrowRight, Play, Star, ChevronDown, Instagram, Camera, Sparkles } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface OfferLandingV2Props {
     setView: (view: View) => void;
@@ -62,7 +63,7 @@ export const OfferLandingV2: React.FC<OfferLandingV2Props> = ({ setView }) => {
             <header className="relative h-screen w-full overflow-hidden flex flex-col justify-end items-center pb-24 text-center">
                 <div className="absolute inset-0">
                     <img
-                        src="/image/portada-bg.png"
+                        src={getOptimizedImageUrl("/image/portada-bg.jpg", 1920)}
                         className="w-full h-full object-cover opacity-50 scale-105 animate-ken-burns-slow"
                         alt="Cinematic Background"
                     />
@@ -152,7 +153,7 @@ export const OfferLandingV2: React.FC<OfferLandingV2Props> = ({ setView }) => {
 
             {/* 4. SOFT OFFER / INVITATION */}
             <section className="py-32 px-6 flex flex-col items-center justify-center text-center relative">
-                <div className="absolute inset-0 bg-[url('/image/portada-bg.png')] bg-fixed bg-cover opacity-10 grayscale"></div>
+                <div className="absolute inset-0 bg-fixed bg-cover opacity-10 grayscale" style={{ backgroundImage: `url(${getOptimizedImageUrl('/image/portada-bg.jpg', 1200)})` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]"></div>
 
                 <div className="relative z-10 max-w-3xl space-y-8 p-12 border border-gold/20 bg-black/40 backdrop-blur-md rounded-sm">

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
-import { Edit, Save, Loader2 } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { Edit, Save, Loader2, Upload } from 'lucide-react';
+import { ImageUploadModal } from './ImageUploadModal';
 
 interface HistoryProps {
     isEditMode: boolean;
@@ -16,8 +18,10 @@ Nuestra misión es preservar la esencia de nuestras raíces, elevandolas a los e
 export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
     const [title, setTitle] = useState(DEFAULT_TITLE);
     const [content, setContent] = useState(DEFAULT_CONTENT);
+    const [imageUrl, setImageUrl] = useState('/image/service-atavio.jpg');
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
     // Temp states for editing
     const [tempTitle, setTempTitle] = useState('');
@@ -35,9 +39,11 @@ export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
             if (data && data.length > 0) {
                 const titleRow = data.find(r => r.key === 'history_title');
                 const contentRow = data.find(r => r.key === 'history_content');
+                const imageRow = data.find(r => r.key === 'history_image');
 
                 if (titleRow) setTitle(titleRow.value);
                 if (contentRow) setContent(contentRow.value);
+                if (imageRow) setImageUrl(imageRow.value);
             }
         } catch (error) {
             console.error('Error fetching history:', error);
@@ -68,7 +74,14 @@ export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
                 updated_at: new Date()
             });
 
-            if (error1 || error2) throw new Error("Error saving content");
+            // Save Image
+            const { error: error3 } = await supabase.from('site_content').upsert({
+                key: 'history_image',
+                value: imageUrl,
+                updated_at: new Date()
+            });
+
+            if (error1 || error2 || error3) throw new Error("Error saving content");
 
             setTitle(tempTitle);
             setContent(tempContent);
@@ -130,9 +143,9 @@ export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
                     ) : (
                         <div className="animate-fade-in-up">
                             <span className="text-gold uppercase tracking-[0.2em] text-xs font-bold mb-4 block">Sobre Nosotros</span>
-                            <h2 className="text-4xl md:text-5xl font-serif font-bold text-ivory mb-8 leading-tight">
+                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-ivory mb-8 leading-tight">
                                 {title}
-                            </h2>
+                            </h1>
                             <div className="space-y-6 text-lg text-ivory/70 font-light leading-relaxed whitespace-pre-line">
                                 {content}
                             </div>
@@ -157,10 +170,21 @@ export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
                     <div className="relative rounded-t-full rounded-b-[10rem] overflow-hidden border-2 border-white/10 h-[600px] shadow-2xl">
                         <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10 opacity-60"></div>
                         <img
-                            src="/image/service-atavio.jpg"
+                            src={getOptimizedImageUrl(imageUrl, 1000)}
                             alt="Tradición Panameña"
                             className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                         />
+                        {isEditMode && (
+                            <button
+                                onClick={() => setIsUploadModalOpen(true)}
+                                className="absolute inset-0 z-20 bg-background-dark/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2"
+                            >
+                                <div className="bg-primary text-background-dark p-3 rounded-full shadow-xl transform scale-75 group-hover:scale-100 transition-transform">
+                                    <Upload size={24} />
+                                </div>
+                                <span className="text-white text-xs font-bold uppercase tracking-widest bg-black/50 px-3 py-1 rounded-full">Cambiar Imagen</span>
+                            </button>
+                        )}
                     </div>
 
                     {/* Decorative Elements */}
@@ -170,6 +194,12 @@ export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
                 </div>
 
             </div>
+            <ImageUploadModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                onUpload={(urls) => setImageUrl(urls[0])}
+                allowMultiple={false}
+            />
         </div>
     );
 };

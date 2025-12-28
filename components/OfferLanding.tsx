@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View } from '../types';
 import { MessageCircle, Star, Check, ArrowRight, Clock, Shield, Heart } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface OfferLandingProps {
     setView: (view: View) => void;
@@ -25,7 +26,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background-dark z-10" />
                     <img
-                        src="/image/desfila-de-polleras-2.png"
+                        src={getOptimizedImageUrl("/image/desfila-de-polleras-2.jpg", 1920)}
                         alt="Reina Folklórica"
                         className="w-full h-full object-cover opacity-60 animate-ken-burns"
                     />
@@ -98,7 +99,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                     <div className="relative">
                         <div className="absolute -inset-4 bg-gold/10 rounded-[2rem] blur-2xl"></div>
                         <img
-                            src="/image/pollera-landing-1.png"
+                            src={getOptimizedImageUrl("/image/pollera-landing-1.jpg", 800)}
                             alt="Detalle Pollera"
                             className="relative rounded-[2rem] border border-white/10 shadow-2xl w-full object-cover aspect-[4/5]"
                         />

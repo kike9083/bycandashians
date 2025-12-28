@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View } from '../types';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabaseClient';
-import { Lock, LogOut, PenTool } from 'lucide-react';
+import { Lock, LogOut, PenTool, Menu, X } from 'lucide-react';
 
 interface LandingPageProps {
     setView: (view: View) => void;
@@ -13,6 +13,7 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEditMode, toggleEditMode }) => {
     const [scrolled, setScrolled] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -27,19 +28,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
         setView(View.HOME);
     };
 
+    const handleNav = (view: View) => {
+        setView(view);
+        setIsOpen(false);
+    };
+
     return (
         <div className="bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden min-h-screen text-ivory">
             {/* Header - Expert Redesign */}
-            <div className={`fixed w-full transition-all duration-500 z-50 ${scrolled ? 'bg-background-dark/80 backdrop-blur-xl py-2 shadow-2xl' : 'bg-gradient-to-b from-background-dark/90 to-transparent py-6'}`}>
+            <div className={`fixed w-full transition-all duration-500 z-50 ${scrolled ? 'bg-background-dark/80 backdrop-blur-xl py-2 shadow-2xl' : isOpen ? 'bg-background-dark' : 'bg-gradient-to-b from-background-dark/90 to-transparent py-6'}`}>
                 <div className="px-6 md:px-12 flex items-center justify-between max-w-[1920px] mx-auto">
-                    <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setView(View.HOME)}>
+                    <div className="flex items-center gap-4 cursor-pointer group" onClick={() => handleNav(View.HOME)}>
                         {/* Logo Container with Glow Effect */}
                         <div className="relative">
                             <div className="absolute -inset-4 bg-gold/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                             <img
                                 src="/image/logo.png"
                                 alt="By Candashian"
-                                className={`w-auto object-contain transition-all duration-500 drop-shadow-2xl ${scrolled ? 'h-[120px]' : 'h-[200px]'}`}
+                                className={`w-auto object-contain transition-all duration-500 drop-shadow-2xl ${scrolled ? 'h-[80px]' : 'h-[120px] md:h-[200px]'}`}
                             />
                         </div>
                     </div>
@@ -98,10 +104,67 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                         )}
                     </div>
 
-                    <button className="md:hidden text-ivory hover:text-gold transition-colors">
-                        <span className="material-symbols-outlined text-3xl">menu_open</span>
+                    {/* Mobile Menu Button */}
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="md:hidden text-ivory hover:text-gold transition-colors p-2"
+                    >
+                        {isOpen ? <X size={32} /> : <Menu size={32} />}
                     </button>
                 </div>
+
+                {/* Mobile Menu Overlay */}
+                {isOpen && (
+                    <div className="md:hidden bg-background-dark border-t border-olive/20 px-6 absolute top-full left-0 w-full shadow-2xl h-screen overflow-y-auto pb-32 animate-fade-in-up">
+                        <div className="flex flex-col py-8 gap-6">
+                            {[
+                                { label: 'Inicio', view: View.HOME },
+                                { label: 'Servicios', view: View.SERVICES },
+                                { label: 'Catálogo', view: View.CATALOG },
+                                { label: 'Galería', view: View.GALLERY },
+                                { label: 'Contacto', view: View.CONTACT }
+                            ].map((item) => (
+                                <button
+                                    key={item.label}
+                                    onClick={() => handleNav(item.view)}
+                                    className="text-left py-4 border-b border-white/5 text-xl font-serif text-ivory hover:text-gold transition-colors flex justify-between items-center group"
+                                >
+                                    <span>{item.label}</span>
+                                    <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-gold">arrow_forward</span>
+                                </button>
+                            ))}
+
+                            <div className="pt-8 flex flex-col gap-4">
+                                {session ? (
+                                    <>
+                                        <button
+                                            onClick={() => { toggleEditMode?.(); setIsOpen(false); }}
+                                            className={`flex items-center gap-3 w-full p-4 rounded-xl ${isEditMode ? 'bg-primary text-background-dark' : 'bg-white/5 text-ivory'}`}
+                                        >
+                                            <PenTool size={20} />
+                                            <span className="font-bold">{isEditMode ? 'Modo Edición Activado' : 'Activar Edición'}</span>
+                                        </button>
+                                        <button
+                                            onClick={() => { handleLogout(); setIsOpen(false); }}
+                                            className="flex items-center gap-3 w-full p-4 rounded-xl bg-red-500/10 text-red-300 hover:bg-red-500/20"
+                                        >
+                                            <LogOut size={20} />
+                                            <span className="font-bold">Cerrar Sesión</span>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        onClick={() => handleNav(View.ADMIN_LOGIN)}
+                                        className="flex items-center gap-3 w-full p-4 rounded-xl bg-white/5 text-ivory/50 hover:bg-white/10 hover:text-ivory transition-colors"
+                                    >
+                                        <Lock size={20} />
+                                        <span>Acceso Administrativo</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Hero Section */}
@@ -114,9 +177,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                         Folklore de Lujo
                     </span>
 
-                    <p className="text-ivory/90 text-lg md:text-2xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md text-balance font-serif">
-                        Elevando el folklore panameño a un estándar de <span className="text-gold italic">lujo</span> y <span className="text-gold italic">precisión</span>. Descubre por qué somos la elección experta para tus momentos más memorables.
-                    </p>
+                    <h1 className="text-ivory/90 text-lg md:text-2xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md text-balance font-serif">
+                        Expertos en <span className="text-gold font-bold">Alquiler de Polleras en Panamá</span>. Elevando el folklore panameño a un estándar de <span className="text-gold italic">lujo</span> y <span className="text-gold italic">precisión</span>. Descubre por qué somos la elección experta para tus momentos más memorables.
+                    </h1>
                     <div className="flex flex-col gap-4 mt-8 w-full max-w-2xl">
                         <div className="flex justify-center w-full">
                             <button
@@ -202,11 +265,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                 </div>
             </div>
 
-            {/* Footer Minimal */}
-            <div className="w-full bg-[#050807] border-t border-white/5 py-10 px-4 flex flex-col items-center justify-center text-center">
+            <div className="w-full bg-[#050807] border-t border-white/5 py-16 px-4 flex flex-col items-center justify-center text-center">
+                <img
+                    src="/image/logo.png"
+                    alt="By Candashian Logo"
+                    className="h-24 w-auto object-contain mb-6 grayscale-[50%] hover:grayscale-0 transition-all duration-500"
+                />
                 <h2 className="text-ivory/30 text-2xl font-serif font-bold tracking-wide mb-4">By Candashian</h2>
                 <div className="flex gap-4 text-ivory/40">
-                    <span className="text-sm">© 2024 Todos los derechos reservados</span>
+                    <span className="text-sm">© {new Date().getFullYear()} Todos los derechos reservados</span>
                 </div>
             </div>
         </div>

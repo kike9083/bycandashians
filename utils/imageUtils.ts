@@ -1,6 +1,23 @@
 export const localizeImageUrl = (url: string): string => {
   if (!url) return '';
-  if (url.startsWith('/') || url.startsWith('data:')) return url;
+  if (url.startsWith('data:')) return url;
+
+  const KEEP_LOCAL = ['logo.png', 'duenas-5.jpg', 'portada-bg.jpg', 'duenas-3.jpg', 'duenas-5.png', 'portada-bg.png', 'duenas-3.png'];
+
+  if (url.startsWith('/image/')) {
+    const filename = url.split('/').pop();
+    if (filename && !KEEP_LOCAL.includes(filename)) {
+      // Decodificar y normalizar nombre (ñ -> n) para coincidir con lo subido a Supabase
+      const decodedName = decodeURIComponent(filename)
+        .replace(/ñ/g, 'n')
+        .replace(/Ñ/g, 'n')
+        .replace(/\s+/g, '-');
+
+      const baseName = decodedName.split('.')[0];
+      return `https://varios-supabase-bycandashians.fjueze.easypanel.host/storage/v1/object/public/bycandashan/site-assets-v2/${baseName}.jpg`;
+    }
+    return url;
+  }
 
   if (url.includes('console-varios-minio.fjueze.easypanel.host')) {
     try {
@@ -8,7 +25,15 @@ export const localizeImageUrl = (url: string): string => {
       const prefix = urlObj.searchParams.get('prefix');
       if (prefix) {
         const filename = prefix.split('/').pop() || prefix.split('%2F').pop();
-        if (filename) return `/image/${filename}`;
+        if (filename) {
+          const decodedName = decodeURIComponent(filename)
+            .replace(/ñ/g, 'n')
+            .replace(/Ñ/g, 'n')
+            .replace(/\s+/g, '-');
+
+          const baseName = decodedName.split('.')[0];
+          return `https://varios-supabase-bycandashians.fjueze.easypanel.host/storage/v1/object/public/bycandashan/site-assets-v2/${baseName}.jpg`;
+        }
       }
     } catch (e) {
       console.error('Error parsing MinIO URL:', e);
@@ -53,8 +78,8 @@ export const getOptimizedImageUrl = (url: string, width: number = 800): string =
 
   try {
     // URL limpia sin el protocolo para el proxy (aunque wsrv acepta con protocolo encoded)
-    // Simplemente codificamos la URL completa de tu MinIO
-    const encodedUrl = encodeURIComponent(url);
+    // Simplemente codificamos la URL completa
+    const encodedUrl = encodeURIComponent(localizedUrl);
 
     // Construimos la URL del Proxy
     // url = tu imagen original

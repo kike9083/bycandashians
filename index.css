@@ -23,13 +23,13 @@
     }
 
     .hero-bg {
-        background-image: linear-gradient(rgba(10, 15, 13, 0.4) 0%, rgba(10, 15, 13, 0.95) 100%), url('/image/dueñas-3.jpg');
+        background-image: linear-gradient(rgba(10, 15, 13, 0.4) 0%, rgba(10, 15, 13, 0.95) 100%), url('/image/duenas-3.jpg');
         background-position: 33% center;
     }
 
     @media (min-width: 768px) {
         .hero-bg {
-            background-image: linear-gradient(rgba(10, 15, 13, 0.4) 0%, rgba(10, 15, 13, 0.95) 100%), url('/image/portada-bg.png');
+            background-image: linear-gradient(rgba(10, 15, 13, 0.4) 0%, rgba(10, 15, 13, 0.95) 100%), url('/image/portada-bg.jpg');
         }
     }
 }
@@ -49,4 +49,32 @@ body {
 #root {
     min-height: 100%;
     background-color: #4F6352;
+}
+
+@keyframes ken-burns {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes ken-burns-slow {
+    0% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1.15);
+    }
+}
+
+.animate-ken-burns {
+    animation: ken-burns 15s ease-in-out infinite alternate;
+}
+
+.animate-ken-burns-slow {
+    animation: ken-burns-slow 30s ease-in-out infinite alternate;
 }
