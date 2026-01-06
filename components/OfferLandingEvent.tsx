@@ -40,7 +40,7 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
     }, []);
 
     const handleBooking = (type: string) => {
-        const msg = `¡Hola! Quiero separar mi cupo para el ${type} en el Desfile de las Mil Polleras 2026.`;
+        const msg = "¡Hola! ✨ Me gustaría cotizar o reservar mi indumentaria para el Desfile de las Mil Polleras 2026. 👸💖";
         window.open(`https://wa.me/50769816062?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
@@ -54,7 +54,7 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
             {/* Header */}
             <header className="p-6 flex justify-between items-center max-w-7xl mx-auto">
                 <div className="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gold to-[#ffaa00] cursor-pointer" onClick={() => setView(View.HOME)}>
-                    BY CANDASHIAN <span className="text-white/30 ml-2 font-normal not-italic text-sm tracking-normal">| MIL POLLERAS 2026</span>
+                    BY CANDASHIANS <span className="text-white/30 ml-2 font-normal not-italic text-sm tracking-normal">| MIL POLLERAS 2026</span>
                 </div>
                 <button onClick={() => setView(View.HOME)} className="font-bold hover:text-[#ffaa00]">
                     Salir
@@ -135,18 +135,17 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                             <h3 className="text-xl font-bold mb-2">PACK ESENCIAL</h3>
                             <div className="text-gold text-xs font-black mb-6 uppercase tracking-widest">Montuna Tradicional</div>
 
-                            <div className="flex items-end gap-2 mb-8">
-                                <span className="text-5xl font-black">$150</span>
-                                <span className="text-gray-500 mb-2">/ evento</span>
+                            <div className="mb-8 border-b border-white/5 pb-4">
+                                <span className="text-gold text-sm font-bold uppercase tracking-widest italic">Consulte disponibilidad</span>
                             </div>
 
                             <ul className="space-y-4 mb-10 flex-grow">
                                 {[
                                     "Alquiler de Pollera Montuna",
-                                    "Tembleques de Escamas",
-                                    "Maquillaje Básico",
-                                    "Asistencia de Vestuario",
-                                    "Entrega en Las Tablas"
+                                    "Tembleques o Sombrero",
+                                    "Maquillaje",
+                                    "Atavio o arreglo",
+                                    "Joyero Opcional"
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
                                         <Zap size={14} className="text-gold" fill="currentColor" />
@@ -169,9 +168,8 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                             <h3 className="text-2xl font-black mb-2 text-center">GALA CLÁSICA</h3>
                             <div className="text-[#ffaa00] text-xs font-black mb-6 text-center uppercase tracking-widest">Pollera de Lujo</div>
 
-                            <div className="flex justify-center items-end gap-2 mb-8">
-                                <span className="text-6xl font-black text-white">$275</span>
-                                <span className="text-gray-500 mb-2 ml-2">/ evento</span>
+                            <div className="flex justify-center mb-8 border-b border-[#ffaa00]/10 pb-4">
+                                <span className="text-[#ffaa00] text-sm font-bold uppercase tracking-widest italic">Consulte disponibilidad</span>
                             </div>
 
                             <ul className="space-y-4 mb-10 flex-grow">
@@ -202,18 +200,18 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                             <h3 className="text-xl font-bold mb-2">REINA VIP</h3>
                             <div className="text-white/40 text-xs font-black mb-6 uppercase tracking-widest">Experiencia Full VIP</div>
 
-                            <div className="flex items-end gap-2 mb-8">
-                                <span className="text-5xl font-black">$450</span>
-                                <span className="text-gray-500 mb-2">/ todo incluido</span>
+                            <div className="mb-8 border-b border-white/5 pb-4">
+                                <span className="text-white/60 text-sm font-bold uppercase tracking-widest italic">Consulte disponibilidad</span>
                             </div>
 
                             <ul className="space-y-4 mb-10 flex-grow">
                                 {[
                                     "Pollera Gala/Zurcida Lujo",
-                                    "Joyería Completa Oro 14k",
+                                    "Joyería Completa",
                                     "Maquillaje Blindado + Pestañas",
                                     "Atavío por Expertos",
-                                    "Sesión de Fotos en Delegación"
+                                    "Sesión de Fotos",
+                                    "Tembleques"
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-gray-400">
                                         <Zap size={14} className="text-white" fill="currentColor" />
@@ -242,7 +240,7 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                         No somos organizadores, somos tus estilistas personales. <br />
                         Prepárate para el evento cultural más grande del año (inicia 1:00 P.M.) con nosotros.
                     </p>
-                    <a href="https://www.atp.gob.pa/" target="_blank" rel="noreferrer" className="text-[#ffaa00] underline font-bold hover:text-white">
+                    <a href="https://www.atp.gob.pa/" target="_blank" rel="noreferrer noopener" className="text-[#ffaa00] underline font-bold hover:text-white">
                         Ver información oficial del evento (ATP)
                     </a>
                 </div>

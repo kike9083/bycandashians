@@ -4,6 +4,8 @@ import { Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabaseClient';
 import { Lock, LogOut, PenTool, Menu, X } from 'lucide-react';
 
+import { EditableText } from './EditableText';
+
 interface LandingPageProps {
     setView: (view: View) => void;
     session?: Session | null;
@@ -44,7 +46,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                             <div className="absolute -inset-4 bg-gold/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                             <img
                                 src="/image/logo.png"
-                                alt="By Candashian"
+                                alt="By Candashians"
                                 className={`w-auto object-contain transition-all duration-500 drop-shadow-2xl ${scrolled ? 'h-[80px]' : 'h-[120px] md:h-[200px]'}`}
                             />
                         </div>
@@ -54,19 +56,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                     <div className="hidden md:flex items-center gap-12">
                         <nav className="flex gap-8">
                             {[
-                                { label: 'Inicio', view: View.HOME },
-                                { label: 'Servicios', view: View.SERVICES },
-                                { label: 'Catálogo', view: View.CATALOG },
-                                { label: 'Galería', view: View.GALLERY },
-                                { label: 'Contacto', view: View.CONTACT }
+                                { label: 'Inicio', view: View.HOME, key: 'nav_home' },
+                                { label: 'Servicios', view: View.SERVICES, key: 'nav_services' },
+                                { label: 'Catálogo', view: View.CATALOG, key: 'nav_catalog' },
+                                { label: 'Galería', view: View.GALLERY, key: 'nav_gallery' },
+                                { label: 'Contacto', view: View.CONTACT, key: 'nav_contact' }
                             ].map((item) => (
                                 <button
                                     key={item.label}
                                     className="relative group py-2"
                                     onClick={() => setView(item.view)}
+                                    title={`Ir a ${item.label}`}
                                 >
                                     <span className="text-ivory text-xs font-bold uppercase tracking-[0.2em] group-hover:text-gold transition-colors duration-300">
-                                        {item.label}
+                                        <EditableText
+                                            contentKey={item.key}
+                                            defaultText={item.label}
+                                            isEditMode={!!isEditMode}
+                                        />
                                     </span>
                                     <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-gold group-hover:w-full transition-all duration-300 ease-out"></span>
                                 </button>
@@ -118,18 +125,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                     <div className="md:hidden bg-background-dark border-t border-olive/20 px-6 absolute top-full left-0 w-full shadow-2xl h-screen overflow-y-auto pb-32 animate-fade-in-up">
                         <div className="flex flex-col py-8 gap-6">
                             {[
-                                { label: 'Inicio', view: View.HOME },
-                                { label: 'Servicios', view: View.SERVICES },
-                                { label: 'Catálogo', view: View.CATALOG },
-                                { label: 'Galería', view: View.GALLERY },
-                                { label: 'Contacto', view: View.CONTACT }
+                                { label: 'Inicio', view: View.HOME, key: 'nav_home' },
+                                { label: 'Servicios', view: View.SERVICES, key: 'nav_services' },
+                                { label: 'Catálogo', view: View.CATALOG, key: 'nav_catalog' },
+                                { label: 'Galería', view: View.GALLERY, key: 'nav_gallery' },
+                                { label: 'Contacto', view: View.CONTACT, key: 'nav_contact' }
                             ].map((item) => (
                                 <button
                                     key={item.label}
                                     onClick={() => handleNav(item.view)}
                                     className="text-left py-4 border-b border-white/5 text-xl font-serif text-ivory hover:text-gold transition-colors flex justify-between items-center group"
                                 >
-                                    <span>{item.label}</span>
+                                    <span>
+                                        <EditableText
+                                            contentKey={item.key}
+                                            defaultText={item.label}
+                                            isEditMode={!!isEditMode}
+                                        />
+                                    </span>
                                     <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-gold">arrow_forward</span>
                                 </button>
                             ))}
@@ -173,12 +186,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                     <div className="w-full h-full bg-cover hero-bg"></div>
                 </div>
                 <div className="relative z-10 flex flex-col items-center text-center max-w-5xl gap-8 mt-16 animate-fade-in-up">
-                    <span className="text-gold uppercase tracking-[0.3em] text-xs font-bold bg-gold/5 px-6 py-2 rounded-full border border-gold/10 backdrop-blur-md shadow-lg shadow-gold/5 animate-fade-in delay-200">
-                        Folklore de Lujo
-                    </span>
+                    <EditableText
+                        contentKey="hero_badge"
+                        defaultText="Folklore de Lujo"
+                        isEditMode={!!isEditMode}
+                        className="text-gold uppercase tracking-[0.3em] text-xs font-bold bg-gold/5 px-6 py-2 rounded-full border border-gold/10 backdrop-blur-md shadow-lg shadow-gold/5 animate-fade-in delay-200"
+                    />
 
                     <h1 className="text-ivory/90 text-lg md:text-2xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md text-balance font-serif">
-                        Expertos en <span className="text-gold font-bold">Alquiler de Polleras en Panamá</span>. Elevando el folklore panameño a un estándar de <span className="text-gold italic">lujo</span> y <span className="text-gold italic">precisión</span>. Descubre por qué somos la elección experta para tus momentos más memorables.
+                        <EditableText
+                            contentKey="hero_title"
+                            defaultText="Expertos en Alquiler de Polleras en Panamá. Elevando el folklore panameño a un estándar de lujo y precisión. Descubre por qué somos la elección experta para tus momentos más memorables."
+                            isEditMode={!!isEditMode}
+                            multiline
+                        />
                     </h1>
                     <div className="flex flex-col gap-4 mt-8 w-full max-w-2xl">
                         <div className="flex justify-center w-full">
@@ -187,11 +208,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                                 onClick={() => setView(View.OFFER_EVENT)}
                             >
                                 <span className="material-symbols-outlined text-5xl mb-3 animate-pulse">bolt</span>
-                                <span className="text-2xl italic tracking-wide">Promo 2026</span>
-                                <span className="text-sm opacity-90 font-bold mt-2 tracking-widest uppercase">Desfile de las Mil Polleras</span>
+                                <EditableText
+                                    contentKey="promo_label"
+                                    defaultText="Promo 2026"
+                                    isEditMode={!!isEditMode}
+                                    className="text-2xl italic tracking-wide block"
+                                />
+                                <EditableText
+                                    contentKey="promo_sublabel"
+                                    defaultText="Desfile de las Mil Polleras"
+                                    isEditMode={!!isEditMode}
+                                    className="text-sm opacity-90 font-bold mt-2 tracking-widest uppercase block"
+                                />
                             </button>
                         </div>
-                        <p className="text-center text-ivory/40 text-xs mt-4 uppercase tracking-widest font-bold">Haz Clic para Ver el Diseño</p>
+                        <EditableText
+                            contentKey="cta_hint"
+                            defaultText="Haz Clic para Ver el Diseño"
+                            isEditMode={!!isEditMode}
+                            className="text-center text-ivory/40 text-xs mt-4 uppercase tracking-widest font-bold block"
+                        />
                     </div>
                 </div>
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-ivory/30">
@@ -206,14 +242,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                 <div className="max-w-[1200px] mx-auto flex flex-col gap-16 relative z-10">
                     <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-olive-dark/10 pb-8">
                         <div className="flex flex-col gap-3 max-w-2xl">
-                            <h2 className="text-gold font-sans uppercase tracking-widest text-sm font-bold">Nuestra Propuesta de Valor</h2>
-                            <h3 className="text-olive-dark text-4xl md:text-5xl font-serif font-medium leading-tight">
-                                Por qué elegirnos
-                            </h3>
+                            <EditableText
+                                contentKey="value_prop_badge"
+                                defaultText="Nuestra Propuesta de Valor"
+                                isEditMode={!!isEditMode}
+                                className="text-olive-dark font-sans uppercase tracking-widest text-sm font-bold block opacity-80"
+                            />
+                            <EditableText
+                                contentKey="value_prop_title"
+                                defaultText="Por qué elegirnos"
+                                isEditMode={!!isEditMode}
+                                as="h3"
+                                className="text-olive-dark text-4xl md:text-5xl font-serif font-medium leading-tight block"
+                            />
                         </div>
-                        <p className="text-olive-dark/70 text-base md:text-lg max-w-md text-pretty">
-                            Fusionamos la alta costura con la tradición más pura para crear piezas que trascienden el tiempo.
-                        </p>
+                        <EditableText
+                            contentKey="value_prop_desc"
+                            defaultText="Fusionamos la alta costura con la tradición más pura para crear piezas que trascienden el tiempo."
+                            isEditMode={!!isEditMode}
+                            as="p"
+                            className="text-olive-dark/70 text-base md:text-lg max-w-md text-pretty block"
+                        />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                         <div className="group relative flex flex-col gap-6 p-8 rounded-[2rem] bg-white border border-olive/10 hover:border-gold/50 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-olive/10">
@@ -221,11 +270,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                                 <span className="material-symbols-outlined text-olive group-hover:text-cream text-2xl">diamond</span>
                             </div>
                             <div className="flex flex-col gap-3">
-                                <h4 className="text-olive-dark text-2xl font-serif font-medium">Experiencia Inigualable</h4>
+                                <EditableText
+                                    contentKey="card_1_title"
+                                    defaultText="Experiencia Inigualable"
+                                    isEditMode={!!isEditMode}
+                                    as="h4"
+                                    className="text-olive-dark text-2xl font-serif font-medium block"
+                                />
                                 <div className="w-12 h-0.5 bg-gold group-hover:w-full transition-all duration-700"></div>
-                                <p className="text-olive-dark/70 text-sm leading-relaxed mt-2">
-                                    Años de maestría vistiendo a reinas y empolleradas. Conocemos los secretos de la confección que solo el tiempo y la práctica pueden otorgar.
-                                </p>
+                                <EditableText
+                                    contentKey="card_1_desc"
+                                    defaultText="Años de maestría vistiendo a reinas y empolleradas. Conocemos los secretos de la confección que solo el tiempo y la práctica pueden otorgar."
+                                    isEditMode={!!isEditMode}
+                                    as="p"
+                                    className="text-olive-dark/70 text-sm leading-relaxed mt-2 block"
+                                    multiline
+                                />
                             </div>
                         </div>
                         <div className="group relative flex flex-col gap-6 p-8 rounded-[2rem] bg-white border border-olive/10 hover:border-gold/50 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-olive/10">
@@ -233,11 +293,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                                 <span className="material-symbols-outlined text-olive group-hover:text-cream text-2xl">history_edu</span>
                             </div>
                             <div className="flex flex-col gap-3">
-                                <h4 className="text-olive-dark text-2xl font-serif font-medium">Respeto por la Tradición</h4>
+                                <EditableText
+                                    contentKey="card_2_title"
+                                    defaultText="Respeto por la Tradición"
+                                    isEditMode={!!isEditMode}
+                                    as="h4"
+                                    className="text-olive-dark text-2xl font-serif font-medium block"
+                                />
                                 <div className="w-12 h-0.5 bg-gold group-hover:w-full transition-all duration-700"></div>
-                                <p className="text-olive-dark/70 text-sm leading-relaxed mt-2">
-                                    Cada pliegue, cada encaje y cada joya respeta rigurosamente los cánones históricos del folclore panameño, preservando nuestra identidad.
-                                </p>
+                                <EditableText
+                                    contentKey="card_2_desc"
+                                    defaultText="Cada pliegue, cada encaje y cada joya respeta rigurosamente los cánones históricos del folclore panameño, preservando nuestra identidad."
+                                    isEditMode={!!isEditMode}
+                                    as="p"
+                                    className="text-olive-dark/70 text-sm leading-relaxed mt-2 block"
+                                    multiline
+                                />
                             </div>
                         </div>
                         <div className="group relative flex flex-col gap-6 p-8 rounded-[2rem] bg-white border border-olive/10 hover:border-gold/50 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-olive/10">
@@ -245,11 +316,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                                 <span className="material-symbols-outlined text-olive group-hover:text-cream text-2xl">favorite</span>
                             </div>
                             <div className="flex flex-col gap-3">
-                                <h4 className="text-olive-dark text-2xl font-serif font-medium">Atención Personalizada</h4>
+                                <EditableText
+                                    contentKey="card_3_title"
+                                    defaultText="Atención Personalizada"
+                                    isEditMode={!!isEditMode}
+                                    as="h4"
+                                    className="text-olive-dark text-2xl font-serif font-medium block"
+                                />
                                 <div className="w-12 h-0.5 bg-gold group-hover:w-full transition-all duration-700"></div>
-                                <p className="text-olive-dark/70 text-sm leading-relaxed mt-2">
-                                    Un acompañamiento íntimo y dedicado. Desde la selección de las joyas hasta el maquillaje final, estamos contigo en cada detalle.
-                                </p>
+                                <EditableText
+                                    contentKey="card_3_desc"
+                                    defaultText="Un acompañamiento íntimo y dedicado. Desde la selección de las joyas hasta el maquillaje final, estamos contigo en cada detalle."
+                                    isEditMode={!!isEditMode}
+                                    as="p"
+                                    className="text-olive-dark/70 text-sm leading-relaxed mt-2 block"
+                                    multiline
+                                />
                             </div>
                         </div>
                     </div>
@@ -258,7 +340,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                             className="group flex items-center gap-3 px-8 py-4 bg-transparent border border-olive text-olive hover:bg-olive hover:text-cream rounded-full transition-all duration-300"
                             onClick={() => setView(View.SERVICES)}
                         >
-                            <span className="font-bold text-lg tracking-wide">Ver Servicios Completos</span>
+                            <span className="font-bold text-lg tracking-wide">
+                                <EditableText
+                                    contentKey="landing_services_cta"
+                                    defaultText="Ver Servicios Completos"
+                                    isEditMode={!!isEditMode}
+                                />
+                            </span>
                             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                         </button>
                     </div>
@@ -268,12 +356,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
             <div className="w-full bg-[#050807] border-t border-white/5 py-16 px-4 flex flex-col items-center justify-center text-center">
                 <img
                     src="/image/logo.png"
-                    alt="By Candashian Logo"
+                    alt="By Candashians Logo"
                     className="h-24 w-auto object-contain mb-6 grayscale-[50%] hover:grayscale-0 transition-all duration-500"
                 />
-                <h2 className="text-ivory/30 text-2xl font-serif font-bold tracking-wide mb-4">By Candashian</h2>
+                <h2 className="text-ivory/30 text-2xl font-serif font-bold tracking-wide mb-4">
+                    <EditableText
+                        contentKey="landing_footer_name"
+                        defaultText="By Candashians"
+                        isEditMode={!!isEditMode}
+                    />
+                </h2>
                 <div className="flex gap-4 text-ivory/40">
-                    <span className="text-sm">© {new Date().getFullYear()} Todos los derechos reservados</span>
+                    <span className="text-sm">
+                        © {new Date().getFullYear()} <EditableText
+                            contentKey="landing_footer_copyright"
+                            defaultText="Todos los derechos reservados"
+                            isEditMode={!!isEditMode}
+                        />
+                    </span>
                 </div>
             </div>
         </div>

@@ -12,7 +12,7 @@ export const OfferLandingMinimal: React.FC<OfferLandingMinimalProps> = ({ setVie
         <div className="bg-[#Fdfdfd] text-[#1a1a1a] font-serif min-h-screen selection:bg-black selection:text-white">
             {/* Nav Minimal */}
             <nav className="fixed w-full p-8 flex justify-between items-center z-50 mix-blend-difference text-white">
-                <div className="text-xl tracking-widest font-bold uppercase cursor-pointer" onClick={() => setView(View.HOME)}>By Candashian</div>
+                <div className="text-xl tracking-widest font-bold uppercase cursor-pointer" onClick={() => setView(View.HOME)}>By Candashians</div>
                 <button onClick={() => setView(View.HOME)} className="uppercase text-xs tracking-[0.2em] hover:underline">Exit</button>
             </nav>
 
@@ -31,7 +31,7 @@ export const OfferLandingMinimal: React.FC<OfferLandingMinimalProps> = ({ setVie
                     </p>
 
                     <div className="flex flex-col gap-4">
-                        <button className="flex items-center gap-4 text-xl group w-fit" onClick={() => window.open('https://wa.me/50769816062?text=Reserve%20Minimal', '_blank')}>
+                        <button className="flex items-center gap-4 text-xl group w-fit" onClick={() => window.open(`https://wa.me/50769816062?text=${encodeURIComponent('¡Hola! ✨ Me gustaría cotizar o reservar mi indumentaria para el Desfile de las Mil Polleras 2026. 👸💖')}`, '_blank')}>
                             <span className="border-b border-black pb-1 group-hover:border-transparent transition-all">Reserve for Jan 17</span>
                             <ArrowRight className="group-hover:translate-x-2 transition-transform duration-300" />
                         </button>
@@ -86,7 +86,7 @@ export const OfferLandingMinimal: React.FC<OfferLandingMinimalProps> = ({ setVie
                         "Elegance is not standing out, but being remembered."
                     </h3>
                     <button
-                        onClick={() => window.open('https://wa.me/50769816062?text=I%20wish%20to%20be%20remembered', '_blank')}
+                        onClick={() => window.open(`https://wa.me/50769816062?text=${encodeURIComponent('¡Hola! ✨ Me gustaría cotizar o reservar mi indumentaria para el Desfile de las Mil Polleras 2026. 👸💖')}`, '_blank')}
                         className="bg-white text-black px-12 py-5 font-sans font-bold text-xs uppercase tracking-[0.2em] hover:bg-gray-200 transition-colors"
                     >
                         Secure Your Appointment

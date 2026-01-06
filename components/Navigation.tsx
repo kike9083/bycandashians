@@ -3,6 +3,7 @@ import { View } from '../types';
 import { Menu, X, Sparkles, PenTool, Lock, LogOut, Users } from 'lucide-react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../services/supabaseClient';
+import { EditableText } from './EditableText';
 
 interface NavigationProps {
   currentView: View;
@@ -25,11 +26,11 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
   }, []);
 
   const navItems = [
-    { label: 'Inicio', value: View.HOME },
-    { label: 'Servicios', value: View.SERVICES },
-    { label: 'Catálogo', value: View.CATALOG },
-    { label: 'Galería', value: View.GALLERY },
-    { label: 'Contacto', value: View.CONTACT },
+    { label: 'Inicio', value: View.HOME, key: 'nav_home' },
+    { label: 'Servicios', value: View.SERVICES, key: 'nav_services' },
+    { label: 'Catálogo', value: View.CATALOG, key: 'nav_catalog' },
+    { label: 'Galería', value: View.GALLERY, key: 'nav_gallery' },
+    { label: 'Contacto', value: View.CONTACT, key: 'nav_contact' },
   ];
 
   const handleNav = (view: View) => {
@@ -64,13 +65,17 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
               <button
                 key={item.value}
                 onClick={() => handleNav(item.value)}
-                aria-label={`Ir a ${item.label}`}
+                title={`Ir a ${item.label}`}
                 className={`text-sm font-medium transition-colors duration-200 uppercase tracking-widest ${currentView === item.value
                   ? 'text-gold border-b border-gold'
                   : 'text-ivory/70 hover:text-gold'
                   }`}
               >
-                {item.label}
+                <EditableText
+                  contentKey={item.key}
+                  defaultText={item.label}
+                  isEditMode={!!isEditMode}
+                />
               </button>
             ))}
 
@@ -120,6 +125,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
                 onClick={toggleEditMode}
                 className={`p-2 rounded-full transition-colors ${isEditMode ? 'bg-primary text-background-dark' : 'text-ivory/50 hover:text-ivory'
                   }`}
+                title={isEditMode ? "Desactivar Edición" : "Activar Edición"}
               >
                 <PenTool size={18} />
               </button>
@@ -146,8 +152,13 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
                   ? 'bg-olive/20 text-gold'
                   : 'text-ivory hover:bg-white/5'
                   }`}
+                title={`Ir a ${item.label}`}
               >
-                {item.label}
+                <EditableText
+                  contentKey={item.key}
+                  defaultText={item.label}
+                  isEditMode={!!isEditMode}
+                />
               </button>
             ))}
 

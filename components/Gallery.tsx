@@ -11,18 +11,18 @@ interface GalleryProps {
 }
 
 const SAMPLE_IMAGES = [
-  { url: 'https://images.unsplash.com/photo-1596906660183-f32f319200b3?q=80&w=600&auto=format&fit=crop', category: 'Detalles' },
+  { url: 'https://images.unsplash.com/photo-1596906660183-f32f319200b3?q=80&w=600&auto=format&fit=crop', category: 'Alquileres' },
   { url: 'https://images.unsplash.com/photo-1523974447453-deb40652b04c?q=80&w=600&auto=format&fit=crop', category: 'Maquillaje' },
   { url: 'https://images.unsplash.com/photo-1533147670608-2a2f9775d3a4?q=80&w=600&auto=format&fit=crop', category: 'Eventos' },
   { url: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=600&auto=format&fit=crop', category: 'Atavío' },
   { url: 'https://images.unsplash.com/photo-1545960920-d33621437193?q=80&w=600&auto=format&fit=crop', category: 'Eventos' },
-  { url: 'https://images.unsplash.com/photo-1550920456-0648218659dc?q=80&w=600&auto=format&fit=crop', category: 'Detalles' },
+  { url: 'https://images.unsplash.com/photo-1550920456-0648218659dc?q=80&w=600&auto=format&fit=crop', category: 'Alquileres' },
   { url: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=600&auto=format&fit=crop', category: 'Eventos' },
   { url: 'https://images.unsplash.com/photo-1574660309995-177b919d3cf4?q=80&w=600&auto=format&fit=crop', category: 'Maquillaje' },
-  { url: 'https://images.unsplash.com/photo-1509670118595-6ae742d48347?q=80&w=600&auto=format&fit=crop', category: 'Detalles' }
+  { url: 'https://images.unsplash.com/photo-1509670118595-6ae742d48347?q=80&w=600&auto=format&fit=crop', category: 'Alquileres' }
 ];
 
-const CATEGORIES = ['TODAS', 'Maquillaje', 'Atavío', 'Eventos', 'Detalles'];
+const CATEGORIES = ['TODAS', 'Maquillaje', 'Atavío', 'Eventos', 'Alquileres', 'Fotos'];
 const ITEMS_PER_PAGE = 10;
 
 export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
@@ -227,6 +227,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                   value={newCategory}
                   onChange={e => setNewCategory(e.target.value)}
                   className="bg-background-dark border border-white/10 text-ivory px-4 py-2 rounded-xl focus:border-gold outline-none text-sm font-bold"
+                  title="Seleccionar Categoría"
                 >
                   {CATEGORIES.filter(c => c !== 'TODAS').map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -274,13 +275,13 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                     <div className="absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       {editingId === img.id ? (
                         <div className="flex gap-1 bg-black/80 backdrop-blur-md p-1 rounded-full border border-white/10">
-                          <button onClick={(e) => saveEdit(img.id, e)} className="p-2 rounded-full text-green-400 hover:bg-white/10"><Save size={16} /></button>
-                          <button onClick={(e) => cancelEdit(e)} className="p-2 rounded-full text-red-400 hover:bg-white/10"><X size={16} /></button>
+                          <button onClick={(e) => saveEdit(img.id, e)} className="p-2 rounded-full text-green-400 hover:bg-white/10" title="Guardar cambios"><Save size={16} /></button>
+                          <button onClick={(e) => cancelEdit(e)} className="p-2 rounded-full text-red-400 hover:bg-white/10" title="Cancelar edición"><X size={16} /></button>
                         </div>
                       ) : (
-                        <button onClick={(e) => startEdit(img, e)} className="bg-black/80 backdrop-blur-md p-2 rounded-full text-gold border border-gold/30 hover:bg-gold hover:text-black transition-colors"><Edit size={16} /></button>
+                        <button onClick={(e) => startEdit(img, e)} className="bg-black/80 backdrop-blur-md p-2 rounded-full text-gold border border-gold/30 hover:bg-gold hover:text-black transition-colors" title="Editar imagen"><Edit size={16} /></button>
                       )}
-                      <button onClick={(e) => handleDelete(img.id, e)} className="bg-black/80 backdrop-blur-md p-2 rounded-full text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-colors"><Trash2 size={16} /></button>
+                      <button onClick={(e) => handleDelete(img.id, e)} className="bg-black/80 backdrop-blur-md p-2 rounded-full text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white transition-colors" title="Eliminar imagen"><Trash2 size={16} /></button>
                     </div>
                   )}
 
@@ -304,6 +305,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                             value={tempImageFit}
                             onChange={(e: any) => setTempImageFit(e.target.value)}
                             className="w-full bg-background-dark border border-white/10 p-1 text-xs rounded text-ivory"
+                            title="Ajuste de Imagen"
                           >
                             <option value="cover">Llenar</option>
                             <option value="contain">Completa</option>
@@ -315,6 +317,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                             value={tempImagePos}
                             onChange={(e: any) => setTempImagePos(e.target.value)}
                             className="w-full bg-background-dark border border-white/10 p-1 text-xs rounded text-ivory"
+                            title="Posición de Imagen"
                           >
                             <option value="center">Centro</option>
                             <option value="top">Arriba</option>
@@ -329,6 +332,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                           value={tempCategory}
                           onChange={(e) => setTempCategory(e.target.value)}
                           className="w-full bg-background-dark border border-white/10 p-1 text-xs rounded text-ivory focus:border-gold outline-none"
+                          title="Categoría de Imagen"
                         >
                           {CATEGORIES.filter(c => c !== 'TODAS').map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
@@ -366,7 +370,7 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-background-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6">
                           <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <span className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-2 block">By Candashian</span>
+                            <span className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-2 block">By Candashians</span>
                             <span className="text-ivory font-serif text-2xl font-medium tracking-wide block">
                               {img.category}
                             </span>

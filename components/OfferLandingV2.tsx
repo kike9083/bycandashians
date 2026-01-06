@@ -38,7 +38,7 @@ export const OfferLandingV2: React.FC<OfferLandingV2Props> = ({ setView }) => {
     ];
 
     const handleWhatsAppClick = () => {
-        const message = "Hola, me ha encantado la historia de By Candashian. Me gustaría agendar una cita para conocer su colección exclusiva.";
+        const message = "¡Hola! ✨ Me ha encantado la historia de By Candashians. 💎 Me gustaría agendar una cita para conocer su colección exclusiva. 👸💖";
         window.open(`https://wa.me/50769816062?text=${encodeURIComponent(message)}`, '_blank');
     };
 
@@ -184,7 +184,7 @@ export const OfferLandingV2: React.FC<OfferLandingV2Props> = ({ setView }) => {
                     <a href="#" className="hover:text-gold transition-colors">Atelier</a>
                     <a href="#" className="hover:text-gold transition-colors">Historias</a>
                 </div>
-                <p className="text-xs text-ivory/20 uppercase tracking-widest">© By Candashian. All Rights Reserved.</p>
+                <p className="text-xs text-ivory/20 uppercase tracking-widest">© By Candashians. All Rights Reserved.</p>
             </footer>
         </div>
     );

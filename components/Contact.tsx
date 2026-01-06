@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Phone, Mail, MapPin, MessageSquare, CheckCircle, AlertCircle, ChevronDown } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { EditableText } from './EditableText';
 
-export const Contact: React.FC = () => {
+interface ContactProps {
+  isEditMode?: boolean;
+}
+
+export const Contact: React.FC<ContactProps> = ({ isEditMode = false }) => {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -11,7 +16,8 @@ export const Contact: React.FC = () => {
 
   const services = [
     'Alquiler de Pollera',
-    'Maquillaje y Atavío',
+    'Maquillaje',
+    'Atavío',
     'Presentación Folklórica',
     'Sesión de Fotos',
     'Otro'
@@ -80,7 +86,7 @@ export const Contact: React.FC = () => {
       }
 
       // Abrir WhatsApp
-      const text = `Hola! Me gustaría cotizar un servicio.%0A%0A*Nombre:* ${name}%0A*Teléfono:* ${phone}%0A*Email:* ${email}%0A*Fecha del Evento:* ${date}%0A*Servicios:* ${servicesText}%0A*Descripción:* ${messageText}`;
+      const text = `¡Hola! 👋 Me gustaría cotizar un servicio. ✨%0A%0A*Nombre:* ${name}%0A*Teléfono:* ${phone}%0A*Email:* ${email}%0A*Fecha del Evento:* ${date}%0A*Servicios:* ${servicesText}%0A*Descripción:* ${messageText}%0A%0A¡Muchas gracias! ✨🌸`;
       window.open(`https://wa.me/50769816062?text=${text}`, '_blank');
 
       // Limpiar formulario
@@ -108,13 +114,19 @@ export const Contact: React.FC = () => {
           {/* Contact Info */}
           <div className="flex flex-col justify-center">
             <span className="text-gold uppercase tracking-[0.2em] text-xs font-bold bg-gold/10 px-4 py-1 rounded-full border border-gold/20 backdrop-blur-sm mb-6 w-fit">
-              Atención Exclusiva
+              <EditableText contentKey="contact_badge" defaultText="Atención Exclusiva" isEditMode={isEditMode} />
             </span>
-            <h2 className="text-4xl font-serif font-bold text-ivory mb-8">Contáctanos</h2>
-            <p className="text-ivory/60 mb-12 text-lg leading-relaxed font-light">
-              ¿Listo para tu experiencia folklórica? Escríbenos para reservar tu cita de prueba o cotizar tu evento.
-              Estamos listos para atenderte con la calidez que nos caracteriza.
-            </p>
+            <h2 className="text-4xl font-serif font-bold text-ivory mb-8">
+              <EditableText contentKey="contact_title" defaultText="Contáctanos" isEditMode={isEditMode} />
+            </h2>
+            <div className="text-ivory/60 mb-12 text-lg leading-relaxed font-light">
+              <EditableText
+                contentKey="contact_description"
+                defaultText="¿Listo para tu experiencia folklórica? Escríbenos para reservar tu cita de prueba o cotizar tu evento. Estamos listos para atenderte con la calidez que nos caracteriza."
+                isEditMode={isEditMode}
+                multiline
+              />
+            </div>
 
             <div className="space-y-8">
               <div className="flex items-start group">
@@ -124,9 +136,15 @@ export const Contact: React.FC = () => {
                   </div>
                 </div>
                 <div className="ml-6">
-                  <h3 className="text-xl font-bold text-ivory group-hover:text-gold transition-colors">Teléfono</h3>
-                  <p className="mt-1 text-ivory/60 text-lg">+507 6981-6062</p>
-                  <p className="text-ivory/30 text-sm">Lunes a Sábado, 9am - 6pm</p>
+                  <h3 className="text-xl font-bold text-ivory group-hover:text-gold transition-colors">
+                    <EditableText contentKey="contact_phone_label" defaultText="Teléfono" isEditMode={isEditMode} />
+                  </h3>
+                  <p className="mt-1 text-ivory/60 text-lg">
+                    <EditableText contentKey="contact_phone_value" defaultText="+507 6981-6062" isEditMode={isEditMode} />
+                  </p>
+                  <p className="text-ivory/30 text-sm">
+                    <EditableText contentKey="contact_phone_hours" defaultText="Lunes a Sábado, 9am - 6pm" isEditMode={isEditMode} />
+                  </p>
                 </div>
               </div>
 
@@ -137,8 +155,12 @@ export const Contact: React.FC = () => {
                   </div>
                 </div>
                 <div className="ml-6">
-                  <h3 className="text-xl font-bold text-ivory group-hover:text-gold transition-colors">Email</h3>
-                  <p className="mt-1 text-ivory/60 text-lg">info@tradicionpanama.com</p>
+                  <h3 className="text-xl font-bold text-ivory group-hover:text-gold transition-colors">
+                    <EditableText contentKey="contact_mail_label" defaultText="Email" isEditMode={isEditMode} />
+                  </h3>
+                  <p className="mt-1 text-ivory/60 text-lg">
+                    <EditableText contentKey="contact_mail_value" defaultText="info@tradicionpanama.com" isEditMode={isEditMode} />
+                  </p>
                 </div>
               </div>
 
@@ -149,8 +171,12 @@ export const Contact: React.FC = () => {
                   </div>
                 </div>
                 <div className="ml-6">
-                  <h3 className="text-xl font-bold text-ivory group-hover:text-gold transition-colors">Ubicación</h3>
-                  <p className="mt-1 text-ivory/60 text-lg">Ciudad de Panamá</p>
+                  <h3 className="text-xl font-bold text-ivory group-hover:text-gold transition-colors">
+                    <EditableText contentKey="contact_location_label" defaultText="Ubicación" isEditMode={isEditMode} />
+                  </h3>
+                  <p className="mt-1 text-ivory/60 text-lg">
+                    <EditableText contentKey="contact_location_value" defaultText="Ciudad de Panamá" isEditMode={isEditMode} />
+                  </p>
                 </div>
               </div>
             </div>
@@ -160,10 +186,11 @@ export const Contact: React.FC = () => {
                 href="https://wa.me/50769816062"
                 target="_blank"
                 rel="noopener noreferrer"
+                title="Contactar por WhatsApp"
                 className="flex items-center justify-center w-full sm:w-auto bg-green-600/90 hover:bg-green-600 text-white px-8 py-4 rounded-full transition-colors font-bold shadow-xl shadow-green-900/20 text-lg transform hover:-translate-y-1"
               >
                 <MessageSquare className="mr-2" size={24} />
-                Chatea con Nosotros
+                <EditableText contentKey="contact_cta_wa" defaultText="Chatea con Nosotros" isEditMode={isEditMode} />
               </a>
             </div>
           </div>
@@ -171,7 +198,9 @@ export const Contact: React.FC = () => {
           {/* Form */}
           <div className="bg-card-dark rounded-3xl shadow-2xl p-10 lg:p-16 border border-white/5 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-            <h3 className="text-2xl font-serif font-bold text-ivory mb-8 relative z-10">Solicitud de Reserva / Cotización</h3>
+            <h3 className="text-2xl font-serif font-bold text-ivory mb-8 relative z-10">
+              <EditableText contentKey="contact_form_title" defaultText="Solicitud de Reserva / Cotización" isEditMode={isEditMode} />
+            </h3>
 
             {/* Success/Error Message */}
             {message && (
@@ -258,11 +287,11 @@ export const Contact: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-bold text-gold uppercase tracking-widest mb-2">Fecha del Evento</label>
-                <input name="date" type="date" className="mt-1 block w-full rounded-xl border-white/10 bg-background-dark text-ivory shadow-sm focus:border-gold focus:ring focus:ring-gold/20 p-4 border transition-all [color-scheme:dark]" />
+                <input name="date" type="date" title="Seleccionar fecha del evento" className="mt-1 block w-full rounded-xl border-white/10 bg-background-dark text-ivory shadow-sm focus:border-gold focus:ring focus:ring-gold/20 p-4 border transition-all [color-scheme:dark]" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-gold uppercase tracking-widest mb-2">Descripción Detallada</label>
-                <textarea name="message" rows={4} className="mt-1 block w-full rounded-xl border-white/10 bg-background-dark text-ivory placeholder-ivory/20 shadow-sm focus:border-gold focus:ring focus:ring-gold/20 p-4 border transition-all resize-none" placeholder="Detalles específicos sobre el evento..." />
+                <textarea name="message" rows={4} className="mt-1 block w-full rounded-xl border-white/10 bg-background-dark text-ivory placeholder-ivory/20 shadow-sm focus:border-gold focus:ring focus:ring-gold/20 p-4 border transition-all resize-none" placeholder="Detalles específicos" />
               </div>
               <button
                 type="submit"

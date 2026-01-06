@@ -15,7 +15,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
     };
 
     const handleWhatsAppClick = (plan: string) => {
-        const message = `Hola, estoy interesada en el paquete *${plan}* que vi en su página web. Me gustaría saber disponibilidad.`;
+        const message = "¡Hola! ✨ Me gustaría cotizar o reservar mi indumentaria para el Desfile de las Mil Polleras 2026. 👸💖";
         window.open(`https://wa.me/50769816062?text=${encodeURIComponent(message)}`, '_blank');
     };
 
@@ -78,7 +78,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                             ¿Por qué conformarte con una foto cuando puedes tener un <span className="text-gold italic">Legado</span>?
                         </h3>
                         <p className="text-ivory/70 text-lg leading-relaxed">
-                            En <strong>By Candashian</strong>, nuestro servicio de alquiler no es solo entregarte un vestido. Es prepararte para que seas el centro de todas las miradas con un atavío impecable.
+                            En <strong>By Candashians</strong>, nuestro servicio de alquiler no es solo entregarte un vestido. Es prepararte para que seas el centro de todas las miradas con un atavío impecable.
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                             {[
@@ -168,18 +168,17 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                             <h3 className="text-2xl font-bold text-ivory mb-2">Paquete Esencial</h3>
                             <div className="bg-white/5 inline-block px-3 py-1 rounded-lg text-xs font-bold text-ivory/50 uppercase tracking-wider mb-6 self-start">Montuna Tradicional</div>
 
-                            <div className="flex items-baseline gap-2 mb-8 border-b border-white/5 pb-8">
-                                <span className="text-5xl font-bold text-gold">$150</span>
-                                <span className="text-ivory/40 text-sm">/ sesión</span>
+                            <div className="mb-8 border-b border-white/5 pb-4">
+                                <span className="text-gold text-sm font-bold uppercase tracking-widest italic">Consulte disponibilidad</span>
                             </div>
 
                             <ul className="space-y-4 mb-10 flex-grow">
                                 {[
                                     "Alquiler de Pollera Montuna",
-                                    "Tembleques de Escamas",
-                                    "Maquillaje Básico",
+                                    "Tembleques o Sombrero",
+                                    "Maquillaje",
                                     "5 Fotos Digitales Editadas",
-                                    "Asistencia de Vestuario"
+                                    "Atavio o arreglo"
                                 ].map((feature) => (
                                     <li key={feature} className="flex items-center gap-3 text-ivory/80 text-sm">
                                         <Check size={16} className="text-gold shrink-0" />
@@ -201,9 +200,8 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                             <h3 className="text-2xl font-bold text-ivory mb-2">Gala Clásica</h3>
                             <div className="bg-gold/5 inline-block px-3 py-1 rounded-lg text-xs font-bold text-gold uppercase tracking-wider mb-6 self-start">Mas Popular</div>
 
-                            <div className="flex items-baseline gap-2 mb-8 border-b border-white/5 pb-8">
-                                <span className="text-5xl font-bold text-gold">$275</span>
-                                <span className="text-ivory/40 text-sm">/ sesión</span>
+                            <div className="mb-8 border-b border-white/5 pb-4">
+                                <span className="text-gold text-sm font-bold uppercase tracking-widest italic">Consulte disponibilidad</span>
                             </div>
 
                             <ul className="space-y-4 mb-10 flex-grow">
@@ -239,17 +237,17 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                             <h3 className="text-3xl font-serif font-bold text-white mb-2">Experiencia Reina</h3>
                             <div className="bg-primary/10 inline-block px-3 py-1 rounded-lg text-xs font-bold text-primary uppercase tracking-wider mb-6 self-start">Todo Incluido VIP</div>
 
-                            <div className="flex items-baseline gap-2 mb-8 border-b border-white/10 pb-8">
-                                <span className="text-6xl font-bold text-primary">$450</span>
-                                <span className="text-ivory/40 text-sm">/ full VIP</span>
+                            <div className="mb-8 border-b border-white/10 pb-4">
+                                <span className="text-primary text-sm font-bold uppercase tracking-widest italic">Consulte disponibilidad</span>
                             </div>
 
                             <ul className="space-y-4 mb-10 flex-grow">
                                 {[
                                     "Pollera de Lujo (Gala/Zurcida)",
-                                    "Joyería Completa Oro 14k",
+                                    "Joyería Completa",
                                     "Maquillaje Blindado + Pestañas",
                                     "Sesión de Fotos Ilimitada",
+                                    "Tembleques",
                                     "25 Fotos High-End Retocadas",
                                     "Reel de Video Profesional"
                                 ].map((feature) => (
@@ -325,7 +323,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
 
             {/* Footer */}
             <footer className="bg-black py-12 text-center text-ivory/30 text-sm border-t border-white/10">
-                <p className="mb-4 font-serif text-xl text-ivory/50">By Candashian</p>
+                <p className="mb-4 font-serif text-xl text-ivory/50">By Candashians</p>
                 <div className="flex justify-center gap-6 mb-8">
                     <button onClick={() => setView(View.HOME)} className="hover:text-gold transition-colors">Ir al Inicio del Sitio</button>
                     <button onClick={() => setView(View.CONTACT)} className="hover:text-gold transition-colors">Contacto</button>

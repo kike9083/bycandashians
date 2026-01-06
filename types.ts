@@ -15,26 +15,26 @@ export enum View {
 }
 
 export enum PolleraType {
-  GALA = 'Gala',
-  MONTUNA = 'Montuna',
-  CONGO = 'Congo',
-  NINA = 'Niña',
-  ESTILIZADA = 'Estilizada',
-  VERAGUENSE = 'Veraguense'
-}
-
-export enum Technique {
-  SOMBREADA = 'Sombreada',
-  MARCADA = 'Marcada',
-  ZURCIDA = 'Zurcida',
-  APLICACION = 'Aplicación'
+  GALA = 'Pollera de Gala',
+  MONTUNA = 'Pollera Montuna',
+  CONGO = 'Pollera Congo',
+  NINA = 'Pollera para Niña',
+  ESTILIZADA = 'Pollera Estilizada',
+  VERAGUENSE = 'Pollera Veragüense',
+  OCUENA = 'Pollera Ocueña',
+  CHIRICANA = 'Pollera Chiricana',
+  DARIENITA = 'Pollera Darienita',
+  ANTONERA = 'Pollera Antoñera',
+  CHORRERANA = 'Pollera Chorrerana',
+  BASQUINA = 'Pollera Basquiña',
+  TIRIADA = 'Pollera Tiriada',
+  ETNIAS = 'Etnias Panameñas'
 }
 
 export interface Product {
   id: string;
   name: string;
-  type: PolleraType;
-  technique: Technique;
+  type: string;
   price: number;
   image: string;
   description: string;

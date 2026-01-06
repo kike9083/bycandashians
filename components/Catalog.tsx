@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { PolleraType, Technique, Product, View } from '../types';
+import { PolleraType, Product, View } from '../types';
 import { Filter, ShoppingBag, Loader2, AlertCircle, Database, PlusCircle, Trash2, Edit, Save, X, Upload } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { getOptimizedImageUrl, localizeImageUrl } from '../utils/imageUtils';
@@ -14,32 +14,28 @@ interface CatalogProps {
 const SAMPLE_PRODUCTS = [
   {
     name: 'Pollera de Gala Santeña',
-    type: PolleraType.GALA,
-    technique: Technique.ZURCIDA,
+    type: 'Pollera de Gala',
     price: 450.00,
     description: 'Exquisita pollera de gala santeña con labores zurcidas y caladas. Incluye joyero completo.',
     image: '/image/pollera-santena-optimized.jpg'
   },
   {
     name: 'Pollera Montuna Santeña',
-    type: PolleraType.MONTUNA,
-    technique: Technique.MARCADA,
+    type: 'Pollera Montuna',
     price: 180.00,
     description: 'Colorida montuna santeña con camisa marcada en punto de cruz y faldón de zaraza floral.',
     image: '/image/catalog-montuna.jpg'
   },
   {
     name: 'Pollera Congo',
-    type: PolleraType.CONGO,
-    technique: Technique.APLICACION,
+    type: 'Pollera Congo',
     price: 90.00,
     description: 'Tradicional pollera Congo de la Costa Atlántica, llena de retazos, color y vida. Incluye corona.',
     image: '/image/pollera-santeña.png'
   },
   {
     name: 'Pollera Veragüense',
-    type: PolleraType.VERAGUENSE,
-    technique: Technique.SOMBREADA,
+    type: 'Pollera Veragüense',
     price: 200.00,
     description: 'Hermosa pollera de la región de Veraguas, caracterizada por sus tonos pastel y elegancia sencilla.',
     image: '/image/dueñas-3.jpg'
@@ -52,8 +48,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   const [seeding, setSeeding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [seedError, setSeedError] = useState<boolean>(false);
-  const [filterType, setFilterType] = useState<PolleraType | 'ALL'>('ALL');
-  const [filterTech, setFilterTech] = useState<Technique | 'ALL'>('ALL');
+  const [filterType, setFilterType] = useState<string>('ALL');
 
   // Edit states
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -65,8 +60,15 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   const [tempName, setTempName] = useState('');
   const [tempDescription, setTempDescription] = useState('');
   const [tempPrice, setTempPrice] = useState(0);
-  const [tempType, setTempType] = useState<PolleraType>(PolleraType.GALA);
-  const [tempTechnique, setTempTechnique] = useState<Technique>(Technique.ZURCIDA);
+  const [tempType, setTempType] = useState<string>('');
+
+  const availableTypes = Array.from(new Set([
+    ...Object.values(PolleraType),
+    ...products.map(p => p.type)
+  ]))
+    .filter(Boolean)
+    .filter(t => t !== 'Gala' && t !== 'Montuna') // Remove legacy short names
+    .sort() as string[];
 
   const fetchProducts = async () => {
     try {
@@ -131,7 +133,6 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     setTempDescription(product.description);
     setTempPrice(product.price);
     setTempType(product.type);
-    setTempTechnique(product.technique);
   };
 
   const cancelEdit = (e: React.MouseEvent) => {
@@ -150,7 +151,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
       description: tempDescription,
       price: tempPrice,
       type: tempType,
-      technique: tempTechnique
+      technique: ''
     }).eq('id', id);
 
     if (!error) {
@@ -162,8 +163,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
         name: tempName,
         description: tempDescription,
         price: tempPrice,
-        type: tempType,
-        technique: tempTechnique
+        type: tempType
       } : p));
       setEditingId(null);
     } else {
@@ -177,9 +177,15 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   };
 
   const filteredProducts = products.filter(p => {
-    const typeMatch = filterType === 'ALL' || p.type === filterType;
-    const techMatch = filterTech === 'ALL' || p.technique === filterTech;
-    return typeMatch && techMatch;
+    if (filterType === 'ALL') return true;
+
+    // Normalización para comparación robusta (ignora prefijos "Pollera de/para")
+    const normalize = (s: string) => (s || '').toLowerCase()
+      .replace(/^pollera (de |para |la )?/, '')
+      .replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u')
+      .trim();
+
+    return p.type === filterType || normalize(p.type) === normalize(filterType);
   });
 
   return (
@@ -207,9 +213,10 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value as any)}
                 className="w-full border-olive/30 rounded-xl shadow-sm p-3 bg-background-dark text-ivory focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
+                title="Filtrar por tipo de pollera"
               >
-                <option value="ALL">Todas</option>
-                {Object.values(PolleraType).map(t => <option key={t} value={t}>{t}</option>)}
+                <option value="ALL">Todas las polleras</option>
+                {availableTypes.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
           </div>
@@ -271,7 +278,7 @@ WITH CHECK (true);`}
                   <>
                     <p className="text-xl font-medium">No se encontraron productos con estos filtros.</p>
                     <button
-                      onClick={() => { setFilterType('ALL'); setFilterTech('ALL'); }}
+                      onClick={() => { setFilterType('ALL'); }}
                       className="mt-4 text-primary font-bold hover:underline text-lg"
                     >
                       Limpiar Filtros
@@ -399,24 +406,16 @@ WITH CHECK (true);`}
                             placeholder="Descripción..."
                           />
                           <div className="flex gap-2 mb-6">
-                            <div className="w-1/2">
+                            <div className="w-full">
                               <label className="text-xs text-ivory/50 font-bold uppercase block mb-1">Tipo:</label>
                               <select
                                 value={tempType}
-                                onChange={(e) => setTempType(e.target.value as PolleraType)}
+                                onChange={(e) => setTempType(e.target.value)}
                                 className="bg-background-dark border border-white/10 rounded p-2 text-sm text-ivory w-full outline-none focus:border-gold"
+                                title="Seleccionar tipo de pollera"
                               >
-                                {Object.values(PolleraType).map(t => <option key={t} value={t}>{t}</option>)}
-                              </select>
-                            </div>
-                            <div className="w-1/2">
-                              <label className="text-xs text-ivory/50 font-bold uppercase block mb-1">Labor:</label>
-                              <select
-                                value={tempTechnique}
-                                onChange={(e) => setTempTechnique(e.target.value as Technique)}
-                                className="bg-background-dark border border-white/10 rounded p-2 text-sm text-ivory w-full outline-none focus:border-gold"
-                              >
-                                {Object.values(Technique).map(t => <option key={t} value={t}>{t}</option>)}
+                                <option value="" disabled>Selecciona un tipo...</option>
+                                {availableTypes.map(t => <option key={t} value={t}>{t}</option>)}
                               </select>
                             </div>
                           </div>
@@ -459,13 +458,13 @@ WITH CHECK (true);`}
                     onClick={async () => {
                       const newProduct = {
                         name: 'Nuevo Producto',
-                        type: PolleraType.GALA,
-                        technique: Technique.ZURCIDA,
+                        type: 'Pollera de Gala',
                         price: 0,
                         description: 'Descripción pendiente...',
                         image: '',
                         image_fit: 'cover',
-                        image_position: 'center'
+                        image_position: 'center',
+                        technique: ''
                       };
 
                       const { data, error } = await supabase.from('products').insert([newProduct]).select();
