@@ -26,7 +26,6 @@ export default defineConfig(({ mode }) => {
             'vendor-react': ['react', 'react-dom'],
             'vendor-utils': ['jspdf', 'jspdf-autotable', 'lucide-react'],
             'vendor-ai': ['@google/genai'],
-            'vendor-jimp': ['jimp'],
           }
         }
       },
