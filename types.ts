@@ -17,16 +17,12 @@ export enum View {
 export enum PolleraType {
   GALA = 'Pollera de Gala',
   MONTUNA = 'Pollera Montuna',
-  CONGO = 'Pollera Congo',
   NINA = 'Pollera para Niña',
-  ESTILIZADA = 'Pollera Estilizada',
   VERAGUENSE = 'Pollera Veragüense',
   OCUENA = 'Pollera Ocueña',
   CHIRICANA = 'Pollera Chiricana',
   DARIENITA = 'Pollera Darienita',
-  ANTONERA = 'Pollera Antoñera',
   CHORRERANA = 'Pollera Chorrerana',
-  BASQUINA = 'Pollera Basquiña',
   TIRIADA = 'Pollera Tiriada',
   ETNIAS = 'Etnias Panameñas'
 }

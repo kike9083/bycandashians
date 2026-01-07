@@ -26,13 +26,7 @@ const SAMPLE_PRODUCTS = [
     description: 'Colorida montuna santeña con camisa marcada en punto de cruz y faldón de zaraza floral.',
     image: '/image/catalog-montuna.jpg'
   },
-  {
-    name: 'Pollera Congo',
-    type: 'Pollera Congo',
-    price: 90.00,
-    description: 'Tradicional pollera Congo de la Costa Atlántica, llena de retazos, color y vida. Incluye corona.',
-    image: '/image/pollera-santeña.png'
-  },
+
   {
     name: 'Pollera Veragüense',
     type: 'Pollera Veragüense',
@@ -68,7 +62,14 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     ...products.map(p => p.type)
   ]))
     .filter(Boolean)
-    .filter(t => t !== 'Gala' && t !== 'Montuna') // Remove legacy short names
+    .filter(t =>
+      t !== 'Gala' &&
+      t !== 'Montuna' &&
+      t !== 'Pollera Congo' &&
+      t !== 'Pollera Antoñera' &&
+      t !== 'Pollera Basquiña' &&
+      t !== 'Pollera Estilizada'
+    ) // Remove legacy and requested types
     .sort() as string[];
 
   const fetchProducts = async () => {
@@ -188,12 +189,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     return p.type === filterType || normalize(p.type) === normalize(filterType);
   });
 
-  // Encuentra una imagen representativa para el tipo seleccionado
-  const getCategoryImage = (type: string) => {
-    if (type === 'ALL') return '/image/hero-bg.jpg';
-    const firstProduct = products.find(p => p.type === type);
-    return firstProduct ? getOptimizedImageUrl(firstProduct.image) : '/image/logo.png';
-  };
+
 
   return (
     <div className="bg-background-dark min-h-screen pt-[250px] pb-16 w-full text-ivory">
@@ -205,31 +201,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
           </div>
         </div>
 
-        {/* Banner de Categoría Seleccionada */}
-        <div className="mb-12 relative h-[300px] md:h-[400px] rounded-[3rem] overflow-hidden group shadow-2xl border border-gold/10 animate-fade-in">
-          <img
-            src={getCategoryImage(filterType)}
-            alt={filterType}
-            className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/40 to-transparent flex flex-col justify-center px-12 md:px-20">
-            <span className="text-primary font-bold text-sm uppercase tracking-[0.3em] mb-4">Colección Exclusiva</span>
-            <h2 className="text-4xl md:text-6xl font-serif font-bold text-ivory mb-6 leading-tight max-w-2xl">
-              {filterType === 'ALL' ? 'Catálogo Completo' : filterType}
-            </h2>
-            <p className="text-ivory/70 text-lg max-w-xl font-light line-clamp-3">
-              {filterType === 'ALL'
-                ? 'Explora nuestra selección curada de polleras tradicionales panameñas, cada una con una historia única tejida en sus hilos.'
-                : `Descubre la elegancia y tradición de nuestra colección de ${filterType}. Piezas únicas listas para tu próximo evento.`}
-            </p>
-          </div>
-          <div className="absolute bottom-8 right-12 hidden md:block">
-            <div className="bg-background-dark/80 backdrop-blur-md p-4 rounded-2xl border border-gold/20 flex items-center gap-4">
-              <ShoppingBag className="text-gold" />
-              <span className="text-ivory font-bold">{filteredProducts.length} Diseños Disponibles</span>
-            </div>
-          </div>
-        </div>
+
 
         {/* Filtros Compactos y Ajuste de Grid */}
         <div className="mb-12 flex flex-col md:flex-row items-center justify-between gap-6">
