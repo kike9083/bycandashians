@@ -30,7 +30,7 @@ export const Hero: React.FC<HeroProps> = ({ setView, isEditMode }) => {
       <div className="relative w-full px-6 md:px-12 lg:px-24 py-24 lg:py-40 flex flex-col justify-center h-full min-h-[700px]">
         <EditableText
           contentKey="hero_page_title"
-          defaultText="Alquiler de Polleras en Panamá, un legado."
+          defaultText="Alquiler de Polleras y Atavíos en Panamá."
           isEditMode={!!isEditMode}
           as="h1"
           className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-tight max-w-4xl block"
@@ -38,7 +38,7 @@ export const Hero: React.FC<HeroProps> = ({ setView, isEditMode }) => {
         />
         <EditableText
           contentKey="hero_page_desc"
-          defaultText="Vive la experiencia completa de lucir una Pollera Panameña. Desde el alquiler de piezas exclusivas hasta el arte del atavío y maquillaje profesional."
+          defaultText="Vive la experiencia completa de portar una Pollera Panameña con el atavío correcto. Ofrecemos alquiler de piezas exclusivas, joyería de lujo y asesoría experta."
           isEditMode={!!isEditMode}
           as="p"
           className="mt-4 max-w-2xl text-2xl text-gray-200 mb-10 font-light block"

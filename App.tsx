@@ -6,7 +6,6 @@ import { Services } from './components/Services';
 import { Catalog } from './components/Catalog';
 import { Gallery } from './components/Gallery';
 import { Contact } from './components/Contact';
-import { AIGenerator } from './components/AIGenerator';
 import { Footer } from './components/Footer';
 import { PrivacyPolicy, TermsOfService } from './components/Legal';
 import { AdminLogin } from './components/AdminLogin';
@@ -117,10 +116,6 @@ const App: React.FC = () => {
 
         {activeView === View.CONTACT && (
           <Contact isEditMode={isEditMode} />
-        )}
-
-        {activeView === View.AI_GENERATOR && (
-          <AIGenerator />
         )}
 
         {activeView === View.PRIVACY && (

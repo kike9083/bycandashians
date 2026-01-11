@@ -196,7 +196,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
       <div className="w-full px-6 md:px-12 lg:px-24">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-olive/20 pb-8">
           <div>
-            <h1 className="text-4xl font-serif font-bold text-ivory animate-fade-in-up">Catálogo de Alquiler de Polleras</h1>
+            <h1 className="text-4xl font-serif font-bold text-ivory animate-fade-in-up">Catálogo de Alquiler de Polleras y Atavíos</h1>
             <p className="mt-2 text-xl text-ivory/60 animate-fade-in-up delay-100">Alquiler de polleras de gala y montunas exclusivas para tu próximo evento.</p>
           </div>
         </div>

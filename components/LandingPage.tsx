@@ -196,7 +196,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                     <h1 className="text-ivory/90 text-lg md:text-2xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md text-balance font-serif">
                         <EditableText
                             contentKey="hero_title"
-                            defaultText="Expertos en Alquiler de Polleras en Panamá. Elevando el folklore panameño a un estándar de lujo y precisión. Descubre por qué somos la elección experta para tus momentos más memorables."
+                            defaultText="Especialistas en Alquiler de Polleras y Atavíos en Panamá. Elevando el folklore panameño a un estándar de lujo y tradición. Descubre por qué somos la opción preferida para el Desfile de las Mil Polleras."
                             isEditMode={!!isEditMode}
                             multiline
                         />

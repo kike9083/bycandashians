@@ -132,7 +132,7 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Package 1: Esencial */}
                         <div className="bg-darkest rounded-3xl p-8 border border-white/10 flex flex-col hover:border-gold/30 transition-all">
-                            <h3 className="text-xl font-bold mb-2">PACK ESENCIAL</h3>
+                            <h3 className="text-xl font-bold mb-2 uppercase">Brillo Esencial</h3>
                             <div className="text-gold text-xs font-black mb-6 uppercase tracking-widest">Montuna Tradicional</div>
 
                             <div className="mb-8 border-b border-white/5 pb-4">
@@ -155,17 +155,17 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                             </ul>
 
                             <button
-                                onClick={() => handleBooking("Pack Esencial - Evento")}
+                                onClick={() => handleBooking("Brillo Esencial - Evento")}
                                 className="w-full border-2 border-gold text-gold hover:bg-gold hover:text-background-dark font-black py-4 rounded-2xl transition-all uppercase"
                             >
-                                Reservar Esencial
+                                Reservar Brillo Esencial
                             </button>
                         </div>
 
                         {/* Package 2: Gala Clásica */}
                         <div className="bg-darkest rounded-3xl p-8 border-2 border-[#ffaa00]/30 flex flex-col md:scale-105 shadow-2xl shadow-[#ffaa00]/10 z-10">
                             <div className="bg-[#ffaa00] text-black text-[10px] font-black px-4 py-1 rounded-full self-center mb-4 uppercase tracking-tighter">MÁS SOLICITADO</div>
-                            <h3 className="text-2xl font-black mb-2 text-center">GALA CLÁSICA</h3>
+                            <h3 className="text-2xl font-black mb-2 text-center uppercase">Brillo Radiante</h3>
                             <div className="text-[#ffaa00] text-xs font-black mb-6 text-center uppercase tracking-widest">Pollera de Lujo</div>
 
                             <div className="flex justify-center mb-8 border-b border-[#ffaa00]/10 pb-4">
@@ -188,7 +188,7 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                             </ul>
 
                             <button
-                                onClick={() => handleBooking("Pack Gala Clásica - Evento")}
+                                onClick={() => handleBooking("Brillo Radiante - Evento")}
                                 className="w-full bg-[#ffaa00] text-black hover:bg-white font-black py-4 rounded-2xl transition-all uppercase shadow-[0_0_20px_rgba(255,170,0,0.3)]"
                             >
                                 ¡LO QUIERO YA!
@@ -197,7 +197,7 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
 
                         {/* Package 3: Reina del Asfalto (VIP) */}
                         <div className="bg-background-dark rounded-3xl p-8 border border-white/10 flex flex-col hover:border-white/30 transition-all opacity-90">
-                            <h3 className="text-xl font-bold mb-2">REINA VIP</h3>
+                            <h3 className="text-xl font-bold mb-2 uppercase">Brillo total</h3>
                             <div className="text-white/40 text-xs font-black mb-6 uppercase tracking-widest">Experiencia Full VIP</div>
 
                             <div className="mb-8 border-b border-white/5 pb-4">
@@ -221,10 +221,10 @@ export const OfferLandingEvent: React.FC<OfferLandingEventProps> = ({ setView })
                             </ul>
 
                             <button
-                                onClick={() => handleBooking("Pack Reina VIP - Evento")}
+                                onClick={() => handleBooking("Brillo total - Evento")}
                                 className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/20 font-black py-4 rounded-2xl transition-all uppercase"
                             >
-                                Reservar VIP
+                                Reservar Brillo total
                             </button>
                         </div>
                     </div>

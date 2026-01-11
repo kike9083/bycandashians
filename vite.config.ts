@@ -11,8 +11,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [react()],
     define: {
-      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+      // API Keys removed for security
     },
     resolve: {
       alias: {
@@ -25,7 +24,6 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             'vendor-react': ['react', 'react-dom'],
             'vendor-utils': ['jspdf', 'jspdf-autotable', 'lucide-react'],
-            'vendor-ai': ['@google/genai'],
           }
         }
       },
