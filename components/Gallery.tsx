@@ -179,9 +179,13 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = getOptimizedImageUrl('/image/galeria-5.jpg');
-    // Prevenir bucles si la imagen de fallback también falla
-    e.currentTarget.onerror = null;
+    // Prevent infinite loop if fallback also fails
+    const target = e.currentTarget;
+    if (target.dataset.hasError) return;
+
+    target.dataset.hasError = "true";
+    target.src = getOptimizedImageUrl('/image/duenas-3.jpg');
+    target.onerror = null; // Final safety net
   };
 
   return (

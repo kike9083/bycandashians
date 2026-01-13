@@ -6,16 +6,17 @@ export const localizeImageUrl = (url: string): string => {
 
   if (url.startsWith('/image/')) {
     const filename = url.split('/').pop();
-    if (filename && !KEEP_LOCAL.includes(filename)) {
-      // Decodificar y normalizar nombre (ñ -> n) para coincidir con lo subido a Supabase
-      const decodedName = decodeURIComponent(filename)
-        .replace(/ñ/g, 'n')
-        .replace(/Ñ/g, 'n')
-        .replace(/\s+/g, '-');
+    // if (filename && !KEEP_LOCAL.includes(filename)) {
+    //   // Decodificar y normalizar nombre (ñ -> n) para coincidir con lo subido a Supabase
+    //   const decodedName = decodeURIComponent(filename)
+    //     .replace(/ñ/g, 'n')
+    //     .replace(/Ñ/g, 'n')
+    //     .replace(/\s+/g, '-');
 
-      const baseName = decodedName.split('.')[0];
-      return `https://varios-supabase-bycandashians.fjueze.easypanel.host/storage/v1/object/public/bycandashan/site-assets-v2/${baseName}.jpg`;
-    }
+    //   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    //   const baseName = decodedName.split('.')[0];
+    //   return `${supabaseUrl}/storage/v1/object/public/bycandashan/site-assets-v2/${baseName}.jpg`;
+    // }
     return url;
   }
 
@@ -31,8 +32,9 @@ export const localizeImageUrl = (url: string): string => {
             .replace(/Ñ/g, 'n')
             .replace(/\s+/g, '-');
 
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
           const baseName = decodedName.split('.')[0];
-          return `https://varios-supabase-bycandashians.fjueze.easypanel.host/storage/v1/object/public/bycandashan/site-assets-v2/${baseName}.jpg`;
+          return `${supabaseUrl}/storage/v1/object/public/bycandashan/site-assets-v2/${baseName}.jpg`;
         }
       }
     } catch (e) {

@@ -173,8 +173,12 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = getOptimizedImageUrl('/image/pollera-santena-optimized.jpg'); // Fallback
-    e.currentTarget.onerror = null;
+    const target = e.currentTarget;
+    if (target.dataset.hasError) return;
+
+    target.dataset.hasError = "true";
+    target.src = getOptimizedImageUrl('/image/duenas-3.jpg'); // Fallback
+    target.onerror = null;
   };
 
   const filteredProducts = products.filter(p => {
