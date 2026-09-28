@@ -118,19 +118,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
                     <p className="text-ivory/90 text-lg md:text-2xl font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md text-balance font-serif">
                         Elevando el folklore panameño a un estándar de <span className="text-gold italic">lujo</span> y <span className="text-gold italic">precisión</span>. Descubre por qué somos la elección experta para tus momentos más memorables.
                     </p>
-                    <div className="flex flex-col gap-4 mt-8 w-full max-w-2xl">
-                        <div className="flex justify-center w-full">
-                            <button
-                                className="group flex flex-col items-center justify-center rounded-2xl p-8 bg-gradient-to-br from-olive to-gold/80 text-white font-black transition-all shadow-xl hover:-translate-y-2 hover:shadow-olive/50 w-full max-w-lg"
-                                onClick={() => setView(View.OFFER_EVENT)}
-                            >
-                                <span className="material-symbols-outlined text-5xl mb-3 animate-pulse">bolt</span>
-                                <span className="text-2xl italic tracking-wide">Promo 2026</span>
-                                <span className="text-sm opacity-90 font-bold mt-2 tracking-widest uppercase">Desfile de las Mil Polleras</span>
-                            </button>
-                        </div>
-                        <p className="text-center text-ivory/40 text-xs mt-4 uppercase tracking-widest font-bold">Haz Clic para Ver el Diseño</p>
-                    </div>
                 </div>
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-ivory/30">
                     <span className="material-symbols-outlined text-4xl">keyboard_arrow_down</span>
