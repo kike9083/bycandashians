@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../services/supabaseClient';
+import { databases, APPWRITE_DATABASE_ID, Query, toItem } from '../services/appwriteClient';
 import { Lead } from '../types';
 import { MessageCircle, Trash2, Calendar, Mail, User, Phone, Search, Grid3x3, List, ChevronDown, ChevronUp, Filter, FileText, Edit2, Save, X as CloseIcon } from 'lucide-react';
 import { QuoteModal } from './QuoteModal';
@@ -18,54 +18,40 @@ export const CRM: React.FC = () => {
 
     useEffect(() => {
         fetchLeads();
-
-        // Subscribe to real-time changes
-        const subscription = supabase
-            .channel('leads_channel')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, (payload) => {
-                fetchLeads();
-            })
-            .subscribe();
-
-        return () => {
-            subscription.unsubscribe();
-        };
     }, []);
 
     const fetchLeads = async () => {
         setLoading(true);
-        const { data, error } = await supabase
-            .from('leads')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (data) {
-            setLeads(data as Lead[]);
+        try {
+            const res = await databases.listDocuments(APPWRITE_DATABASE_ID, 'leads', [
+                Query.orderDesc('created_at'),
+                Query.limit(500),
+            ]);
+            setLeads(res.documents.map((d) => toItem<Lead>(d)));
+        } catch (err) {
+            console.error('Error fetching leads:', err);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const updateStatus = async (id: string, newStatus: string) => {
-        const { error } = await supabase
-            .from('leads')
-            .update({ status: newStatus })
-            .eq('id', id);
-
-        if (!error) {
+        try {
+            await databases.updateDocument(APPWRITE_DATABASE_ID, 'leads', id, { status: newStatus });
             setLeads(prev => prev.map(lead => lead.id === id ? { ...lead, status: newStatus as any } : lead));
+        } catch (err) {
+            console.error('Error updating status:', err);
         }
     };
 
     const deleteLead = async (id: string) => {
         if (!window.confirm('¿Estás seguro de que quieres eliminar este cliente potencial?')) return;
 
-        const { error } = await supabase
-            .from('leads')
-            .delete()
-            .eq('id', id);
-
-        if (!error) {
+        try {
+            await databases.deleteDocument(APPWRITE_DATABASE_ID, 'leads', id);
             setLeads(prev => prev.filter(lead => lead.id !== id));
+        } catch (err) {
+            console.error('Error deleting lead:', err);
         }
     };
 
@@ -85,16 +71,13 @@ export const CRM: React.FC = () => {
         e.preventDefault();
         if (!editingLead) return;
 
-        const { error } = await supabase
-            .from('leads')
-            .update(editFormData)
-            .eq('id', editingLead.id);
-
-        if (!error) {
+        try {
+            await databases.updateDocument(APPWRITE_DATABASE_ID, 'leads', editingLead.id, editFormData);
             setLeads(prev => prev.map(l => l.id === editingLead.id ? { ...l, ...editFormData } : l));
             setEditingLead(null);
-        } else {
-            alert('Error al actualizar el cliente: ' + error.message);
+        } catch (err: any) {
+            console.error('Error updating lead:', err);
+            alert('Error al actualizar el cliente: ' + (err?.message || 'Error desconocido'));
         }
     };
 

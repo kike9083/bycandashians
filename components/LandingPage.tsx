@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View } from '../types';
-import { Session } from '@supabase/supabase-js';
-import { supabase } from '../services/supabaseClient';
+import { signOut, type AppSession } from '../services/appwriteClient';
 import { Lock, LogOut, PenTool } from 'lucide-react';
 
 interface LandingPageProps {
     setView: (view: View) => void;
-    session?: Session | null;
+    session?: AppSession;
     isEditMode?: boolean;
     toggleEditMode?: () => void;
+    onLogout?: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEditMode, toggleEditMode }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEditMode, toggleEditMode, onLogout }) => {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -23,7 +23,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ setView, session, isEd
     }, []);
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
+        await signOut();
+        onLogout?.();
         setView(View.HOME);
     };
 

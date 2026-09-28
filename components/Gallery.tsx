@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { GalleryItem } from '../types';
-import { supabase } from '../services/supabaseClient';
+import { databases, APPWRITE_DATABASE_ID, Query, ID, toItem } from '../services/appwriteClient';
 import { Loader2, PlusCircle, Trash2, Save, Edit, X, Filter, ChevronDown } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 
@@ -54,36 +54,29 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
         setLoading(true);
       }
 
-      let query = supabase
-        .from('gallery')
-        .select('*', { count: 'exact' });
-
-      // Apply filter if specific category selected
+      const queries: string[] = [];
       if (category !== 'TODAS') {
-        query = query.eq('category', category);
+        queries.push(Query.equal('category', category));
       }
+      queries.push(
+        Query.orderDesc('created_at'),
+        Query.limit(ITEMS_PER_PAGE),
+        Query.offset(pageNumber * ITEMS_PER_PAGE)
+      );
 
-      // Apply pagination
-      const from = pageNumber * ITEMS_PER_PAGE;
-      const to = from + ITEMS_PER_PAGE - 1;
-
-      const { data, count, error } = await query
-        .range(from, to)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const res = await databases.listDocuments(APPWRITE_DATABASE_ID, 'gallery', queries);
+      const data = res.documents.map((d) => toItem<GalleryItem>(d));
+      const count = res.total;
 
       if (data) {
         if (isAppend) {
-          setImages(prev => [...prev, ...data as GalleryItem[]]);
+          setImages(prev => [...prev, ...data]);
         } else {
-          setImages(data as GalleryItem[]);
+          setImages(data);
         }
 
         // Check if there are more items to load
-        if (count !== null) {
-          setHasMore(from + data.length < count);
-        }
+        setHasMore(pageNumber * ITEMS_PER_PAGE + data.length < count);
       }
     } catch (err) {
       console.error('Error fetching gallery:', err);
@@ -106,32 +99,41 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
   };
 
   const handleSeedGallery = async () => {
-    const { error } = await supabase.from('gallery').insert(SAMPLE_IMAGES);
-    if (!error) {
+    try {
+      await databases.createDocument(APPWRITE_DATABASE_ID, 'gallery', ID.unique(), SAMPLE_IMAGES[0]);
+      for (const img of SAMPLE_IMAGES.slice(1)) {
+        await databases.createDocument(APPWRITE_DATABASE_ID, 'gallery', ID.unique(), img);
+      }
       setPage(0);
       fetchGallery(0, selectedCategory, false);
+    } catch (err) {
+      console.error('Error seeding gallery:', err);
     }
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm('¿Eliminar foto?')) return;
-    const { error } = await supabase.from('gallery').delete().eq('id', id);
-    if (!error) setImages(images.filter(i => i.id !== id));
+    try {
+      await databases.deleteDocument(APPWRITE_DATABASE_ID, 'gallery', id);
+      setImages(images.filter(i => i.id !== id));
+    } catch (err) {
+      console.error('Error deleting image:', err);
+    }
   };
 
   const handleAdd = async () => {
     if (!newUrl) return;
-    const { data, error } = await supabase
-      .from('gallery')
-      .insert([{ url: newUrl, category: newCategory }])
-      .select();
-
-    if (!error && data) {
+    try {
+      const doc = await databases.createDocument(APPWRITE_DATABASE_ID, 'gallery', ID.unique(), {
+        url: newUrl,
+        category: newCategory,
+      });
       setNewUrl('');
       // Prepend new image to the list immediately
-      setImages([data[0] as GalleryItem, ...images]);
-    } else {
+      setImages([toItem<GalleryItem>(doc), ...images]);
+    } catch (err) {
+      console.error('Error saving image:', err);
       alert("Error al guardar en la base de datos. Verifica permisos.");
     }
   };
@@ -153,14 +155,13 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
 
   const saveEdit = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const { error } = await supabase.from('gallery').update({
-      url: editUrl,
-      image_fit: tempImageFit,
-      image_position: tempImagePos,
-      category: tempCategory
-    }).eq('id', id);
-
-    if (!error) {
+    try {
+      await databases.updateDocument(APPWRITE_DATABASE_ID, 'gallery', id, {
+        url: editUrl,
+        image_fit: tempImageFit,
+        image_position: tempImagePos,
+        category: tempCategory
+      });
       setImages(images.map(i => i.id === id ? {
         ...i,
         url: editUrl,
@@ -169,7 +170,8 @@ export const Gallery: React.FC<GalleryProps> = ({ isEditMode }) => {
         category: tempCategory
       } : i));
       setEditingId(null);
-    } else {
+    } catch (err) {
+      console.error('Error updating image:', err);
       alert("Error al actualizar la imagen");
     }
   };

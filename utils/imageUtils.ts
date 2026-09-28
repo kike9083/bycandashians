@@ -27,7 +27,7 @@ export const getOptimizedImageUrl = (url: string, width: number = 800): string =
     return newUrl;
   }
 
-  // 3. Optimización para MinIO / Supabase / URLs Externas
+  // 3. Optimización para Appwrite / MinIO / URLs Externas
   // Usamos 'wsrv.nl' como Proxy de Imágenes (Open Source).
   // Esto redimensiona, comprime y convierte a WebP al vuelo las imágenes de tu servidor.
   

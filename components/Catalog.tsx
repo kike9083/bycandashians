@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { PolleraType, Technique, Product, View } from '../types';
 import { Filter, ShoppingBag, Loader2, AlertCircle, Database, PlusCircle, Trash2, Edit, Save, X } from 'lucide-react';
-import { supabase } from '../services/supabaseClient';
+import { databases, APPWRITE_DATABASE_ID, ID, toItem } from '../services/appwriteClient';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface CatalogProps {
@@ -68,17 +68,9 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     try {
       setLoading(true);
       setError(null);
-      const { data, error } = await supabase
-        .from('products')
-        .select('*');
+      const res = await databases.listDocuments(APPWRITE_DATABASE_ID, 'products');
 
-      if (error) {
-        throw error;
-      }
-
-      if (data) {
-        setProducts(data as Product[]);
-      }
+      setProducts(res.documents.map((d) => toItem<Product>(d)));
     } catch (err: any) {
       console.error('Error fetching products:', err);
       setError(`Error: ${err.message || JSON.stringify(err)}`);
@@ -95,8 +87,9 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
     setSeeding(true);
     setSeedError(false);
     try {
-      const { error } = await supabase.from('products').insert(SAMPLE_PRODUCTS);
-      if (error) throw error;
+      for (const p of SAMPLE_PRODUCTS) {
+        await databases.createDocument(APPWRITE_DATABASE_ID, 'products', ID.unique(), p);
+      }
       await fetchProducts(); // Reload data
     } catch (err: any) {
       console.error('Error seeding data:', err);
@@ -109,10 +102,11 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!window.confirm("¿Seguro que deseas eliminar esta pollera?")) return;
-    const { error } = await supabase.from('products').delete().eq('id', id);
-    if (!error) {
+    try {
+      await databases.deleteDocument(APPWRITE_DATABASE_ID, 'products', id);
       setProducts(products.filter(p => p.id !== id));
-    } else {
+    } catch (err) {
+      console.error('Error deleting product:', err);
       alert("Error al eliminar producto");
     }
   };
@@ -136,16 +130,15 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
 
   const saveEdit = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const { error } = await supabase.from('products').update({
-      image: tempImageUrl,
-      image_fit: tempImageFit,
-      image_position: tempImagePos,
-      name: tempName,
-      description: tempDescription,
-      price: tempPrice
-    }).eq('id', id);
-
-    if (!error) {
+    try {
+      await databases.updateDocument(APPWRITE_DATABASE_ID, 'products', id, {
+        image: tempImageUrl,
+        image_fit: tempImageFit,
+        image_position: tempImagePos,
+        name: tempName,
+        description: tempDescription,
+        price: tempPrice
+      });
       setProducts(products.map(p => p.id === id ? {
         ...p,
         image: tempImageUrl,
@@ -156,7 +149,8 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
         price: tempPrice
       } : p));
       setEditingId(null);
-    } else {
+    } catch (err) {
+      console.error('Error updating product:', err);
       alert('Error al actualizar producto');
     }
   };
@@ -235,7 +229,7 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
                     <Database className="w-16 h-16 text-olive/20 mb-6" />
                     <h3 className="text-xl font-bold text-ivory mb-2">Base de Datos Vacía</h3>
                     <p className="text-center text-base max-w-md mb-8">
-                      No hay productos en la base de datos de Supabase. Puedes cargar los productos de ejemplo automáticamente.
+                      No hay productos en la base de datos de Appwrite. Puedes cargar los productos de ejemplo automáticamente.
                     </p>
                     <button
                       onClick={handleSeedData}
@@ -251,18 +245,10 @@ export const Catalog: React.FC<CatalogProps> = ({ setView, isEditMode }) => {
                         <div className="flex items-start">
                           <AlertCircle className="text-gold w-6 h-6 mr-3 mt-1 flex-shrink-0" />
                           <div className="w-full">
-                            <p className="font-bold text-gold text-base mb-2">Permiso Denegado (RLS)</p>
+                            <p className="font-bold text-gold text-base mb-2">Permiso Denegado</p>
                             <p className="text-sm text-yellow-100/80 mb-4">
-                              Supabase bloquea las inserciones por defecto. Para habilitar este botón, ejecuta este comando en el <strong>SQL Editor</strong> de Supabase:
+                              Appwrite bloquea las inserciones sin permiso. Para habilitar este botón, agregá el permiso <strong>create("users")</strong> a la colección <strong>products</strong> en la consola de Appwrite (o iniciá sesión como admin).
                             </p>
-                            <div className="relative group">
-                              <pre className="bg-background-dark text-ivory/80 p-4 rounded text-sm overflow-x-auto font-mono border border-olive/20">
-                                {`CREATE POLICY "Enable insert for anon" 
-ON products 
-FOR INSERT 
-WITH CHECK (true);`}
-                              </pre>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -446,14 +432,15 @@ WITH CHECK (true);`}
                         image_position: 'center'
                       };
 
-                      const { data, error } = await supabase.from('products').insert([newProduct]).select();
-
-                      if (!error && data) {
-                        setProducts(prev => [...prev, data[0] as Product]);
+                      try {
+                        const doc = await databases.createDocument(APPWRITE_DATABASE_ID, 'products', ID.unique(), newProduct);
+                        const created = toItem<Product>(doc);
+                        setProducts(prev => [...prev, created]);
                         // Auto-start edit mode for the new product
-                        startEdit(data[0] as Product);
-                      } else {
-                        alert("Error al crear producto: " + error?.message);
+                        startEdit(created);
+                      } catch (err: any) {
+                        console.error('Error creating product:', err);
+                        alert("Error al crear producto: " + (err?.message || 'Error desconocido'));
                       }
                     }}
                   >

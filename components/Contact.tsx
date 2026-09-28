@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Phone, Mail, MapPin, MessageSquare, CheckCircle, AlertCircle, ChevronDown } from 'lucide-react';
-import { supabase } from '../services/supabaseClient';
+import { databases, APPWRITE_DATABASE_ID, ID } from '../services/appwriteClient';
 
 export const Contact: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
@@ -47,28 +47,16 @@ export const Contact: React.FC = () => {
     const servicesText = selectedServices.join(', ');
 
     try {
-      // Guardar en Supabase
-      const { data, error } = await supabase
-        .from('leads')
-        .insert([
-          {
-            name,
-            email,
-            phone,
-            service: servicesText,
-            event_date: date || null,
-            message: messageText,
-            status: 'New'
-          }
-        ])
-        .select();
-
-      if (error) {
-        console.error('Error al guardar:', error);
-        setMessage({ type: 'error', text: 'Hubo un error al enviar el formulario. Por favor intenta de nuevo.' });
-        setSubmitting(false);
-        return;
-      }
+      // Guardar en Appwrite
+      await databases.createDocument(APPWRITE_DATABASE_ID, 'leads', ID.unique(), {
+        name,
+        email,
+        phone,
+        service: servicesText,
+        event_date: date || null,
+        message: messageText,
+        status: 'New'
+      });
 
       // Abrir WhatsApp
       const text = `Hola! Me gustaría cotizar un servicio.%0A%0A*Nombre:* ${name}%0A*Teléfono:* ${phone}%0A*Email:* ${email}%0A*Fecha del Evento:* ${date}%0A*Servicios:* ${servicesText}%0A*Descripción:* ${messageText}`;

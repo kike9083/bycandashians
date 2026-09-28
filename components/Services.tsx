@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, ServiceItem } from '../types';
 import { Shirt, Gem, Palette, Music, Loader2, Edit, Save, PlusCircle, Camera } from 'lucide-react';
-import { supabase } from '../services/supabaseClient';
+import { databases, APPWRITE_DATABASE_ID, Query, ID, toItem } from '../services/appwriteClient';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface ServicesProps {
@@ -63,9 +63,16 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
 
   const fetchServices = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from('services').select('*').order('title');
-    if (data) setServices(data as ServiceItem[]);
-    setLoading(false);
+    try {
+      const res = await databases.listDocuments(APPWRITE_DATABASE_ID, 'services', [
+        Query.orderAsc('title'),
+      ]);
+      setServices(res.documents.map((d) => toItem<ServiceItem>(d)));
+    } catch (err) {
+      console.error('Error fetching services:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -73,8 +80,14 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   }, []);
 
   const handleSeedServices = async () => {
-    const { error } = await supabase.from('services').insert(SAMPLE_SERVICES);
-    if (!error) fetchServices();
+    try {
+      for (const s of SAMPLE_SERVICES) {
+        await databases.createDocument(APPWRITE_DATABASE_ID, 'services', ID.unique(), s);
+      }
+      fetchServices();
+    } catch (err) {
+      console.error('Error seeding services:', err);
+    }
   };
 
   const getIcon = (name: string) => {
@@ -98,15 +111,14 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
   };
 
   const saveEdit = async (id: string) => {
-    const { error } = await supabase.from('services').update({
-      image: tempImageUrl,
-      image_fit: tempImageFit,
-      image_position: tempImagePos,
-      title: tempTitle,
-      description: tempDescription
-    }).eq('id', id);
-
-    if (!error) {
+    try {
+      await databases.updateDocument(APPWRITE_DATABASE_ID, 'services', id, {
+        image: tempImageUrl,
+        image_fit: tempImageFit,
+        image_position: tempImagePos,
+        title: tempTitle,
+        description: tempDescription
+      });
       setServices(services.map(s => s.id === id ? {
         ...s,
         image: tempImageUrl,
@@ -116,7 +128,8 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
         description: tempDescription
       } : s));
       setEditingId(null);
-    } else {
+    } catch (err) {
+      console.error('Error updating service:', err);
       alert('Error al actualizar imagen');
     }
   };
@@ -136,14 +149,18 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
       return;
     }
 
-    const { data, error } = await supabase.from('services').insert([photoService]).select();
+    let data: ServiceItem | null = null;
+    try {
+      const doc = await databases.createDocument(APPWRITE_DATABASE_ID, 'services', ID.unique(), photoService);
+      data = toItem<ServiceItem>(doc);
+    } catch (error) {
+      console.error("Error adding service", error);
+    }
 
-    if (!error && data) {
-      setServices((prev) => [...prev, data[0] as ServiceItem]);
+    if (data) {
+      setServices((prev) => [...prev, data as ServiceItem]);
       alert("Servicio agregado exitosamente.");
     } else {
-      console.error("Error adding service", error);
-
       // Fallback: Add locally so the user can see it (even if DB fails)
       const fallbackService = {
         ...photoService,
@@ -154,7 +171,7 @@ export const Services: React.FC<ServicesProps> = ({ setView, isEditMode }) => {
 
       setServices((prev) => [...prev, fallbackService]);
 
-      alert(`Nota: El servicio se agregó VISUALMENTE, pero hubo un error al guardarlo en la base de datos (${error?.message || 'Error desconocido'}).\n\nSi el error es "Failed to fetch", suele ser un bloqueo de red o falta de permisos RLS en Supabase.`);
+      alert(`Nota: El servicio se agregó VISUALMENTE, pero hubo un error al guardarlo en la base de datos.\n\nVerifica tu conexión o los permisos de la colección en Appwrite.`);
     }
   };
 

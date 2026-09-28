@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { View } from '../types';
 import { Menu, X, Sparkles, PenTool, Lock, LogOut, Users } from 'lucide-react';
-import { Session } from '@supabase/supabase-js';
-import { supabase } from '../services/supabaseClient';
+import { signOut, type AppSession } from '../services/appwriteClient';
 
 interface NavigationProps {
   currentView: View;
   setView: (view: View) => void;
   isEditMode: boolean;
   toggleEditMode: () => void;
-  session: Session | null;
+  session: AppSession;
+  onLogout: () => void;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, isEditMode, toggleEditMode, session }) => {
+export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, isEditMode, toggleEditMode, session, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -38,7 +38,8 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView, is
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
+    onLogout();
     setView(View.HOME);
     setIsOpen(false);
   };

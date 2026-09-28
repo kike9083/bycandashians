@@ -25,7 +25,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background-dark z-10" />
                     <img
-                        src="https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fdesfila-de-polleras-2.png&version_id=null"
+                        src="https://varios-appwrite-techpadah.fjueze.easypanel.host/v1/storage/buckets/bycandashan/files/6ab8d153a01b01f08a03/view?project=6ab8ce90001e6bf86e8a"
                         alt="Reina Folklórica"
                         className="w-full h-full object-cover opacity-60 animate-ken-burns"
                     />
@@ -98,7 +98,7 @@ export const OfferLanding: React.FC<OfferLandingProps> = ({ setView }) => {
                     <div className="relative">
                         <div className="absolute -inset-4 bg-gold/10 rounded-[2rem] blur-2xl"></div>
                         <img
-                            src="https://console-varios-minio.fjueze.easypanel.host/api/v1/buckets/bycandashan/objects/download?preview=true&prefix=images%2Fpollera-landing-1.png&version_id=null"
+                            src="https://varios-appwrite-techpadah.fjueze.easypanel.host/v1/storage/buckets/bycandashan/files/6ab8d170546457ac4717/view?project=6ab8ce90001e6bf86e8a"
                             alt="Detalle Pollera"
                             className="relative rounded-[2rem] border border-white/10 shadow-2xl w-full object-cover aspect-[4/5]"
                         />

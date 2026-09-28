@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lead, Product, ServiceItem } from '../types';
 import { X, Plus, Trash2, Download, MessageCircle, ShoppingBag, Shirt, Settings } from 'lucide-react';
-import { supabase } from '../services/supabaseClient';
+import { databases, APPWRITE_DATABASE_ID, Query, toItem, parseSettingValue, upsertDocument } from '../services/appwriteClient';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -34,21 +34,30 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({ lead, onClose }) => {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            const [productsRes, servicesRes, settingsRes] = await Promise.all([
-                supabase.from('products').select('*'),
-                supabase.from('services').select('*'),
-                supabase.from('app_settings').select('value').eq('key', 'quote_counter').single()
-            ]);
+            try {
+                const [productsRes, servicesRes] = await Promise.all([
+                    databases.listDocuments(APPWRITE_DATABASE_ID, 'products', [Query.limit(100)]),
+                    databases.listDocuments(APPWRITE_DATABASE_ID, 'services', [Query.limit(100)]),
+                ]);
 
-            if (productsRes.data) setProducts(productsRes.data as Product[]);
-            if (servicesRes.data) setServices(servicesRes.data as ServiceItem[]);
+                setProducts(productsRes.documents.map((d) => toItem<Product>(d)));
+                setServices(servicesRes.documents.map((d) => toItem<ServiceItem>(d)));
 
-            if (settingsRes.data && settingsRes.data.value) {
-                const nextCount = (settingsRes.data.value as any).count + 1;
-                setQuoteNum(nextCount.toString().padStart(4, '0'));
+                try {
+                    const setting = await databases.getDocument(APPWRITE_DATABASE_ID, 'app_settings', 'quote_counter');
+                    const parsed = parseSettingValue<{ count: number }>(setting.value);
+                    if (parsed && typeof parsed.count === 'number') {
+                        const nextCount = parsed.count + 1;
+                        setQuoteNum(nextCount.toString().padStart(4, '0'));
+                    }
+                } catch {
+                    // Sin contador previo: se queda en '0001'
+                }
+            } catch (err) {
+                console.error('Error fetching quote data:', err);
+            } finally {
+                setLoading(false);
             }
-
-            setLoading(false);
         };
 
         fetchData();
@@ -248,15 +257,15 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({ lead, onClose }) => {
 
             // Sync with DB: Increment the counter
             const currentNum = parseInt(quoteNum);
-            const { error } = await supabase
-                .from('app_settings')
-                .update({ value: { count: currentNum } })
-                .eq('key', 'quote_counter');
-
-            if (!error) {
+            try {
+                await upsertDocument('app_settings', 'quote_counter', {
+                    value: JSON.stringify({ count: currentNum })
+                });
                 // Advance local state for immediate next quote if modal stays open
                 const nextNum = (currentNum + 1).toString().padStart(4, '0');
                 setQuoteNum(nextNum);
+            } catch (err) {
+                console.error('Error syncing quote counter:', err);
             }
         }
     };

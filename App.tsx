@@ -15,32 +15,23 @@ import { History } from './components/History';
 import { CRM } from './components/CRM';
 import { OfferLanding } from './components/OfferLanding';
 import { OfferLandingEvent } from './components/OfferLandingEvent';
-import { supabase } from './services/supabaseClient';
-import { Session } from '@supabase/supabase-js';
+import { getSession, type AppSession } from './services/appwriteClient';
 
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<View>(View.HOME);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<AppSession>(null);
+
+  const refreshSession = async () => {
+    const user = await getSession();
+    setSession(user);
+    setIsEditMode(!!user);
+  };
 
   // Handle Authentication Session
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) {
-        setIsEditMode(true);
-      } else {
-        setIsEditMode(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    refreshSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Scroll to top when view changes
@@ -51,7 +42,7 @@ const App: React.FC = () => {
   // Main Content Rendering Logic
   const renderContent = () => {
     if (activeView === View.ADMIN_LOGIN) {
-      return <AdminLogin setView={setActiveView} />;
+      return <AdminLogin setView={setActiveView} onLogin={refreshSession} />;
     }
 
     // Common components structure for main site
@@ -123,7 +114,7 @@ const App: React.FC = () => {
   };
 
   if (activeView === View.HOME) {
-    return <LandingPage setView={setActiveView} session={session} isEditMode={isEditMode} toggleEditMode={() => setIsEditMode(!isEditMode)} />;
+    return <LandingPage setView={setActiveView} session={session} isEditMode={isEditMode} toggleEditMode={() => setIsEditMode(!isEditMode)} onLogout={refreshSession} />;
   }
 
   if (activeView === View.OFFER_LANDING) {
@@ -142,6 +133,7 @@ const App: React.FC = () => {
         isEditMode={isEditMode}
         toggleEditMode={() => setIsEditMode(!isEditMode)}
         session={session}
+        onLogout={refreshSession}
       />
 
       <main className="flex-grow w-full">

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { supabase } from '../services/supabaseClient';
+import { account } from '../services/appwriteClient';
 import { View } from '../types';
 import { Lock, Loader2, AlertCircle } from 'lucide-react';
 
 interface AdminLoginProps {
   setView: (view: View) => void;
+  onLogin: () => void;
 }
 
-export const AdminLogin: React.FC<AdminLoginProps> = ({ setView }) => {
+export const AdminLogin: React.FC<AdminLoginProps> = ({ setView, onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,12 +20,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ setView }) => {
     setError(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
+      await account.createEmailPasswordSession(email, password);
+      onLogin();
 
       // Successful login
       setView(View.HOME);

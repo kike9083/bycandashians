@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../services/supabaseClient';
+import { databases, APPWRITE_DATABASE_ID, Query, toItem, upsertDocument } from '../services/appwriteClient';
 import { Edit, Save, Loader2 } from 'lucide-react';
 
 interface HistoryProps {
@@ -30,11 +30,14 @@ export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
     const fetchContent = async () => {
         try {
             setLoading(true);
-            const { data, error } = await supabase.from('site_content').select('*');
+            const res = await databases.listDocuments(APPWRITE_DATABASE_ID, 'site_content', [
+                Query.limit(100),
+            ]);
+            const data = res.documents.map((d) => toItem<{ id: string; value: string }>(d));
 
             if (data && data.length > 0) {
-                const titleRow = data.find(r => r.key === 'history_title');
-                const contentRow = data.find(r => r.key === 'history_content');
+                const titleRow = data.find(r => r.id === 'history_title');
+                const contentRow = data.find(r => r.id === 'history_content');
 
                 if (titleRow) setTitle(titleRow.value);
                 if (contentRow) setContent(contentRow.value);
@@ -55,20 +58,16 @@ export const History: React.FC<HistoryProps> = ({ isEditMode }) => {
     const saveContent = async () => {
         try {
             // Save Title
-            const { error: error1 } = await supabase.from('site_content').upsert({
-                key: 'history_title',
+            await upsertDocument('site_content', 'history_title', {
                 value: tempTitle,
-                updated_at: new Date()
+                updated_at: new Date().toISOString()
             });
 
             // Save Content
-            const { error: error2 } = await supabase.from('site_content').upsert({
-                key: 'history_content',
+            await upsertDocument('site_content', 'history_content', {
                 value: tempContent,
-                updated_at: new Date()
+                updated_at: new Date().toISOString()
             });
-
-            if (error1 || error2) throw new Error("Error saving content");
 
             setTitle(tempTitle);
             setContent(tempContent);
